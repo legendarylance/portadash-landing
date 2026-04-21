@@ -171,9 +171,9 @@
     .stories-marquee-wrap::before, .stories-marquee-wrap::after { content: ''; position: absolute; top: 0; width: 120px; height: 100%; z-index: 2; pointer-events: none; }
     .stories-marquee-wrap::before { left: 0; background: linear-gradient(to right, var(--color-bg) 0%, transparent 100%); }
     .stories-marquee-wrap::after { right: 0; background: linear-gradient(to left, var(--color-bg) 0%, transparent 100%); }
-    .stories-grid { display: flex; width: max-content; animation: marquee-scroll 36s linear infinite; }
+    .stories-grid { display: flex; width: max-content; animation: marquee-scroll 36s linear infinite; will-change: transform; }
     .stories-grid:hover { animation-play-state: paused; }
-    .story-card { width: 300px; flex-shrink: 0; }
+    .story-card { width: 300px; flex-shrink: 0; position: relative; }
     @keyframes marquee-scroll { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
     .story-quote { font-size: var(--text-base); color: var(--color-text); line-height: 1.7; margin-bottom: var(--space-5); font-style: italic; }
     .story-attr { display:flex; align-items:center; gap: var(--space-3); }
@@ -466,7 +466,7 @@
         <p style="max-width: 54ch; color: var(--color-text-muted); font-size: var(--text-sm);">A few real experiences that show how PortaDash helps in the moments people care about most.</p>
       </div>
       <div class=”stories-marquee-wrap”>
-        <div class=”stories-grid reveal” id=”stories-grid”>
+        <div class=”stories-grid” id=”stories-grid”>
           <article class=”story-card”><p class=”story-quote”>”I checked PortaDash from my watch during a long run and found a restroom without stopping to dig for my phone.”</p><div class=”story-attr”><div class=”story-avatar”>JR</div><div><div class=”story-name”>Jamie</div><div class=”story-role”>Runner</div></div></div></article>
           <article class=”story-card”><p class=”story-quote”>”Traveling with kids is a lot easier when you can pull up nearby options fast instead of guessing.”</p><div class=”story-attr”><div class=”story-avatar”>MS</div><div><div class=”story-name”>Morgan</div><div class=”story-role”>Parent</div></div></div></article>
           <article class=”story-card”><p class=”story-quote”>”The app feels practical, fast, and weirdly comforting when you are in an unfamiliar part of town.”</p><div class=”story-attr”><div class=”story-avatar”>AL</div><div><div class=”story-name”>Alex</div><div class=”story-role”>Traveler</div></div></div></article>
