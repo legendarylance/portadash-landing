@@ -636,7 +636,10 @@
     waitlistBackdrop?.addEventListener('click', closeWaitlist);
     document.addEventListener('keydown', e => { if (e.key === 'Escape' && waitlistModal && !waitlistModal.hidden) closeWaitlist(); });
     const marqueeTrack = document.getElementById('marquee-track');
-    if (marqueeTrack) marqueeTrack.innerHTML += marqueeTrack.innerHTML;
+    if (marqueeTrack) {
+      const orig = marqueeTrack.innerHTML;
+      marqueeTrack.innerHTML += orig + orig + orig; // 4× total — each half fills wide viewports
+    }
 
     waitlistForm?.addEventListener('submit', async (e) => {
       e.preventDefault();
