@@ -79,7 +79,7 @@
     nav { position: sticky; top: 0; z-index: 100; background: color-mix(in oklch, var(--color-bg) 90%, transparent); backdrop-filter: blur(12px); border-bottom: 1px solid oklch(from var(--color-text) l c h / 0.08); }
     .nav-inner { max-width: var(--content-wide); margin-inline: auto; padding: var(--space-3) var(--space-4); display: flex; align-items: center; justify-content: space-between; gap: var(--space-6); }
     .nav-logo { display: flex; align-items: center; gap: var(--space-3); text-decoration: none; color: var(--color-text); }
-    .nav-logo img { width: 58px; height: 58px; flex-shrink: 0; border-radius: 8px; vertical-align: middle; }
+    .nav-logo img { height: 40px; width: auto; flex-shrink: 0; vertical-align: middle; }
     .nav-links { display: flex; align-items: center; gap: var(--space-6); list-style: none; }
     .nav-links a { text-decoration: none; font-size: var(--text-sm); color: var(--color-text-muted); font-weight: 500; }
     .nav-links a:hover { color: var(--color-text); }
@@ -261,7 +261,7 @@
       .device-side-top { transform: translate(25px, -8px) rotate(8deg) scale(.9); }
       .device-side-bottom { transform: translate(22px, 18px) rotate(10deg) scale(.88); }
       .screenshot-rail { grid-template-columns: 1fr 1fr; }
-      .nav-logo img { width: 48px; height: 48px; }
+      .nav-logo img { height: 32px; width: auto; }
     }
   </style>
 </head>
@@ -269,7 +269,7 @@
   <nav>
     <div class="nav-inner">
       <a class="nav-logo" href="#top">
-        <img src="https://images.squarespace-cdn.com/content/691b50d6baead334ac79a899/a9776fae-4ccc-4646-ba47-37c4bc0ae732/PortaDash_Bright.png?content-type=image%2Fpng" alt="PortaDash logo" width="58" height="58">
+        <img src="./PortaDash_Logo_Horizontal.png" alt="PortaDash logo">
       </a>
       <ul class="nav-links">
         <li><a href="#features">Features</a></li>
