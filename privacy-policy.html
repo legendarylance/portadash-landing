@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Privacy Policy — PortaDash</title>
+  <meta name="description" content="PortaDash Privacy Policy — how we collect, use, and safeguard your information when you use the app." />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Work+Sans:wght@300..700&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js" defer></script>
+  <style>
+    :root {
+      --color-bg: #f4f7f2;
+      --color-surface: #f8faf6;
+      --color-surface-2: #fbfcfa;
+      --color-surface-offset: #eef2ec;
+      --color-divider: #d4dcd2;
+      --color-border: #c8d4c6;
+      --color-text: #1e271c;
+      --color-text-muted: #5a6e58;
+      --color-text-faint: #9aaa98;
+      --color-text-inverse: #f4f7f2;
+      --color-primary: #1a35cc;
+      --color-primary-hover: #1228a8;
+      --color-primary-active: #0c1e84;
+      --color-primary-highlight: #dde3fa;
+      --color-accent: #e07a1a;
+      --color-accent-highlight: #fde8cc;
+      --radius-sm: 0.375rem;
+      --radius-md: 0.5rem;
+      --radius-lg: 0.75rem;
+      --radius-xl: 1rem;
+      --radius-2xl: 1.5rem;
+      --radius-full: 9999px;
+      --shadow-sm: 0 1px 2px oklch(0.2 0.02 130 / 0.06);
+      --shadow-md: 0 4px 12px oklch(0.2 0.02 130 / 0.09);
+      --shadow-lg: 0 12px 32px oklch(0.2 0.02 130 / 0.13);
+      --transition-interactive: 180ms cubic-bezier(0.16, 1, 0.3, 1);
+      --font-display: 'Instrument Serif', Georgia, serif;
+      --font-body: 'Work Sans', 'Helvetica Neue', sans-serif;
+      --text-xs: clamp(0.75rem, 0.7rem + 0.25vw, 0.875rem);
+      --text-sm: clamp(0.875rem, 0.8rem + 0.35vw, 1rem);
+      --text-base: clamp(1rem, 0.95rem + 0.25vw, 1.125rem);
+      --text-lg: clamp(1.125rem, 1rem + 0.75vw, 1.5rem);
+      --text-xl: clamp(1.5rem, 1.2rem + 1.25vw, 2.25rem);
+      --text-2xl: clamp(2rem, 1.2rem + 2.5vw, 3.5rem);
+      --space-1: 0.25rem; --space-2: 0.5rem; --space-3: 0.75rem; --space-4: 1rem;
+      --space-5: 1.25rem; --space-6: 1.5rem; --space-8: 2rem; --space-10: 2.5rem;
+      --space-12: 3rem; --space-16: 4rem; --space-20: 5rem;
+      --content-default: 720px; --content-wide: 1200px;
+      color-scheme: light;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { -webkit-font-smoothing: antialiased; scroll-behavior: smooth; scroll-padding-top: var(--space-16); }
+    body { min-height: 100dvh; font-family: var(--font-body); font-size: var(--text-base); color: var(--color-text); background: var(--color-bg); line-height: 1.6; }
+    img { display: block; max-width: 100%; height: auto; }
+    h1, h2, h3, h4 { text-wrap: balance; line-height: 1.2; }
+    p, li { text-wrap: pretty; }
+    input, button, textarea, select { font: inherit; color: inherit; }
+    button { cursor: pointer; background: none; border: none; }
+    a, button { transition: color var(--transition-interactive), background var(--transition-interactive); }
+    :focus-visible { outline: 2px solid var(--color-primary); outline-offset: 3px; border-radius: var(--radius-sm); }
+
+    /* Nav */
+    nav { position: sticky; top: 0; z-index: 100; background: color-mix(in oklch, var(--color-bg) 90%, transparent); backdrop-filter: blur(12px); border-bottom: 1px solid oklch(from var(--color-text) l c h / 0.08); }
+    .nav-inner { max-width: var(--content-wide); margin-inline: auto; padding: var(--space-3) var(--space-4); display: flex; align-items: center; justify-content: space-between; gap: var(--space-6); }
+    .nav-logo { display: flex; align-items: center; gap: var(--space-3); text-decoration: none; color: var(--color-text); }
+    .nav-logo img { height: 40px; width: auto; flex-shrink: 0; vertical-align: middle; }
+    .nav-links { display: flex; align-items: center; gap: var(--space-6); list-style: none; }
+    .nav-links a { text-decoration: none; font-size: var(--text-sm); color: var(--color-text-muted); font-weight: 500; }
+    .nav-links a:hover { color: var(--color-text); }
+    .nav-cta { background: var(--color-primary); color: var(--color-text-inverse) !important; padding: var(--space-2) var(--space-5); border-radius: var(--radius-full); font-size: var(--text-sm) !important; font-weight: 600 !important; text-decoration: none; white-space: nowrap; }
+    .nav-cta:hover { background: var(--color-primary-hover) !important; }
+    .nav-hamburger { display: none; width: 36px; height: 36px; border-radius: var(--radius-md); border: 1px solid oklch(from var(--color-text) l c h / 0.12); background: none; cursor: pointer; flex-direction: column; align-items: center; justify-content: center; gap: 4.5px; flex-shrink: 0; }
+    .nav-hamburger span { display: block; width: 16px; height: 1.5px; background: var(--color-text); border-radius: 2px; transition: transform 250ms cubic-bezier(0.16,1,0.3,1), opacity 250ms; transform-origin: center; }
+    .nav-hamburger[aria-expanded="true"] span:nth-child(1) { transform: translateY(6px) rotate(45deg); }
+    .nav-hamburger[aria-expanded="true"] span:nth-child(2) { opacity: 0; transform: scaleX(0); }
+    .nav-hamburger[aria-expanded="true"] span:nth-child(3) { transform: translateY(-6px) rotate(-45deg); }
+    .nav-drawer { max-height: 0; overflow: hidden; transition: max-height 320ms cubic-bezier(0.16,1,0.3,1); background: var(--color-surface); border-top: 1px solid transparent; }
+    .nav-drawer.open { max-height: 400px; border-top-color: oklch(from var(--color-text) l c h / 0.07); }
+    .nav-drawer-inner { padding: var(--space-3) var(--space-4) var(--space-5); display: flex; flex-direction: column; gap: var(--space-1); }
+    .nav-drawer a { display: block; padding: var(--space-3) var(--space-3); border-radius: var(--radius-lg); font-size: var(--text-sm); font-weight: 500; color: var(--color-text-muted); text-decoration: none; transition: background var(--transition-interactive), color var(--transition-interactive); }
+    .nav-drawer a:hover { background: var(--color-surface-offset); color: var(--color-text); }
+    .nav-drawer-divider { height: 1px; background: oklch(from var(--color-text) l c h / 0.07); margin: var(--space-2) 0; }
+    .nav-drawer .nav-drawer-cta { background: var(--color-primary); color: var(--color-text-inverse); font-weight: 600; text-align: center; margin-top: var(--space-1); }
+    .nav-drawer .nav-drawer-cta:hover { background: var(--color-primary-hover); color: var(--color-text-inverse); }
+
+    /* Modals */
+    .download-modal-backdrop { position: fixed; inset: 0; background: oklch(0.1 0.01 120 / 0.38); z-index: 140; }
+    .download-modal { position: fixed; inset: 50% auto auto 50%; transform: translate(-50%, -50%); width: min(92vw, 460px); background: var(--color-surface-2); z-index: 150; border: 1px solid oklch(from var(--color-text) l c h / 0.1); border-radius: var(--radius-2xl); box-shadow: var(--shadow-lg); padding: var(--space-8); }
+    .download-modal h2 { font-family: var(--font-display); font-size: var(--text-xl); font-weight: 400; margin-bottom: var(--space-3); }
+    .download-modal p { color: var(--color-text-muted); margin-bottom: var(--space-6); }
+    .download-modal-actions { display: grid; gap: var(--space-3); }
+    .badge-link { display: inline-flex; justify-content: center; }
+    .store-badge { width: min(100%, 280px); height: auto; display: block; }
+    .download-modal-close { position: absolute; top: var(--space-4); right: var(--space-4); width: 48px; height: 48px; border-radius: var(--radius-full); color: var(--color-text-muted); font-size: 1.5rem; }
+    .download-modal-close:hover { background: var(--color-surface-offset); color: var(--color-text); }
+    .section-label { font-size: var(--text-xs); font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--color-primary); margin-bottom: var(--space-4); }
+    .android-badge-soon { position: relative; }
+    .android-badge-soon .badge-coming-soon { position: absolute; top: -8px; right: -8px; background: var(--color-accent); color: #fff; font-size: 9px; font-weight: 700; letter-spacing: .04em; padding: 2px 8px; border-radius: var(--radius-full); text-transform: uppercase; pointer-events: none; }
+    .waitlist-modal-backdrop { position: fixed; inset: 0; background: oklch(0.1 0.01 120 / 0.38); z-index: 140; }
+    .waitlist-modal { position: fixed; inset: 50% auto auto 50%; transform: translate(-50%, -50%); width: min(92vw, 460px); background: var(--color-surface-2); z-index: 150; border: 1px solid oklch(from var(--color-text) l c h / 0.1); border-radius: var(--radius-2xl); box-shadow: var(--shadow-lg); padding: var(--space-8); }
+    .waitlist-modal h2 { font-family: var(--font-display); font-size: var(--text-xl); font-weight: 400; margin-bottom: var(--space-3); }
+    .waitlist-modal p { color: var(--color-text-muted); margin-bottom: var(--space-5); }
+    .waitlist-modal-close { position: absolute; top: var(--space-4); right: var(--space-4); width: 48px; height: 48px; border-radius: var(--radius-full); color: var(--color-text-muted); font-size: 1.5rem; }
+    .waitlist-modal-close:hover { background: var(--color-surface-offset); color: var(--color-text); }
+    .waitlist-form { display: flex; flex-direction: column; gap: var(--space-3); }
+    .waitlist-input { width: 100%; padding: var(--space-3) var(--space-4); border-radius: var(--radius-lg); border: 1px solid var(--color-border); background: var(--color-surface-2); font-family: var(--font-body); font-size: var(--text-sm); color: var(--color-text); outline: none; transition: border-color var(--transition-interactive); }
+    .waitlist-input:focus { border-color: var(--color-primary); box-shadow: 0 0 0 3px oklch(from var(--color-primary) l c h / 0.12); }
+    .waitlist-submit { width: 100%; padding: var(--space-4); border-radius: var(--radius-full); background: var(--color-primary); color: var(--color-text-inverse); font-family: var(--font-body); font-size: var(--text-sm); font-weight: 600; border: none; cursor: pointer; }
+    .waitlist-submit:hover { background: var(--color-primary-hover); }
+    .waitlist-fine { font-size: var(--text-xs); color: var(--color-text-faint); text-align: center; }
+    .waitlist-success { display: none; text-align: center; padding: var(--space-4) 0; }
+    .waitlist-success-icon { width: 52px; height: 52px; border-radius: 50%; background: var(--color-primary-highlight); display: flex; align-items: center; justify-content: center; margin: 0 auto var(--space-4); color: var(--color-primary); }
+    .waitlist-success h3 { font-family: var(--font-display); font-size: var(--text-xl); font-weight: 400; margin-bottom: var(--space-2); }
+
+    /* Page hero */
+    .pp-hero { padding: clamp(var(--space-12), 6vw, var(--space-20)) var(--space-4) clamp(var(--space-8), 4vw, var(--space-12)); background: linear-gradient(160deg, var(--color-bg) 0%, var(--color-surface-offset) 100%); }
+    .pp-hero-badge { display: inline-flex; align-items: center; gap: var(--space-2); background: var(--color-primary-highlight); color: var(--color-primary); border: 1px solid color-mix(in oklch, var(--color-primary) 20%, transparent); padding: var(--space-1) var(--space-4); border-radius: var(--radius-full); font-size: var(--text-xs); font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: var(--space-5); }
+    .pp-hero h1 { font-family: var(--font-display); font-size: var(--text-2xl); font-weight: 400; color: var(--color-text); margin-bottom: var(--space-4); }
+    .pp-hero p { font-size: var(--text-sm); color: var(--color-text-muted); line-height: 1.7; }
+
+    /* Policy content */
+    .pp-body { padding: clamp(var(--space-10), 5vw, var(--space-16)) var(--space-4); }
+    .pp-content { max-width: var(--content-default); margin-inline: auto; }
+
+    /* TOC */
+    .pp-toc { background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius-xl); padding: var(--space-6); margin-bottom: var(--space-10); box-shadow: var(--shadow-sm); }
+    .pp-toc h2 { font-size: var(--text-sm); font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--color-primary); margin-bottom: var(--space-4); }
+    .pp-toc ol { list-style: none; display: grid; gap: var(--space-2); padding: 0; }
+    .pp-toc ol li { display: flex; align-items: baseline; gap: var(--space-2); }
+    .pp-toc ol li a { font-size: var(--text-sm); color: var(--color-text-muted); text-decoration: none; font-weight: 500; }
+    .pp-toc ol li a:hover { color: var(--color-primary); }
+    .pp-toc-num { font-size: var(--text-xs); font-weight: 700; color: var(--color-primary); min-width: 20px; }
+
+    /* Sections */
+    .pp-section { margin-bottom: var(--space-12); padding-bottom: var(--space-12); border-bottom: 1px solid var(--color-divider); }
+    .pp-section:last-child { border-bottom: none; margin-bottom: 0; }
+    .pp-section-num { font-size: var(--text-xs); font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--color-primary); margin-bottom: var(--space-3); }
+    .pp-section h2 { font-family: var(--font-display); font-size: var(--text-xl); font-weight: 400; color: var(--color-text); margin-bottom: var(--space-5); }
+    .pp-section h3 { font-size: var(--text-base); font-weight: 700; color: var(--color-text); margin-top: var(--space-6); margin-bottom: var(--space-3); }
+    .pp-section p { font-size: var(--text-base); color: var(--color-text-muted); line-height: 1.75; margin-bottom: var(--space-4); }
+    .pp-section p:last-child { margin-bottom: 0; }
+    .pp-section ul, .pp-section ol { padding-left: var(--space-6); display: grid; gap: var(--space-2); margin-bottom: var(--space-4); }
+    .pp-section li { font-size: var(--text-base); color: var(--color-text-muted); line-height: 1.7; }
+    .pp-section strong { color: var(--color-text); font-weight: 600; }
+    .pp-section a { color: var(--color-primary); text-decoration: none; font-weight: 500; }
+    .pp-section a:hover { color: var(--color-primary-hover); text-decoration: underline; }
+
+    /* Highlight boxes */
+    .pp-highlight { background: var(--color-primary-highlight); border: 1px solid color-mix(in oklch, var(--color-primary) 20%, transparent); border-radius: var(--radius-lg); padding: var(--space-5) var(--space-6); margin-bottom: var(--space-5); }
+    .pp-highlight p { color: var(--color-primary); margin-bottom: 0; font-size: var(--text-sm); }
+    .pp-highlight strong { color: var(--color-primary); }
+    .pp-steps { background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius-xl); padding: var(--space-6); margin-bottom: var(--space-5); }
+    .pp-steps ol { padding-left: var(--space-5); display: grid; gap: var(--space-3); }
+    .pp-steps li { font-size: var(--text-sm); color: var(--color-text-muted); line-height: 1.65; }
+    .pp-steps li strong { color: var(--color-text); }
+    .pp-delete-grid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-4); margin-bottom: var(--space-4); }
+    .pp-delete-card { background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius-xl); padding: var(--space-5); }
+    .pp-delete-card h4 { font-size: var(--text-sm); font-weight: 700; margin-bottom: var(--space-3); color: var(--color-text); }
+    .pp-delete-card ul { padding-left: var(--space-4); display: grid; gap: var(--space-2); }
+    .pp-delete-card li { font-size: var(--text-sm); color: var(--color-text-muted); line-height: 1.6; }
+
+    /* Footer */
+    .site-footer { background: var(--color-surface); border-top: 1px solid var(--color-divider); padding: var(--space-12) var(--space-6) var(--space-10); }
+    .footer-grid { max-width: var(--content-wide); margin-inline: auto; display: grid; grid-template-columns: 1.2fr .8fr .8fr; gap: var(--space-8); }
+    .footer-brand h3 { font-family: var(--font-display); font-size: var(--text-lg); font-weight: 400; margin-bottom: var(--space-3); }
+    .footer-brand p, .footer-links a { color: var(--color-text-muted); font-size: var(--text-sm); line-height: 1.7; text-decoration: none; }
+    .footer-links h4 { font-size: var(--text-xs); font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--color-text-faint); margin-bottom: var(--space-3); }
+    .footer-links ul { list-style: none; display: grid; gap: var(--space-2); }
+    .footer-links a:hover { color: var(--color-text); }
+    .footer-bottom { max-width: var(--content-wide); margin: var(--space-8) auto 0; padding-top: var(--space-4); border-top: 1px solid var(--color-divider); display: flex; justify-content: space-between; align-items: center; gap: var(--space-4); flex-wrap: wrap; }
+    .footer-bottom p { font-size: var(--text-sm); color: var(--color-text-muted); }
+    .footer-social { display: flex; align-items: center; gap: var(--space-4); }
+    .footer-social a { color: #000; display: flex; transition: transform 200ms cubic-bezier(0.16,1,0.3,1); }
+    .footer-social a:hover { transform: scale(1.35); }
+    .footer-social svg { width: 24px; height: 24px; fill: currentColor; display: block; }
+
+    .reveal { opacity: 0; transform: translateY(20px); transition: opacity .6s ease, transform .6s ease; }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+
+    @media (max-width: 980px) {
+      .footer-grid { grid-template-columns: 1fr; }
+      .footer-bottom { flex-direction: column; }
+      .pp-delete-grid { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 720px) {
+      .nav-links { display: none; }
+      .nav-hamburger { display: flex; }
+    }
+    @media (max-width: 640px) {
+      .nav-logo img { height: 32px; }
+    }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <div class="nav-inner">
+      <a class="nav-logo" href="./portadash-consumer-landing-no-side-space.html">
+        <img src="./PortaDash_Logo_Horizontal.png" alt="PortaDash logo">
+      </a>
+      <ul class="nav-links">
+        <li><a href="./portadash-consumer-landing-no-side-space.html#features">Features</a></li>
+        <li><a href="./portadash-consumer-landing-no-side-space.html#watch-mode">Watch</a></li>
+        <li><a href="./portadash-consumer-landing-no-side-space.html#stories">Stories</a></li>
+        <li><a href="./faq.html">FAQ</a></li>
+        <li><a href="./contact.html">Contact</a></li>
+        <li><a href="./portadash-media-kit.html" target="_blank" rel="noopener noreferrer">Press Kit</a></li>
+      </ul>
+      <button class="nav-cta" type="button" data-download-open>Download</button>
+      <button class="nav-hamburger" type="button" id="nav-hamburger" aria-label="Toggle menu" aria-expanded="false" aria-controls="nav-drawer">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+    <div class="nav-drawer" id="nav-drawer" role="navigation" aria-label="Mobile menu">
+      <div class="nav-drawer-inner">
+        <a href="./portadash-consumer-landing-no-side-space.html#features" class="nav-drawer-link">Features</a>
+        <a href="./portadash-consumer-landing-no-side-space.html#watch-mode" class="nav-drawer-link">Watch</a>
+        <a href="./portadash-consumer-landing-no-side-space.html#stories" class="nav-drawer-link">Stories</a>
+        <a href="./faq.html" class="nav-drawer-link">FAQ</a>
+        <a href="./contact.html" class="nav-drawer-link">Contact</a>
+        <a href="./portadash-media-kit.html" target="_blank" rel="noopener noreferrer" class="nav-drawer-link">Press Kit</a>
+        <div class="nav-drawer-divider"></div>
+        <a href="#" class="nav-drawer-cta" data-download-open>Download PortaDash free</a>
+      </div>
+    </div>
+  </nav>
+
+  <div class="download-modal-backdrop" data-download-backdrop hidden></div>
+  <div class="download-modal" data-download-modal hidden aria-labelledby="download-modal-title" aria-modal="true" role="dialog">
+    <button class="download-modal-close" type="button" data-download-close aria-label="Close download options">&times;</button>
+    <p class="section-label" style="margin-bottom: var(--space-3);">Choose your platform</p>
+    <h2 id="download-modal-title">Download PortaDash</h2>
+    <p>Pick the store that matches your device.</p>
+    <div class="download-modal-actions">
+      <a href="https://apps.apple.com/us/app/portadash/id6755355109" target="_blank" rel="noopener noreferrer" class="badge-link"><img src="./assets/app-store-badge.png" alt="Download on the App Store" class="store-badge"></a>
+      <button type="button" class="badge-link android-badge-soon" data-waitlist-open>
+        <span class="badge-coming-soon">Coming soon</span>
+        <img src="./assets/google-play-badge.png" alt="Join the Android Waitlist" class="store-badge">
+      </button>
+    </div>
+  </div>
+
+  <div class="waitlist-modal-backdrop" data-waitlist-backdrop hidden></div>
+  <div class="waitlist-modal" data-waitlist-modal hidden aria-labelledby="waitlist-modal-title" aria-modal="true" role="dialog">
+    <button class="waitlist-modal-close" type="button" data-waitlist-close aria-label="Close">&times;</button>
+    <p class="section-label" style="margin-bottom: var(--space-3);">Android — coming soon</p>
+    <h2 id="waitlist-modal-title">Be first when PortaDash hits Google Play.</h2>
+    <p>Drop your email and we'll notify you the moment the Android app is live. No spam — just one email when it's ready.</p>
+    <div id="waitlist-form-wrap">
+      <form class="waitlist-form" data-waitlist-form>
+        <input class="waitlist-input" type="email" name="email" placeholder="your@email.com" required autocomplete="email">
+        <button type="submit" class="waitlist-submit">Notify me when it's live</button>
+        <p class="waitlist-fine">No spam. One email when the app launches. Unsubscribe any time.</p>
+      </form>
+    </div>
+    <div class="waitlist-success" data-waitlist-success>
+      <div class="waitlist-success-icon"><i data-lucide="check"></i></div>
+      <h3>You're on the list.</h3>
+      <p>We'll send one email when PortaDash is live on Google Play. See you on Android.</p>
+    </div>
+  </div>
+
+  <!-- Hero -->
+  <div class="pp-hero">
+    <div style="max-width: var(--content-wide); margin-inline: auto; padding-inline: var(--space-4);">
+      <div class="pp-hero-badge">Legal</div>
+      <h1>Privacy Policy</h1>
+      <p>Last reviewed: 2025 &nbsp;·&nbsp; PortaDash is committed to protecting your privacy.</p>
+    </div>
+  </div>
+
+  <!-- Content -->
+  <div class="pp-body">
+    <div class="pp-content">
+
+      <!-- Table of contents -->
+      <div class="pp-toc reveal">
+        <h2>Contents</h2>
+        <ol>
+          <li><span class="pp-toc-num">01</span><a href="#introduction">Introduction</a></li>
+          <li><span class="pp-toc-num">02</span><a href="#information-we-collect">Information We Collect</a></li>
+          <li><span class="pp-toc-num">03</span><a href="#third-party-services">Third-Party Services</a></li>
+          <li><span class="pp-toc-num">04</span><a href="#how-we-use">How We Use Your Information</a></li>
+          <li><span class="pp-toc-num">05</span><a href="#childrens-privacy">Children's Privacy</a></li>
+          <li><span class="pp-toc-num">06</span><a href="#security">Security</a></li>
+          <li><span class="pp-toc-num">07</span><a href="#changes">Changes to This Privacy Policy</a></li>
+          <li><span class="pp-toc-num">08</span><a href="#deletion">Deleting Your Account and Data</a></li>
+        </ol>
+      </div>
+
+      <!-- 1. Introduction -->
+      <section class="pp-section reveal" id="introduction">
+        <p class="pp-section-num">01 — Introduction</p>
+        <h2>Introduction</h2>
+        <p><strong>PortaDash</strong> ("we," "our," or "us") is committed to protecting your privacy. This Privacy Policy explains how we collect, use, and safeguard your information when you use our mobile application (the "App"). By using the App, you agree to the collection and use of information in accordance with this policy.</p>
+      </section>
+
+      <!-- 2. Information We Collect -->
+      <section class="pp-section reveal" id="information-we-collect">
+        <p class="pp-section-num">02 — Information We Collect</p>
+        <h2>Information We Collect</h2>
+
+        <h3>A. Location Data</h3>
+        <p>To help you find nearby restrooms and porta potties, our App requires access to your device's location.</p>
+        <ul>
+          <li><strong>How we use it:</strong> We use your location data solely to display your position on the map and to calculate distances to nearby facilities.</li>
+          <li><strong>Storage:</strong> We do not store your movement history or track your location when the App is not in use. Your location data stays on your device and is not sent to our servers for tracking purposes.</li>
+        </ul>
+
+        <h3>B. User-Generated Content</h3>
+        <p>If you choose to contribute to the community by adding a new restroom location, updating details, or leaving a rating or review:</p>
+        <ul>
+          <li><strong>Public Data:</strong> The information you submit (e.g., location coordinates, facility descriptions, ratings, and photos) will be publicly visible to other users of the App.</li>
+          <li><strong>Anonymity:</strong> Your contributions are associated with your anonymous user ID. We do not display your real name or personal contact details next to your reviews unless you explicitly choose to include them in your profile.</li>
+        </ul>
+
+        <h3>C. Non-Personal Usage Data (Analytics)</h3>
+        <p>We use third-party services to understand how our App is used and to fix crashes. This data is <strong>anonymous</strong> and cannot be used to identify you personally.</p>
+        <ul>
+          <li><strong>Device Information:</strong> We may collect data about your device model, operating system version, and unique device identifiers (like IDFV).</li>
+          <li><strong>Usage Data:</strong> We track actions such as button taps, screen views, and session duration to improve the user experience.</li>
+        </ul>
+      </section>
+
+      <!-- 3. Third-Party Services -->
+      <section class="pp-section reveal" id="third-party-services">
+        <p class="pp-section-num">03 — Third-Party Services</p>
+        <h2>Third-Party Services</h2>
+        <p>We use the following trusted third-party services to operate the App. These providers have their own privacy policies regarding how they handle data:</p>
+
+        <h3>Google Firebase (Analytics &amp; Crashlytics)</h3>
+        <p>We use Firebase to collect anonymous usage data and crash reports. This helps us fix bugs and understand which features are most popular.</p>
+        <p><a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer">Google Privacy Policy →</a></p>
+
+        <h3>OpenStreetMap (OSM)</h3>
+        <p>Our map data is derived from OpenStreetMap. When you view the map, some technical data (like your IP address) may be visible to OpenStreetMap servers to serve the map tiles.</p>
+        <p><a href="https://wiki.openstreetmap.org/wiki/Privacy_Policy" target="_blank" rel="noopener noreferrer">OpenStreetMap Privacy Policy →</a></p>
+      </section>
+
+      <!-- 4. How We Use Your Information -->
+      <section class="pp-section reveal" id="how-we-use">
+        <p class="pp-section-num">04 — How We Use Your Information</p>
+        <h2>How We Use Your Information</h2>
+        <p>We use the collected data for the following purposes:</p>
+        <ul>
+          <li>To provide and maintain the App (e.g., showing you the nearest restroom).</li>
+          <li>To allow you to participate in interactive features (e.g., rating a restroom).</li>
+          <li>To monitor the usage of the App to detect and fix technical issues.</li>
+          <li>To prevent fraud and ensure the security of our community data.</li>
+        </ul>
+      </section>
+
+      <!-- 5. Children's Privacy -->
+      <section class="pp-section reveal" id="childrens-privacy">
+        <p class="pp-section-num">05 — Children's Privacy</p>
+        <h2>Children's Privacy</h2>
+        <p>Our App is intended for general audiences, including parents and runners. We do not knowingly collect personally identifiable information from children under the age of 13. If you are a parent or guardian and you are aware that your child has provided us with personal data, please contact us.</p>
+        <p>If we become aware that we have collected personal data from anyone under the age of 13 without verification of parental consent, we take steps to remove that information from our servers.</p>
+      </section>
+
+      <!-- 6. Security -->
+      <section class="pp-section reveal" id="security">
+        <p class="pp-section-num">06 — Security</p>
+        <h2>Security</h2>
+        <p>We value your trust in providing us your information and strive to use commercially acceptable means of protecting it. All communication between the App and our servers is encrypted using standard HTTPS (TLS) protocols.</p>
+        <p>However, no method of transmission over the internet is 100% secure. We cannot guarantee absolute security.</p>
+      </section>
+
+      <!-- 7. Changes -->
+      <section class="pp-section reveal" id="changes">
+        <p class="pp-section-num">07 — Changes</p>
+        <h2>Changes to This Privacy Policy</h2>
+        <p>We may update our Privacy Policy from time to time. We will notify you of any changes by posting the new Privacy Policy on this page. You are advised to review this page periodically for any changes.</p>
+      </section>
+
+      <!-- 8. Deletion -->
+      <section class="pp-section reveal" id="deletion">
+        <p class="pp-section-num">08 — Deleting Your Account and Data</p>
+        <h2>Deleting Your Account and Data</h2>
+        <p>We believe you should have full control over your data. If you'd like to delete your PortaDash account and associated data, here's how:</p>
+
+        <h3>How to request deletion</h3>
+        <div class="pp-steps">
+          <ol>
+            <li>Send an email to <strong>nanudalabs@gmail.com</strong> with the subject line: <strong>"AccountDeletionRequest"</strong></li>
+            <li>Include the email address associated with your account (if you signed in with Google) or your approximate location and username if known</li>
+            <li>We'll process your request within <strong>30 days</strong> and confirm via email once complete</li>
+          </ol>
+        </div>
+
+        <h3>What gets deleted and what may be retained</h3>
+        <div class="pp-delete-grid">
+          <div class="pp-delete-card">
+            <h4>What gets deleted</h4>
+            <ul>
+              <li>Your Firebase account and user profile</li>
+              <li>Your gamification points, rank, and persona badge</li>
+              <li>Any pins you added to the map</li>
+              <li>Your ratings and notes on restrooms</li>
+              <li>Your inbox activity and high-fives</li>
+              <li>Your Scout Dispatch email subscription</li>
+            </ul>
+          </div>
+          <div class="pp-delete-card">
+            <h4>What may be retained</h4>
+            <ul>
+              <li>Anonymized, non-identifiable usage statistics that cannot be traced back to you</li>
+              <li>Any content you contributed to OpenStreetMap (OSM) — governed by OpenStreetMap's own data policies and cannot be removed by PortaDash</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="pp-highlight">
+          <p>Questions about your data? Contact us at <strong>nanudalabs@gmail.com</strong></p>
+        </div>
+      </section>
+
+    </div>
+  </div>
+
+  <footer class="site-footer">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <h3>PortaDash</h3>
+        <p>Find the nearest restroom or porta potty instantly. Built for movement, urgency, and practical everyday relief.</p>
+      </div>
+      <div class="footer-links">
+        <h4>Explore</h4>
+        <ul>
+          <li><a href="./portadash-consumer-landing-no-side-space.html#features">Features</a></li>
+          <li><a href="./portadash-consumer-landing-no-side-space.html#watch-mode">Watch</a></li>
+          <li><a href="./portadash-consumer-landing-no-side-space.html#stories">Stories</a></li>
+          <li><a href="./faq.html">FAQ</a></li>
+          <li><a href="./contact.html">Contact</a></li>
+        </ul>
+      </div>
+      <div class="footer-links">
+        <h4>Resources</h4>
+        <ul>
+          <li><a href="./privacy-policy.html">Privacy Policy</a></li>
+          <li><a href="./portadash-media-kit.html" target="_blank" rel="noopener noreferrer">Press Kit</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>Built by Nanuda Labs LLC · Richmond, Virginia</p>
+      <div class="footer-social">
+        <a href="https://www.instagram.com/portadash2025" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
+          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+        </a>
+        <a href="https://www.threads.net/@portadash2025" target="_blank" rel="noopener noreferrer" aria-label="Threads">
+          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12.186 24h-.007c-3.581-.024-6.334-1.205-8.184-3.509C2.35 18.44 1.5 15.586 1.472 12.01v-.017c.03-3.579.858-6.43 2.523-8.482C5.858 1.205 8.61.024 12.191 0h.014c2.746.02 5.043.725 6.826 2.098 1.677 1.29 2.858 3.13 3.512 5.467l-2.04.569c-1.104-3.96-3.898-5.984-8.304-6.015-2.91.022-5.11.936-6.54 2.717C4.307 6.504 3.616 8.914 3.589 12c.027 3.086.718 5.496 2.057 7.164 1.43 1.783 3.631 2.698 6.54 2.717 1.677-.01 3.04-.316 4.066-.905.94-.538 1.553-1.258 1.822-2.14.273-.896.267-1.98-.019-3.18-.292-1.24-.93-2.33-1.9-3.24l-.85-.79.86-.78c1.18-1.07 1.86-2.41 2.02-3.99.17-1.69-.18-3.17-.96-4.19-.83-1.08-2.12-1.63-3.83-1.63-1.63 0-2.94.53-3.9 1.58-.98 1.08-1.5 2.65-1.55 4.66v.07c.05 1.97.58 3.52 1.57 4.6.96 1.06 2.28 1.6 3.93 1.6.74 0 1.42-.15 2.04-.44l.65 1.84c-.87.39-1.82.59-2.82.59-2.15 0-3.94-.77-5.31-2.3-1.35-1.5-2.08-3.55-2.14-6.11l-.01-.13.01-.13c.06-2.59.8-4.64 2.14-6.11 1.37-1.53 3.16-2.3 5.31-2.3 2.26 0 4.03.73 5.27 2.17 1.2 1.39 1.75 3.32 1.54 5.55-.18 1.93-.9 3.62-2.09 5.01.66.75 1.15 1.57 1.45 2.46.47 1.52.46 3.02-.02 4.46-.5 1.52-1.45 2.74-2.84 3.62C15.54 23.64 13.98 24 12.19 24z"/></svg>
+        </a>
+        <a href="https://www.tiktok.com/@portadash" target="_blank" rel="noopener noreferrer" aria-label="TikTok">
+          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.41-1.11 1.04-1.36 1.75-.21.51-.15 1.07-.14 1.61.24 1.64 1.82 3.02 3.5 2.87 1.12-.01 2.19-.66 2.77-1.61.19-.33.4-.67.41-1.06.1-1.79.06-3.57.07-5.36.01-4.03-.01-8.05.02-12.07z"/></svg>
+        </a>
+        <a href="https://www.facebook.com/portadash" target="_blank" rel="noopener noreferrer" aria-label="Facebook">
+          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+        </a>
+        <a href="https://x.com/portadash" target="_blank" rel="noopener noreferrer" aria-label="X">
+          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.747l7.73-8.835L1.254 2.25H8.08l4.259 5.631L18.244 2.25zm-1.161 17.52h1.833L7.084 4.126H5.117L17.083 19.77z"/></svg>
+        </a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // Download modal
+    const downloadOpenButtons = document.querySelectorAll('[data-download-open]');
+    const downloadClose = document.querySelector('[data-download-close]');
+    const downloadModal = document.querySelector('[data-download-modal]');
+    const downloadBackdrop = document.querySelector('[data-download-backdrop]');
+    function openDownloadModal() { downloadModal.hidden = false; downloadBackdrop.hidden = false; document.body.style.overflow = 'hidden'; }
+    function closeDownloadModal() { downloadModal.hidden = true; downloadBackdrop.hidden = true; document.body.style.overflow = ''; }
+    downloadOpenButtons.forEach((b) => b.addEventListener('click', openDownloadModal));
+    downloadClose?.addEventListener('click', closeDownloadModal);
+    downloadBackdrop?.addEventListener('click', closeDownloadModal);
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && downloadModal && !downloadModal.hidden) closeDownloadModal(); });
+
+    // Waitlist modal
+    const waitlistOpenBtns = document.querySelectorAll('[data-waitlist-open]');
+    const waitlistModal = document.querySelector('[data-waitlist-modal]');
+    const waitlistBackdrop = document.querySelector('[data-waitlist-backdrop]');
+    const waitlistClose = document.querySelector('[data-waitlist-close]');
+    const waitlistForm = document.querySelector('[data-waitlist-form]');
+    const waitlistSuccess = document.querySelector('[data-waitlist-success]');
+    function openWaitlist() { waitlistModal.hidden = false; waitlistBackdrop.hidden = false; document.body.style.overflow = 'hidden'; }
+    function closeWaitlist() { waitlistModal.hidden = true; waitlistBackdrop.hidden = true; document.body.style.overflow = ''; }
+    waitlistOpenBtns.forEach(b => b.addEventListener('click', openWaitlist));
+    waitlistClose?.addEventListener('click', closeWaitlist);
+    waitlistBackdrop?.addEventListener('click', closeWaitlist);
+    document.addEventListener('keydown', e => { if (e.key === 'Escape' && waitlistModal && !waitlistModal.hidden) closeWaitlist(); });
+    waitlistForm?.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      waitlistForm.closest('#waitlist-form-wrap').style.display = 'none';
+      waitlistSuccess.style.display = 'block';
+    });
+
+    // Hamburger
+    const navHamburger = document.getElementById('nav-hamburger');
+    const navDrawer = document.getElementById('nav-drawer');
+    navHamburger?.addEventListener('click', () => {
+      const isOpen = navDrawer.classList.toggle('open');
+      navHamburger.setAttribute('aria-expanded', isOpen);
+    });
+    document.querySelectorAll('.nav-drawer-link').forEach(link => {
+      link.addEventListener('click', () => {
+        navDrawer.classList.remove('open');
+        navHamburger.setAttribute('aria-expanded', 'false');
+      });
+    });
+
+    // Lucide icons
+    window.addEventListener('DOMContentLoaded', () => { if (window.lucide) lucide.createIcons(); });
+
+    // Reveal on scroll
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => { if (entry.isIntersecting) entry.target.classList.add('visible'); });
+    }, { threshold: 0.05 });
+    document.querySelectorAll('.reveal').forEach((el) => observer.observe(el));
+  </script>
+</body>
+</html>
