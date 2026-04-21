@@ -166,8 +166,8 @@
     .marquee-track { display: flex; gap: var(--space-5); width: max-content; animation: marquee-scroll 36s linear infinite; }
     .marquee-track:hover { animation-play-state: paused; }
     @keyframes marquee-scroll { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
-    .story-card { width: 300px; flex-shrink: 0; }
-    .story-card, .supporter-card, .faq-item, .contact-card-panel { background: var(--color-surface); border: 1px solid oklch(from var(--color-text) l c h / 0.08); border-radius: var(--radius-xl); padding: var(--space-6); box-shadow: var(--shadow-sm); }
+    .story-card { width: 300px; flex-shrink: 0; background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius-xl); padding: var(--space-6); box-shadow: var(--shadow-sm); }
+    .supporter-card, .faq-item, .contact-card-panel { background: var(--color-surface); border: 1px solid oklch(from var(--color-text) l c h / 0.08); border-radius: var(--radius-xl); padding: var(--space-6); box-shadow: var(--shadow-sm); }
     .story-quote { font-size: var(--text-base); color: var(--color-text); line-height: 1.7; margin-bottom: var(--space-5); font-style: italic; }
     .story-attr { display: flex; align-items: center; gap: var(--space-3); }
     .story-stars { display: flex; gap: 3px; margin-bottom: var(--space-3); }
