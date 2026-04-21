@@ -221,6 +221,10 @@
     .waitlist-success { display: none; text-align: center; padding: var(--space-4) 0; }
     .waitlist-success-icon { width: 52px; height: 52px; border-radius: 50%; background: var(--color-primary-highlight); display: flex; align-items: center; justify-content: center; margin: 0 auto var(--space-4); color: var(--color-primary); }
     .waitlist-success h3 { font-family: var(--font-display); font-size: var(--text-xl); font-weight: 400; margin-bottom: var(--space-2); }
+    .bmc-btn { display: inline-flex; align-items: center; gap: var(--space-3); background: #FFDD00; color: var(--color-text); padding: var(--space-4) var(--space-8); border-radius: var(--radius-lg); font-weight: 700; font-size: var(--text-sm); text-decoration: none; margin-top: var(--space-2); transition: background var(--transition-interactive); }
+    .bmc-btn:hover { background: #f0cf00; }
+    .bmc-btn-sm { display: inline-flex; align-items: center; gap: var(--space-2); background: #FFDD00; color: var(--color-text); padding: var(--space-2) var(--space-4); border-radius: var(--radius-md); font-weight: 700; font-size: var(--text-xs); text-decoration: none; }
+    .bmc-btn-sm:hover { background: #f0cf00; }
     .android-badge-soon { position: relative; }
     .android-badge-soon .badge-coming-soon { position: absolute; top: -8px; right: -8px; background: var(--color-accent); color: #fff; font-size: 9px; font-weight: 700; letter-spacing: .04em; padding: 2px 8px; border-radius: var(--radius-full); text-transform: uppercase; pointer-events: none; }
 
@@ -514,13 +518,11 @@
     <div class="container">
       <div class="reveal">
         <p class="section-label">Supporters</p>
-        <h2 class="section-heading">A community that believes this should exist</h2>
-        <p class="section-body">A few early backers and community supporters who helped make PortaDash possible.</p>
-      </div>
-      <div class="supporters-grid reveal">
-        <article class="supporter-card"><h3>Early backers</h3><p>People who donated early and helped validate the mission.</p><div class="supporter-tier">Founding support</div></article>
-        <article class="supporter-card"><h3>Fitness community</h3><p>Runners and outdoor groups who understand the need immediately.</p><div class="supporter-tier">Community support</div></article>
-        <article class="supporter-card"><h3>Local champions</h3><p>Supporters who helped spread the word and shared the app with others.</p><div class="supporter-tier">Word of mouth</div></article>
+        <h2 class="section-heading">PortaDash is free because of people like you.</h2>
+        <p class="section-body">No ads, no subscriptions — just community support. If PortaDash has helped you once, consider buying the team a coffee.</p>
+        <a href="https://buymeacoffee.com/YOUR_BMC_USERNAME" target="_blank" rel="noopener noreferrer" class="bmc-btn">
+          ☕ Buy us a coffee
+        </a>
       </div>
     </div>
   </section>
@@ -593,6 +595,7 @@
     </div>
     <div class="footer-bottom">
       <p>Built by Nanuda Labs LLC · Richmond, Virginia</p>
+      <a href="https://buymeacoffee.com/YOUR_BMC_USERNAME" target="_blank" rel="noopener noreferrer" class="bmc-btn-sm">☕ Buy us a coffee</a>
     </div>
   </footer>
 
