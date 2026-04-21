@@ -637,8 +637,10 @@
     document.addEventListener('keydown', e => { if (e.key === 'Escape' && waitlistModal && !waitlistModal.hidden) closeWaitlist(); });
     const marqueeTrack = document.getElementById('marquee-track');
     if (marqueeTrack) {
-      const orig = marqueeTrack.innerHTML;
-      marqueeTrack.innerHTML += orig + orig + orig; // 4× total — each half fills wide viewports
+      const items = Array.from(marqueeTrack.children);
+      for (let i = 0; i < 3; i++) {
+        items.forEach(item => marqueeTrack.appendChild(item.cloneNode(true)));
+      }
     }
 
     waitlistForm?.addEventListener('submit', async (e) => {
