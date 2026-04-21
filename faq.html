@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FAQ — PortaDash</title>
+  <meta name="description" content="Frequently asked questions about PortaDash — the free, ad-free restroom finder for iPhone, Android, Apple Watch, and Wear OS." />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Work+Sans:wght@300..700&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js" defer></script>
+  <style>
+    :root {
+      --color-bg: #f4f7f2;
+      --color-surface: #f8faf6;
+      --color-surface-2: #fbfcfa;
+      --color-surface-offset: #eef2ec;
+      --color-surface-offset-2: #e6ece4;
+      --color-surface-dynamic: #dde5db;
+      --color-divider: #d4dcd2;
+      --color-border: #c8d4c6;
+      --color-text: #1e271c;
+      --color-text-muted: #5a6e58;
+      --color-text-faint: #9aaa98;
+      --color-text-inverse: #f4f7f2;
+      --color-primary: #1a35cc;
+      --color-primary-hover: #1228a8;
+      --color-primary-active: #0c1e84;
+      --color-primary-highlight: #dde3fa;
+      --color-accent: #e07a1a;
+      --color-accent-hover: #c05e08;
+      --color-accent-highlight: #fde8cc;
+      --radius-sm: 0.375rem;
+      --radius-md: 0.5rem;
+      --radius-lg: 0.75rem;
+      --radius-xl: 1rem;
+      --radius-2xl: 1.5rem;
+      --radius-full: 9999px;
+      --shadow-sm: 0 1px 2px oklch(0.2 0.02 130 / 0.06);
+      --shadow-md: 0 4px 12px oklch(0.2 0.02 130 / 0.09);
+      --shadow-lg: 0 12px 32px oklch(0.2 0.02 130 / 0.13);
+      --transition-interactive: 180ms cubic-bezier(0.16, 1, 0.3, 1);
+      --font-display: 'Instrument Serif', Georgia, serif;
+      --font-body: 'Work Sans', 'Helvetica Neue', sans-serif;
+      --text-xs: clamp(0.75rem, 0.7rem + 0.25vw, 0.875rem);
+      --text-sm: clamp(0.875rem, 0.8rem + 0.35vw, 1rem);
+      --text-base: clamp(1rem, 0.95rem + 0.25vw, 1.125rem);
+      --text-lg: clamp(1.125rem, 1rem + 0.75vw, 1.5rem);
+      --text-xl: clamp(1.5rem, 1.2rem + 1.25vw, 2.25rem);
+      --text-2xl: clamp(2rem, 1.2rem + 2.5vw, 3.5rem);
+      --text-3xl: clamp(2.5rem, 1rem + 4vw, 5rem);
+      --space-1: 0.25rem; --space-2: 0.5rem; --space-3: 0.75rem; --space-4: 1rem;
+      --space-5: 1.25rem; --space-6: 1.5rem; --space-8: 2rem; --space-10: 2.5rem;
+      --space-12: 3rem; --space-16: 4rem; --space-20: 5rem; --space-24: 6rem;
+      --content-narrow: 640px; --content-default: 960px; --content-wide: 1200px;
+      color-scheme: light;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { -webkit-font-smoothing: antialiased; scroll-behavior: smooth; scroll-padding-top: var(--space-16); }
+    body { min-height: 100dvh; font-family: var(--font-body); font-size: var(--text-base); color: var(--color-text); background: var(--color-bg); line-height: 1.6; }
+    img, picture, video, canvas, svg { display: block; max-width: 100%; height: auto; }
+    h1, h2, h3, h4, h5, h6 { text-wrap: balance; line-height: 1.15; }
+    p, li { text-wrap: pretty; }
+    input, button, textarea, select { font: inherit; color: inherit; }
+    button { cursor: pointer; background: none; border: none; }
+    a, button, [role="button"] { transition: color var(--transition-interactive), background var(--transition-interactive), box-shadow var(--transition-interactive), transform var(--transition-interactive); }
+    :focus-visible { outline: 2px solid var(--color-primary); outline-offset: 3px; border-radius: var(--radius-sm); }
+    .container { max-width: var(--content-wide); margin-inline: auto; padding-inline: var(--space-3); }
+    .container-narrow { max-width: var(--content-default); margin-inline: auto; padding-inline: var(--space-4); }
+
+    /* Nav */
+    nav { position: sticky; top: 0; z-index: 100; background: color-mix(in oklch, var(--color-bg) 90%, transparent); backdrop-filter: blur(12px); border-bottom: 1px solid oklch(from var(--color-text) l c h / 0.08); }
+    .nav-inner { max-width: var(--content-wide); margin-inline: auto; padding: var(--space-3) var(--space-4); display: flex; align-items: center; justify-content: space-between; gap: var(--space-6); }
+    .nav-logo { display: flex; align-items: center; gap: var(--space-3); text-decoration: none; color: var(--color-text); }
+    .nav-logo img { height: 40px; width: auto; flex-shrink: 0; vertical-align: middle; }
+    .nav-links { display: flex; align-items: center; gap: var(--space-6); list-style: none; }
+    .nav-links a { text-decoration: none; font-size: var(--text-sm); color: var(--color-text-muted); font-weight: 500; }
+    .nav-links a:hover { color: var(--color-text); }
+    .nav-links a.active { color: var(--color-primary); font-weight: 600; }
+    .nav-cta { background: var(--color-primary); color: var(--color-text-inverse) !important; padding: var(--space-2) var(--space-5); border-radius: var(--radius-full); font-size: var(--text-sm) !important; font-weight: 600 !important; text-decoration: none; white-space: nowrap; }
+    .nav-cta:hover { background: var(--color-primary-hover) !important; }
+
+    /* Hamburger */
+    .nav-hamburger { display: none; width: 36px; height: 36px; border-radius: var(--radius-md); border: 1px solid oklch(from var(--color-text) l c h / 0.12); background: none; cursor: pointer; flex-direction: column; align-items: center; justify-content: center; gap: 4.5px; flex-shrink: 0; }
+    .nav-hamburger span { display: block; width: 16px; height: 1.5px; background: var(--color-text); border-radius: 2px; transition: transform 250ms cubic-bezier(0.16,1,0.3,1), opacity 250ms; transform-origin: center; }
+    .nav-hamburger[aria-expanded="true"] span:nth-child(1) { transform: translateY(6px) rotate(45deg); }
+    .nav-hamburger[aria-expanded="true"] span:nth-child(2) { opacity: 0; transform: scaleX(0); }
+    .nav-hamburger[aria-expanded="true"] span:nth-child(3) { transform: translateY(-6px) rotate(-45deg); }
+    .nav-drawer { max-height: 0; overflow: hidden; transition: max-height 320ms cubic-bezier(0.16,1,0.3,1); background: var(--color-surface); border-top: 1px solid transparent; }
+    .nav-drawer.open { max-height: 400px; border-top-color: oklch(from var(--color-text) l c h / 0.07); }
+    .nav-drawer-inner { padding: var(--space-3) var(--space-4) var(--space-5); display: flex; flex-direction: column; gap: var(--space-1); }
+    .nav-drawer a { display: block; padding: var(--space-3) var(--space-3); border-radius: var(--radius-lg); font-size: var(--text-sm); font-weight: 500; color: var(--color-text-muted); text-decoration: none; transition: background var(--transition-interactive), color var(--transition-interactive); }
+    .nav-drawer a:hover { background: var(--color-surface-offset); color: var(--color-text); }
+    .nav-drawer-divider { height: 1px; background: oklch(from var(--color-text) l c h / 0.07); margin: var(--space-2) 0; }
+    .nav-drawer .nav-drawer-cta { background: var(--color-primary); color: var(--color-text-inverse); font-weight: 600; text-align: center; margin-top: var(--space-1); }
+    .nav-drawer .nav-drawer-cta:hover { background: var(--color-primary-hover); color: var(--color-text-inverse); }
+
+    /* Modals */
+    .download-modal-backdrop { position: fixed; inset: 0; background: oklch(0.1 0.01 120 / 0.38); z-index: 140; }
+    .download-modal { position: fixed; inset: 50% auto auto 50%; transform: translate(-50%, -50%); width: min(92vw, 460px); background: var(--color-surface-2); z-index: 150; border: 1px solid oklch(from var(--color-text) l c h / 0.1); border-radius: var(--radius-2xl); box-shadow: var(--shadow-lg); padding: var(--space-8); }
+    .download-modal h2 { font-family: var(--font-display); font-size: var(--text-xl); font-weight: 400; margin-bottom: var(--space-3); }
+    .download-modal p { color: var(--color-text-muted); margin-bottom: var(--space-6); }
+    .download-modal-actions { display: grid; gap: var(--space-3); }
+    .badge-link { display: inline-flex; justify-content: center; }
+    .store-badge { width: min(100%, 280px); height: auto; display: block; }
+    .download-modal-close { position: absolute; top: var(--space-4); right: var(--space-4); width: 48px; height: 48px; border-radius: var(--radius-full); color: var(--color-text-muted); font-size: 1.5rem; }
+    .download-modal-close:hover { background: var(--color-surface-offset); color: var(--color-text); }
+    .section-label { font-size: var(--text-xs); font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--color-primary); margin-bottom: var(--space-4); }
+    .android-badge-soon { position: relative; }
+    .android-badge-soon .badge-coming-soon { position: absolute; top: -8px; right: -8px; background: var(--color-accent); color: #fff; font-size: 9px; font-weight: 700; letter-spacing: .04em; padding: 2px 8px; border-radius: var(--radius-full); text-transform: uppercase; pointer-events: none; }
+    .waitlist-modal-backdrop { position: fixed; inset: 0; background: oklch(0.1 0.01 120 / 0.38); z-index: 140; }
+    .waitlist-modal { position: fixed; inset: 50% auto auto 50%; transform: translate(-50%, -50%); width: min(92vw, 460px); background: var(--color-surface-2); z-index: 150; border: 1px solid oklch(from var(--color-text) l c h / 0.1); border-radius: var(--radius-2xl); box-shadow: var(--shadow-lg); padding: var(--space-8); }
+    .waitlist-modal h2 { font-family: var(--font-display); font-size: var(--text-xl); font-weight: 400; margin-bottom: var(--space-3); }
+    .waitlist-modal p { color: var(--color-text-muted); margin-bottom: var(--space-5); }
+    .waitlist-modal-close { position: absolute; top: var(--space-4); right: var(--space-4); width: 48px; height: 48px; border-radius: var(--radius-full); color: var(--color-text-muted); font-size: 1.5rem; }
+    .waitlist-modal-close:hover { background: var(--color-surface-offset); color: var(--color-text); }
+    .waitlist-form { display: flex; flex-direction: column; gap: var(--space-3); }
+    .waitlist-input { width: 100%; padding: var(--space-3) var(--space-4); border-radius: var(--radius-lg); border: 1px solid var(--color-border); background: var(--color-surface-2); font-family: var(--font-body); font-size: var(--text-sm); color: var(--color-text); outline: none; transition: border-color var(--transition-interactive); }
+    .waitlist-input:focus { border-color: var(--color-primary); box-shadow: 0 0 0 3px oklch(from var(--color-primary) l c h / 0.12); }
+    .waitlist-submit { width: 100%; padding: var(--space-4); border-radius: var(--radius-full); background: var(--color-primary); color: var(--color-text-inverse); font-family: var(--font-body); font-size: var(--text-sm); font-weight: 600; border: none; cursor: pointer; transition: background var(--transition-interactive); }
+    .waitlist-submit:hover { background: var(--color-primary-hover); }
+    .waitlist-fine { font-size: var(--text-xs); color: var(--color-text-faint); text-align: center; }
+    .waitlist-success { display: none; text-align: center; padding: var(--space-4) 0; }
+    .waitlist-success-icon { width: 52px; height: 52px; border-radius: 50%; background: var(--color-primary-highlight); display: flex; align-items: center; justify-content: center; margin: 0 auto var(--space-4); color: var(--color-primary); }
+    .waitlist-success h3 { font-family: var(--font-display); font-size: var(--text-xl); font-weight: 400; margin-bottom: var(--space-2); }
+
+    /* Page hero */
+    .faq-hero { padding: clamp(var(--space-12), 6vw, var(--space-20)) var(--space-4) clamp(var(--space-8), 4vw, var(--space-12)); background: linear-gradient(160deg, var(--color-bg) 0%, var(--color-surface-offset) 100%); }
+    .faq-hero-badge { display: inline-flex; align-items: center; gap: var(--space-2); background: var(--color-primary-highlight); color: var(--color-primary); border: 1px solid color-mix(in oklch, var(--color-primary) 20%, transparent); padding: var(--space-1) var(--space-4); border-radius: var(--radius-full); font-size: var(--text-xs); font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: var(--space-5); }
+    .faq-hero h1 { font-family: var(--font-display); font-size: var(--text-2xl); font-weight: 400; color: var(--color-text); margin-bottom: var(--space-4); }
+    .faq-hero p { font-size: var(--text-base); color: var(--color-text-muted); max-width: 52ch; line-height: 1.7; }
+
+    /* Category jump links */
+    .faq-nav { padding: var(--space-6) var(--space-4); border-bottom: 1px solid var(--color-divider); background: var(--color-surface); }
+    .faq-nav-inner { max-width: var(--content-default); margin-inline: auto; display: flex; flex-wrap: wrap; gap: var(--space-2); }
+    .faq-nav-link { display: inline-flex; align-items: center; padding: var(--space-2) var(--space-4); border-radius: var(--radius-full); font-size: var(--text-xs); font-weight: 600; letter-spacing: 0.04em; text-decoration: none; color: var(--color-text-muted); background: var(--color-surface-offset); border: 1px solid var(--color-border); transition: background var(--transition-interactive), color var(--transition-interactive); }
+    .faq-nav-link:hover { background: var(--color-primary-highlight); color: var(--color-primary); border-color: color-mix(in oklch, var(--color-primary) 25%, transparent); }
+
+    /* FAQ content */
+    .faq-content { padding: clamp(var(--space-10), 5vw, var(--space-16)) var(--space-4); }
+    .faq-section { margin-bottom: clamp(var(--space-10), 5vw, var(--space-16)); }
+    .faq-section:last-child { margin-bottom: 0; }
+    .faq-category-label { font-size: var(--text-xs); font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--color-primary); margin-bottom: var(--space-3); }
+    .faq-category-heading { font-family: var(--font-display); font-size: var(--text-xl); font-weight: 400; color: var(--color-text); margin-bottom: var(--space-6); padding-bottom: var(--space-4); border-bottom: 1px solid var(--color-divider); }
+
+    /* Accordion items */
+    .faq-accordion { display: grid; gap: var(--space-3); }
+    details.faq-item { background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius-xl); box-shadow: var(--shadow-sm); overflow: hidden; }
+    details.faq-item[open] { border-color: color-mix(in oklch, var(--color-primary) 30%, var(--color-border)); }
+    summary.faq-question { list-style: none; display: flex; align-items: center; justify-content: space-between; gap: var(--space-4); padding: var(--space-5) var(--space-6); font-size: var(--text-base); font-weight: 600; color: var(--color-text); cursor: pointer; user-select: none; }
+    summary.faq-question::-webkit-details-marker { display: none; }
+    summary.faq-question::after { content: '+'; flex-shrink: 0; width: 24px; height: 24px; border-radius: 50%; background: var(--color-surface-offset); color: var(--color-text-muted); font-size: 1.1rem; font-weight: 400; display: flex; align-items: center; justify-content: center; transition: background var(--transition-interactive), transform var(--transition-interactive), color var(--transition-interactive); }
+    details.faq-item[open] summary.faq-question::after { content: '−'; background: var(--color-primary-highlight); color: var(--color-primary); transform: rotate(0deg); }
+    summary.faq-question:hover { color: var(--color-primary); }
+    .faq-answer { padding: 0 var(--space-6) var(--space-5); color: var(--color-text-muted); font-size: var(--text-base); line-height: 1.75; }
+    .faq-answer p + p { margin-top: var(--space-3); }
+
+    /* Footer CTA strip */
+    .faq-cta-strip { background: var(--color-primary); padding: clamp(var(--space-12), 5vw, var(--space-16)) var(--space-4); text-align: center; }
+    .faq-cta-strip h2 { font-family: var(--font-display); font-size: var(--text-xl); font-weight: 400; color: var(--color-text-inverse); margin-bottom: var(--space-3); }
+    .faq-cta-strip p { font-size: var(--text-base); color: color-mix(in oklch, var(--color-text-inverse) 80%, transparent); margin-bottom: var(--space-6); max-width: 48ch; margin-inline: auto; }
+    .faq-cta-strip button { background: var(--color-text-inverse); color: var(--color-primary); padding: var(--space-4) var(--space-8); border-radius: var(--radius-full); font-size: var(--text-sm); font-weight: 700; border: none; cursor: pointer; }
+    .faq-cta-strip button:hover { opacity: 0.9; }
+
+    /* Site footer */
+    .site-footer { background: var(--color-surface); border-top: 1px solid var(--color-divider); padding: var(--space-12) var(--space-6) var(--space-10); }
+    .footer-grid { max-width: var(--content-wide); margin-inline: auto; display:grid; grid-template-columns: 1.2fr .8fr .8fr; gap: var(--space-8); }
+    .footer-brand h3 { font-family: var(--font-display); font-size: var(--text-lg); font-weight: 400; margin-bottom: var(--space-3); }
+    .footer-brand p, .footer-links a { color: var(--color-text-muted); font-size: var(--text-sm); line-height: 1.7; text-decoration: none; }
+    .footer-links h4 { font-size: var(--text-xs); font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--color-text-faint); margin-bottom: var(--space-3); }
+    .footer-links ul { list-style: none; display:grid; gap: var(--space-2); }
+    .footer-links a:hover { color: var(--color-text); }
+    .footer-bottom { max-width: var(--content-wide); margin: var(--space-8) auto 0; padding-top: var(--space-4); border-top: 1px solid var(--color-divider); display:flex; justify-content: space-between; align-items: center; gap: var(--space-4); flex-wrap: wrap; }
+    .footer-bottom p { font-size: var(--text-sm); color: var(--color-text-muted); }
+    .footer-social { display: flex; align-items: center; gap: var(--space-4); }
+    .footer-social a { color: #000; display: flex; transition: transform 200ms cubic-bezier(0.16,1,0.3,1); }
+    .footer-social a:hover { transform: scale(1.35); }
+    .footer-social svg { width: 24px; height: 24px; fill: currentColor; display: block; }
+
+    /* Reveal animation */
+    .reveal { opacity: 0; transform: translateY(20px); transition: opacity .6s ease, transform .6s ease; }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+
+    @media (max-width: 980px) {
+      .footer-grid { grid-template-columns: 1fr; }
+      .footer-bottom { flex-direction: column; }
+    }
+    @media (max-width: 720px) {
+      .nav-links { display: none; }
+      .nav-hamburger { display: flex; }
+    }
+    @media (max-width: 640px) {
+      .nav-logo img { height: 32px; }
+    }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <div class="nav-inner">
+      <a class="nav-logo" href="./portadash-consumer-landing-no-side-space.html">
+        <img src="./PortaDash_Logo_Horizontal.png" alt="PortaDash logo">
+      </a>
+      <ul class="nav-links">
+        <li><a href="./portadash-consumer-landing-no-side-space.html#features">Features</a></li>
+        <li><a href="./portadash-consumer-landing-no-side-space.html#watch-mode">Watch</a></li>
+        <li><a href="./portadash-consumer-landing-no-side-space.html#stories">Stories</a></li>
+        <li><a href="./faq.html" class="active">FAQ</a></li>
+        <li><a href="./portadash-consumer-landing-no-side-space.html#contact">Contact</a></li>
+        <li><a href="./portadash-media-kit.html" target="_blank" rel="noopener noreferrer">Press Kit</a></li>
+      </ul>
+      <button class="nav-cta" type="button" data-download-open>Download</button>
+      <button class="nav-hamburger" type="button" id="nav-hamburger" aria-label="Toggle menu" aria-expanded="false" aria-controls="nav-drawer">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+    <div class="nav-drawer" id="nav-drawer" role="navigation" aria-label="Mobile menu">
+      <div class="nav-drawer-inner">
+        <a href="./portadash-consumer-landing-no-side-space.html#features" class="nav-drawer-link">Features</a>
+        <a href="./portadash-consumer-landing-no-side-space.html#watch-mode" class="nav-drawer-link">Watch</a>
+        <a href="./portadash-consumer-landing-no-side-space.html#stories" class="nav-drawer-link">Stories</a>
+        <a href="./faq.html" class="nav-drawer-link">FAQ</a>
+        <a href="./portadash-consumer-landing-no-side-space.html#contact" class="nav-drawer-link">Contact</a>
+        <a href="./portadash-media-kit.html" target="_blank" rel="noopener noreferrer" class="nav-drawer-link">Press Kit</a>
+        <div class="nav-drawer-divider"></div>
+        <a href="#" class="nav-drawer-cta" data-download-open>Download PortaDash free</a>
+      </div>
+    </div>
+  </nav>
+
+  <div class="download-modal-backdrop" data-download-backdrop hidden></div>
+  <div class="download-modal" data-download-modal hidden aria-labelledby="download-modal-title" aria-modal="true" role="dialog">
+    <button class="download-modal-close" type="button" data-download-close aria-label="Close download options">&times;</button>
+    <p class="section-label" style="margin-bottom: var(--space-3);">Choose your platform</p>
+    <h2 id="download-modal-title">Download PortaDash</h2>
+    <p>Pick the store that matches your device.</p>
+    <div class="download-modal-actions">
+      <a href="https://apps.apple.com/us/app/portadash/id6755355109" target="_blank" rel="noopener noreferrer" class="badge-link"><img src="./assets/app-store-badge.png" alt="Download on the App Store" class="store-badge"></a>
+      <button type="button" class="badge-link android-badge-soon" data-waitlist-open>
+        <span class="badge-coming-soon">Coming soon</span>
+        <img src="./assets/google-play-badge.png" alt="Join the Android Waitlist" class="store-badge">
+      </button>
+    </div>
+  </div>
+
+  <div class="waitlist-modal-backdrop" data-waitlist-backdrop hidden></div>
+  <div class="waitlist-modal" data-waitlist-modal hidden aria-labelledby="waitlist-modal-title" aria-modal="true" role="dialog">
+    <button class="waitlist-modal-close" type="button" data-waitlist-close aria-label="Close">&times;</button>
+    <p class="section-label" style="margin-bottom: var(--space-3);">Android — coming soon</p>
+    <h2 id="waitlist-modal-title">Be first when PortaDash hits Google Play.</h2>
+    <p>Drop your email and we'll notify you the moment the Android app is live. No spam — just one email when it's ready.</p>
+    <div id="waitlist-form-wrap">
+      <form class="waitlist-form" data-waitlist-form>
+        <input class="waitlist-input" type="email" name="email" placeholder="your@email.com" required autocomplete="email">
+        <button type="submit" class="waitlist-submit">Notify me when it's live</button>
+        <p class="waitlist-fine">No spam. One email when the app launches. Unsubscribe any time.</p>
+      </form>
+    </div>
+    <div class="waitlist-success" data-waitlist-success>
+      <div class="waitlist-success-icon"><i data-lucide="check"></i></div>
+      <h3>You're on the list.</h3>
+      <p>We'll send one email when PortaDash is live on Google Play. See you on Android.</p>
+    </div>
+  </div>
+
+  <!-- Page hero -->
+  <div class="faq-hero">
+    <div class="container-narrow">
+      <div class="faq-hero-badge">Help Center</div>
+      <h1>Frequently Asked Questions</h1>
+      <p>Everything you need to know about using PortaDash — from finding your first restroom to earning your first points.</p>
+    </div>
+  </div>
+
+  <!-- Category jump links -->
+  <div class="faq-nav">
+    <div class="faq-nav-inner">
+      <a href="#general" class="faq-nav-link">General</a>
+      <a href="#map-pins" class="faq-nav-link">Map &amp; Pins</a>
+      <a href="#adding-pins" class="faq-nav-link">Adding Pins</a>
+      <a href="#go-now" class="faq-nav-link">Go Now!</a>
+      <a href="#watch-mode" class="faq-nav-link">Watch Mode</a>
+      <a href="#points-ranks" class="faq-nav-link">Points &amp; Ranks</a>
+      <a href="#account-privacy" class="faq-nav-link">Account &amp; Privacy</a>
+      <a href="#activity-social" class="faq-nav-link">Activity &amp; Social</a>
+      <a href="#support" class="faq-nav-link">Support</a>
+    </div>
+  </div>
+
+  <!-- FAQ content -->
+  <div class="faq-content">
+    <div class="container-narrow">
+
+      <!-- General -->
+      <section class="faq-section reveal" id="general">
+        <p class="faq-category-label">01 — General</p>
+        <h2 class="faq-category-heading">Getting started</h2>
+        <div class="faq-accordion">
+          <details class="faq-item">
+            <summary class="faq-question">What is PortaDash?</summary>
+            <div class="faq-answer">
+              <p>PortaDash is a free, crowd-sourced map that helps you find the nearest restroom or porta-potty — wherever you are. It combines OpenStreetMap data with community-added pins to give you the most complete picture of what's nearby.</p>
+            </div>
+          </details>
+          <details class="faq-item">
+            <summary class="faq-question">Is PortaDash free?</summary>
+            <div class="faq-answer">
+              <p>Yes, completely free — and always will be. No ads, no subscriptions, no premium tiers. The app is funded entirely by optional "Buy Me a Coffee" donations from users who want to support the project.</p>
+            </div>
+          </details>
+          <details class="faq-item">
+            <summary class="faq-question">What areas does PortaDash cover?</summary>
+            <div class="faq-answer">
+              <p>PortaDash combines OpenStreetMap data (which covers permanent restrooms worldwide) with community-added pins. This means coverage is strongest in areas with an active community, but the permanent restroom layer gives you a useful baseline everywhere in the world.</p>
+            </div>
+          </details>
+        </div>
+      </section>
+
+      <!-- Map & Pins -->
+      <section class="faq-section reveal" id="map-pins">
+        <p class="faq-category-label">02 — Map &amp; Pins</p>
+        <h2 class="faq-category-heading">Understanding the map</h2>
+        <div class="faq-accordion">
+          <details class="faq-item">
+            <summary class="faq-question">What do the different pin colors mean?</summary>
+            <div class="faq-answer">
+              <p><strong>Blue</strong> — permanent restrooms sourced from OpenStreetMap.</p>
+              <p><strong>Orange</strong> — porta-potties and temporary facilities sourced from OpenStreetMap.</p>
+              <p><strong>Red</strong> — community-added spots contributed by PortaDash users.</p>
+            </div>
+          </details>
+          <details class="faq-item">
+            <summary class="faq-question">How accurate are the pins?</summary>
+            <div class="faq-answer">
+              <p>Blue and orange pins come from OpenStreetMap, which is maintained by a global volunteer community and is generally highly accurate for permanent facilities. Community (red) pins vary in accuracy depending on when they were added and whether they've been verified by other users.</p>
+            </div>
+          </details>
+          <details class="faq-item">
+            <summary class="faq-question">Why do some pins disappear?</summary>
+            <div class="faq-answer">
+              <p>Community porta-potty pins expire automatically to keep the map fresh. Event pins disappear after 3 days. Beach and park pins last 60–180 days depending on the type. Permanent restroom pins from OpenStreetMap do not expire.</p>
+            </div>
+          </details>
+          <details class="faq-item">
+            <summary class="faq-question">Can I see which restrooms are accessible or have baby changing tables?</summary>
+            <div class="faq-answer">
+              <p>Yes. Tap any pin to open the detail sheet, which shows accessibility features, wheelchair access, baby changing facilities, and paper supply status — where that information has been provided by the community.</p>
+            </div>
+          </details>
+        </div>
+      </section>
+
+      <!-- Adding Pins -->
+      <section class="faq-section reveal" id="adding-pins">
+        <p class="faq-category-label">03 — Adding Pins</p>
+        <h2 class="faq-category-heading">Contributing to the map</h2>
+        <div class="faq-accordion">
+          <details class="faq-item">
+            <summary class="faq-question">How do I add a pin?</summary>
+            <div class="faq-answer">
+              <p>Tap the <strong>+</strong> tab at the bottom of the app, then position the crosshair on the map over the location you want to mark. Fill in any details you know, then confirm. Your pin is live immediately.</p>
+            </div>
+          </details>
+          <details class="faq-item">
+            <summary class="faq-question">What happens after I add a pin?</summary>
+            <div class="faq-answer">
+              <p>Your pin appears on the map immediately and is visible to all users around the world. You also earn 10 points toward your community rank for contributing.</p>
+            </div>
+          </details>
+          <details class="faq-item">
+            <summary class="faq-question">Can I edit or delete a pin I added?</summary>
+            <div class="faq-answer">
+              <p>Yes. Tap any community pin you've added to open its detail sheet. From there you'll find options to edit the details or delete the pin entirely.</p>
+            </div>
+          </details>
+        </div>
+      </section>
+
+      <!-- Go Now! -->
+      <section class="faq-section reveal" id="go-now">
+        <p class="faq-category-label">04 — Go Now!</p>
+        <h2 class="faq-category-heading">Instant navigation</h2>
+        <div class="faq-accordion">
+          <details class="faq-item">
+            <summary class="faq-question">What does "Go Now!" do?</summary>
+            <div class="faq-answer">
+              <p>"Go Now!" instantly opens Apple Maps with turn-by-turn directions to the nearest restroom. It's designed for the moments when you need to move fast — no searching, no tapping around, just go.</p>
+            </div>
+          </details>
+          <details class="faq-item">
+            <summary class="faq-question">Why did "Go Now!" open a pin that was far away?</summary>
+            <div class="faq-answer">
+              <p>Go Now! finds the nearest pin based on straight-line distance from your current location. If there aren't many pins in your immediate area, it may route you to something that's a bit further. Contributing more pins in your area helps everyone nearby.</p>
+            </div>
+          </details>
+        </div>
+      </section>
+
+      <!-- Watch Mode -->
+      <section class="faq-section reveal" id="watch-mode">
+        <p class="faq-category-label">05 — Watch Mode</p>
+        <h2 class="faq-category-heading">Apple Watch &amp; Live Activity</h2>
+        <div class="faq-accordion">
+          <details class="faq-item">
+            <summary class="faq-question">What is Watch Mode?</summary>
+            <div class="faq-answer">
+              <p>Watch Mode sends nearby pins to your Apple Watch so you can see distance and direction at a glance — without taking your phone out. It's great for runs, hikes, or any situation where your hands aren't free.</p>
+            </div>
+          </details>
+          <details class="faq-item">
+            <summary class="faq-question">Do I need an Apple Watch to use Watch Mode?</summary>
+            <div class="faq-answer">
+              <p>No. Without an Apple Watch, Watch Mode still shows the nearest pin as a Live Activity on your iPhone Lock Screen — so you get at-a-glance info either way.</p>
+            </div>
+          </details>
+          <details class="faq-item">
+            <summary class="faq-question">Does Watch Mode drain my battery?</summary>
+            <div class="faq-answer">
+              <p>Watch Mode is designed to be efficient. It uses your existing location updates rather than running a separate GPS process, so the impact on battery life is minimal.</p>
+            </div>
+          </details>
+          <details class="faq-item">
+            <summary class="faq-question">Will Watch Mode turn off automatically?</summary>
+            <div class="faq-answer">
+              <p>Yes. If your phone hasn't detected nearby pins for 4 hours, Watch Mode ends automatically to preserve battery life. You can always restart it manually.</p>
+            </div>
+          </details>
+        </div>
+      </section>
+
+      <!-- Points & Ranks -->
+      <section class="faq-section reveal" id="points-ranks">
+        <p class="faq-category-label">06 — Points &amp; Ranks</p>
+        <h2 class="faq-category-heading">Community rewards</h2>
+        <div class="faq-accordion">
+          <details class="faq-item">
+            <summary class="faq-question">How do I earn points?</summary>
+            <div class="faq-answer">
+              <p>You earn points by contributing to the community: adding new pins (10 points each), rating restrooms, verifying existing pins, and other in-app actions. The more you contribute, the faster you level up.</p>
+            </div>
+          </details>
+          <details class="faq-item">
+            <summary class="faq-question">What are the ranks?</summary>
+            <div class="faq-answer">
+              <p>Ranks go from <strong>Rookie → Scout → Guardian → Legend</strong>. Your current rank is shown on your Profile tab. Each level reflects how much you've contributed to the PortaDash community.</p>
+            </div>
+          </details>
+          <details class="faq-item">
+            <summary class="faq-question">Do my points reset?</summary>
+            <div class="faq-answer">
+              <p>No. Points accumulate permanently and are tied to your account. Nothing you earn is ever taken away.</p>
+            </div>
+          </details>
+        </div>
+      </section>
+
+      <!-- Account & Privacy -->
+      <section class="faq-section reveal" id="account-privacy">
+        <p class="faq-category-label">07 — Account &amp; Privacy</p>
+        <h2 class="faq-category-heading">Your data and account</h2>
+        <div class="faq-accordion">
+          <details class="faq-item">
+            <summary class="faq-question">Do I need to create an account?</summary>
+            <div class="faq-answer">
+              <p>No. PortaDash works fully anonymously out of the box — no sign-up required. You can find restrooms and contribute to the map without ever creating an account.</p>
+            </div>
+          </details>
+          <details class="faq-item">
+            <summary class="faq-question">What is Apple Sign-In for?</summary>
+            <div class="faq-answer">
+              <p>Signing in with Apple links your anonymous account to your Apple ID. This lets you restore your points and contributions if you switch devices or reinstall the app.</p>
+            </div>
+          </details>
+          <details class="faq-item">
+            <summary class="faq-question">What data does PortaDash collect?</summary>
+            <div class="faq-answer">
+              <p>PortaDash collects your location (only while you're actively using the app) and the pins you add. We don't sell your data or use it for advertising. For full details, see the <a href="./privacy-policy.html" style="color: var(--color-primary); text-decoration: none; font-weight: 600;">Privacy Policy</a>.</p>
+            </div>
+          </details>
+        </div>
+      </section>
+
+      <!-- Activity & Social -->
+      <section class="faq-section reveal" id="activity-social">
+        <p class="faq-category-label">08 — Activity &amp; Social</p>
+        <h2 class="faq-category-heading">Connecting with the community</h2>
+        <div class="faq-accordion">
+          <details class="faq-item">
+            <summary class="faq-question">What is the Activity tab?</summary>
+            <div class="faq-answer">
+              <p>The Activity feed shows you notifications whenever someone uses a pin you added, gives you a High Five, or interacts with your contributions. It's a way to see the real-world impact of what you've added to the map.</p>
+            </div>
+          </details>
+          <details class="faq-item">
+            <summary class="faq-question">What is a High Five?</summary>
+            <div class="faq-answer">
+              <p>A High Five is a way to thank the person who added a pin that helped you find relief. When you tap a pin that saved the day, you can send the contributor a High Five — a small moment of community appreciation.</p>
+            </div>
+          </details>
+          <details class="faq-item">
+            <summary class="faq-question">What is the Impact Card?</summary>
+            <div class="faq-answer">
+              <p>When you reach a milestone (like helping 100 people find a restroom), PortaDash generates a shareable card showing your contribution stats. You can share it on social media or just keep it as a personal badge of honor.</p>
+            </div>
+          </details>
+          <details class="faq-item">
+            <summary class="faq-question">I missed my Impact Card — can I share it later?</summary>
+            <div class="faq-answer">
+              <p>Yes. Go to <strong>Profile → Share Your Impact</strong> to bring up your most recent Impact Card at any time.</p>
+            </div>
+          </details>
+        </div>
+      </section>
+
+      <!-- Support -->
+      <section class="faq-section reveal" id="support">
+        <p class="faq-category-label">09 — Support</p>
+        <h2 class="faq-category-heading">Getting help</h2>
+        <div class="faq-accordion">
+          <details class="faq-item">
+            <summary class="faq-question">How can I support PortaDash?</summary>
+            <div class="faq-answer">
+              <p>The best ways to support the project are: adding pins in your area, rating restrooms you visit, and — if you'd like to contribute financially — buying the developer a coffee at <a href="https://buymeacoffee.com/portadash" target="_blank" rel="noopener noreferrer" style="color: var(--color-primary); text-decoration: none; font-weight: 600;">buymeacoffee.com/portadash</a>.</p>
+            </div>
+          </details>
+          <details class="faq-item">
+            <summary class="faq-question">I found a bug or have a suggestion.</summary>
+            <div class="faq-answer">
+              <p>Go to <strong>Profile → Send Feedback</strong> inside the app — it goes directly to the developer. You can also reach us at <a href="mailto:hello@portadash.com" style="color: var(--color-primary); text-decoration: none; font-weight: 600;">hello@portadash.com</a>.</p>
+            </div>
+          </details>
+          <details class="faq-item">
+            <summary class="faq-question">Can I help improve the map?</summary>
+            <div class="faq-answer">
+              <p>Absolutely. Every pin you add, every rating you leave, and every location you verify makes the map better for everyone. The product gets stronger as more people contribute — so jump in.</p>
+            </div>
+          </details>
+        </div>
+      </section>
+
+    </div>
+  </div>
+
+  <!-- CTA strip -->
+  <div class="faq-cta-strip">
+    <div class="container-narrow">
+      <h2>Ready to find relief?</h2>
+      <p>PortaDash is free, ad-free, and available on iPhone, Android, Apple Watch, and Wear OS.</p>
+      <button type="button" data-download-open>Download PortaDash free</button>
+    </div>
+  </div>
+
+  <footer class="site-footer">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <h3>PortaDash</h3>
+        <p>Find the nearest restroom or porta potty instantly. Built for movement, urgency, and practical everyday relief.</p>
+      </div>
+      <div class="footer-links">
+        <h4>Explore</h4>
+        <ul>
+          <li><a href="./portadash-consumer-landing-no-side-space.html#features">Features</a></li>
+          <li><a href="./portadash-consumer-landing-no-side-space.html#watch-mode">Watch</a></li>
+          <li><a href="./portadash-consumer-landing-no-side-space.html#stories">Stories</a></li>
+          <li><a href="./faq.html">FAQ</a></li>
+          <li><a href="./portadash-consumer-landing-no-side-space.html#contact">Contact</a></li>
+        </ul>
+      </div>
+      <div class="footer-links">
+        <h4>Resources</h4>
+        <ul>
+          <li><a href="./contact.html" target="_blank" rel="noopener noreferrer">Contact</a></li>
+          <li><a href="./privacy-policy.html" target="_blank" rel="noopener noreferrer">Privacy Policy</a></li>
+          <li><a href="./portadash-media-kit.html" target="_blank" rel="noopener noreferrer">Press Kit</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>Built by Nanuda Labs LLC · Richmond, Virginia</p>
+      <div class="footer-social">
+        <a href="https://www.instagram.com/portadash2025" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
+          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+        </a>
+        <a href="https://www.threads.net/@portadash2025" target="_blank" rel="noopener noreferrer" aria-label="Threads">
+          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12.186 24h-.007c-3.581-.024-6.334-1.205-8.184-3.509C2.35 18.44 1.5 15.586 1.472 12.01v-.017c.03-3.579.858-6.43 2.523-8.482C5.858 1.205 8.61.024 12.191 0h.014c2.746.02 5.043.725 6.826 2.098 1.677 1.29 2.858 3.13 3.512 5.467l-2.04.569c-1.104-3.96-3.898-5.984-8.304-6.015-2.91.022-5.11.936-6.54 2.717C4.307 6.504 3.616 8.914 3.589 12c.027 3.086.718 5.496 2.057 7.164 1.43 1.783 3.631 2.698 6.54 2.717 1.677-.01 3.04-.316 4.066-.905.94-.538 1.553-1.258 1.822-2.14.273-.896.267-1.98-.019-3.18-.292-1.24-.93-2.33-1.9-3.24l-.85-.79.86-.78c1.18-1.07 1.86-2.41 2.02-3.99.17-1.69-.18-3.17-.96-4.19-.83-1.08-2.12-1.63-3.83-1.63-1.63 0-2.94.53-3.9 1.58-.98 1.08-1.5 2.65-1.55 4.66v.07c.05 1.97.58 3.52 1.57 4.6.96 1.06 2.28 1.6 3.93 1.6.74 0 1.42-.15 2.04-.44l.65 1.84c-.87.39-1.82.59-2.82.59-2.15 0-3.94-.77-5.31-2.3-1.35-1.5-2.08-3.55-2.14-6.11l-.01-.13.01-.13c.06-2.59.8-4.64 2.14-6.11 1.37-1.53 3.16-2.3 5.31-2.3 2.26 0 4.03.73 5.27 2.17 1.2 1.39 1.75 3.32 1.54 5.55-.18 1.93-.9 3.62-2.09 5.01.66.75 1.15 1.57 1.45 2.46.47 1.52.46 3.02-.02 4.46-.5 1.52-1.45 2.74-2.84 3.62C15.54 23.64 13.98 24 12.19 24z"/></svg>
+        </a>
+        <a href="https://www.tiktok.com/@portadash" target="_blank" rel="noopener noreferrer" aria-label="TikTok">
+          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.41-1.11 1.04-1.36 1.75-.21.51-.15 1.07-.14 1.61.24 1.64 1.82 3.02 3.5 2.87 1.12-.01 2.19-.66 2.77-1.61.19-.33.4-.67.41-1.06.1-1.79.06-3.57.07-5.36.01-4.03-.01-8.05.02-12.07z"/></svg>
+        </a>
+        <a href="https://www.facebook.com/portadash" target="_blank" rel="noopener noreferrer" aria-label="Facebook">
+          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+        </a>
+        <a href="https://x.com/portadash" target="_blank" rel="noopener noreferrer" aria-label="X">
+          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.747l7.73-8.835L1.254 2.25H8.08l4.259 5.631L18.244 2.25zm-1.161 17.52h1.833L7.084 4.126H5.117L17.083 19.77z"/></svg>
+        </a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // Download modal
+    const downloadOpenButtons = document.querySelectorAll('[data-download-open]');
+    const downloadClose = document.querySelector('[data-download-close]');
+    const downloadModal = document.querySelector('[data-download-modal]');
+    const downloadBackdrop = document.querySelector('[data-download-backdrop]');
+    function openDownloadModal() { downloadModal.hidden = false; downloadBackdrop.hidden = false; document.body.style.overflow = 'hidden'; }
+    function closeDownloadModal() { downloadModal.hidden = true; downloadBackdrop.hidden = true; document.body.style.overflow = ''; }
+    downloadOpenButtons.forEach((b) => b.addEventListener('click', openDownloadModal));
+    downloadClose?.addEventListener('click', closeDownloadModal);
+    downloadBackdrop?.addEventListener('click', closeDownloadModal);
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && downloadModal && !downloadModal.hidden) closeDownloadModal(); });
+
+    // Waitlist modal
+    const waitlistOpenBtns = document.querySelectorAll('[data-waitlist-open]');
+    const waitlistModal = document.querySelector('[data-waitlist-modal]');
+    const waitlistBackdrop = document.querySelector('[data-waitlist-backdrop]');
+    const waitlistClose = document.querySelector('[data-waitlist-close]');
+    const waitlistForm = document.querySelector('[data-waitlist-form]');
+    const waitlistSuccess = document.querySelector('[data-waitlist-success]');
+    function openWaitlist() { waitlistModal.hidden = false; waitlistBackdrop.hidden = false; document.body.style.overflow = 'hidden'; }
+    function closeWaitlist() { waitlistModal.hidden = true; waitlistBackdrop.hidden = true; document.body.style.overflow = ''; }
+    waitlistOpenBtns.forEach(b => b.addEventListener('click', openWaitlist));
+    waitlistClose?.addEventListener('click', closeWaitlist);
+    waitlistBackdrop?.addEventListener('click', closeWaitlist);
+    document.addEventListener('keydown', e => { if (e.key === 'Escape' && waitlistModal && !waitlistModal.hidden) closeWaitlist(); });
+    waitlistForm?.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      waitlistForm.closest('#waitlist-form-wrap').style.display = 'none';
+      waitlistSuccess.style.display = 'block';
+    });
+
+    // Hamburger
+    const navHamburger = document.getElementById('nav-hamburger');
+    const navDrawer = document.getElementById('nav-drawer');
+    navHamburger?.addEventListener('click', () => {
+      const isOpen = navDrawer.classList.toggle('open');
+      navHamburger.setAttribute('aria-expanded', isOpen);
+    });
+    document.querySelectorAll('.nav-drawer-link').forEach(link => {
+      link.addEventListener('click', () => {
+        navDrawer.classList.remove('open');
+        navHamburger.setAttribute('aria-expanded', 'false');
+      });
+    });
+
+    // Lucide icons
+    window.addEventListener('DOMContentLoaded', () => { if (window.lucide) lucide.createIcons(); });
+
+    // Reveal on scroll
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => { if (entry.isIntersecting) entry.target.classList.add('visible'); });
+    }, { threshold: 0.08 });
+    document.querySelectorAll('.reveal').forEach((el) => observer.observe(el));
+  </script>
+</body>
+</html>
