@@ -114,7 +114,8 @@
     .proof-item { display: flex; align-items: center; gap: var(--space-2); color: var(--color-text-muted); font-size: var(--text-sm); }
     .proof-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--color-primary); }
     .hero-mini-note { display: inline-flex; align-items: center; gap: var(--space-2); margin-top: var(--space-6); padding: var(--space-2) var(--space-4); border-radius: var(--radius-full); font-size: var(--text-xs); color: var(--color-primary); background: var(--color-primary-highlight); font-weight: 700; }
-    .hero-rating { font-size: var(--text-sm); color: var(--color-text-muted); margin-top: var(--space-3); }
+    .hero-social-proof { font-size: var(--text-sm); color: var(--color-text-muted); margin-top: var(--space-4); margin-bottom: var(--space-2); letter-spacing: 0.01em; }
+    .hero-social-proof .hero-stars { color: var(--color-accent); letter-spacing: 0.05em; margin-right: var(--space-2); }
     .stats-strip { background: var(--color-surface); border: 1px solid oklch(from var(--color-text) l c h / 0.08); border-radius: var(--radius-2xl); padding: clamp(var(--space-8), 5vw, var(--space-12)) var(--space-8); display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-4); margin-top: var(--space-12); }
     .stat-item { text-align: center; padding: var(--space-4); position: relative; }
     .stat-item + .stat-item::before { content: ''; position: absolute; left: 0; top: 15%; height: 70%; width: 1px; background: oklch(from var(--color-text) l c h / 0.08); }
@@ -343,13 +344,13 @@
       <div class="hero-premium">
         <div class="hero-copy">
           <div class="hero-badge"><span>Free</span><span>Ad-Free</span><span>iPhone + Android + Watch</span></div>
+          <p class="hero-social-proof"><span class="hero-stars">★★★★★</span> 10,000+ people have found relief</p>
           <h1>Find a restroom <em>before</em> it becomes a problem.</h1>
           <p class="hero-sub">PortaDash shows you the nearest restroom or porta potty instantly on iPhone, Android, Apple Watch, and Wear OS when you are mid-run, traveling, commuting, or just caught in a bad moment.</p>
           <div class="hero-actions">
             <button type="button" class="btn-primary" data-download-open>Download PortaDash</button>
             <a href="#features" class="btn-secondary">Explore features</a>
           </div>
-          <p class="hero-rating"><span style="color: var(--color-accent);">★</span> 5.0 · App Store</p>
           <div class="hero-proof">
             <div class="proof-item"><span class="proof-dot"></span><span>Built for runners, parents, travelers, and commuters</span></div>
             <div class="proof-item"><span class="proof-dot"></span><span>Works across phone and watch experiences</span></div>
