@@ -190,6 +190,18 @@
     .footer-bottom { max-width: var(--content-wide); margin: var(--space-8) auto 0; padding-top: var(--space-4); border-top: 1px solid var(--color-divider); display:flex; justify-content: space-between; gap: var(--space-4); flex-wrap: wrap; }
     .footer-bottom p, .footer-bottom a { color: var(--color-text-faint); font-size: var(--text-xs); text-decoration:none; }
 
+    .stats-strip { background: var(--color-surface); border: 1px solid oklch(from var(--color-text) l c h / 0.08); border-radius: var(--radius-2xl); padding: clamp(var(--space-8), 5vw, var(--space-12)) var(--space-8); display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-4); margin-top: var(--space-12); }
+    .stat-item { text-align: center; padding: var(--space-4); position: relative; }
+    .stat-item + .stat-item::before { content: ''; position: absolute; left: 0; top: 15%; height: 70%; width: 1px; background: oklch(from var(--color-text) l c h / 0.08); }
+    .stat-number { font-family: var(--font-display); font-size: clamp(2rem, 4vw, 2.75rem); font-weight: 400; color: var(--color-text); line-height: 1; margin-bottom: var(--space-2); display: flex; align-items: baseline; justify-content: center; gap: 2px; }
+    .stat-number-suffix { font-size: 1.5rem; color: var(--color-primary); }
+    .stat-label { font-size: var(--text-sm); color: var(--color-text-muted); line-height: 1.5; max-width: 16ch; margin: 0 auto; }
+    @media (max-width: 640px) {
+      .stats-strip { grid-template-columns: 1fr; }
+      .stat-item + .stat-item::before { display: none; }
+      .stat-item + .stat-item { border-top: 1px solid oklch(from var(--color-text) l c h / 0.08); }
+    }
+
     .reveal { opacity: 0; transform: translateY(20px); transition: opacity .6s ease, transform .6s ease; }
     .reveal.visible { opacity: 1; transform: translateY(0); }
 
@@ -354,6 +366,26 @@
         <div class="platform-card"><img src="./assets/android-icon.png" alt="" class="platform-icon"><h3>Android</h3><p>Bring the same fast-access experience to more people on the move.</p></div>
         <div class="platform-card"><img src="./assets/apple-watch-icon.png" alt="" class="platform-icon"><h3>Apple Watch</h3><p>Check nearby pins and directions without pulling your phone out mid-run.</p></div>
         <div class="platform-card"><img src="./assets/wear-os-icon.png" alt="" class="platform-icon"><h3>Wear OS</h3><p>Keep the wrist-first utility alive for Android users who need speed and convenience.</p></div>
+      </div>
+      <div class="stats-strip reveal" id="stats-strip">
+        <div class="stat-item">
+          <div class="stat-number">
+            <span class="stat-count" data-target="10000">0</span><span class="stat-number-suffix">+</span>
+          </div>
+          <p class="stat-label">Restrooms mapped by the community</p>
+        </div>
+        <div class="stat-item">
+          <div class="stat-number">
+            <span class="stat-count" data-target="4">0</span><span class="stat-number-suffix" style="font-size:1.1rem; margin-left:3px;">platforms</span>
+          </div>
+          <p class="stat-label">iPhone, Android, Apple Watch & Wear OS</p>
+        </div>
+        <div class="stat-item">
+          <div class="stat-number">
+            <span class="stat-count" data-target="100">0</span><span class="stat-number-suffix">%</span>
+          </div>
+          <p class="stat-label">Free and ad-free, always</p>
+        </div>
       </div>
     </div>
   </section>
@@ -612,6 +644,32 @@
         navHamburger.setAttribute('aria-expanded', 'false');
       });
     });
+    function easeOutQuart(t) { return 1 - Math.pow(1 - t, 4); }
+    function animateStat(el) {
+      const target = +el.dataset.target;
+      const duration = target >= 1000 ? 1800 : 900;
+      const start = performance.now();
+      (function step(now) {
+        const p = Math.min((now - start) / duration, 1);
+        const val = Math.round(easeOutQuart(p) * target);
+        el.textContent = val >= 1000 ? (val / 1000).toFixed(val % 1000 === 0 ? 0 : 1) + 'k' : val;
+        if (p < 1) requestAnimationFrame(step);
+        else el.textContent = target >= 1000 ? Math.round(target / 1000) + 'k' : target;
+      })(start);
+    }
+    const statsStrip = document.getElementById('stats-strip');
+    if (statsStrip) {
+      const statsObserver = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            document.querySelectorAll('.stat-count').forEach(animateStat);
+            statsObserver.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.4 });
+      statsObserver.observe(statsStrip);
+    }
+
     const observer = new IntersectionObserver((entries) => { entries.forEach((entry) => { if (entry.isIntersecting) entry.target.classList.add('visible'); }); }, { threshold: 0.12 });
     document.querySelectorAll('.reveal').forEach((el) => observer.observe(el));
   </script>
