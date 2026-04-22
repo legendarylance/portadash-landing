@@ -79,11 +79,13 @@
     .nav-hamburger[aria-expanded="true"] span:nth-child(3) { transform: translateY(-6px) rotate(-45deg); }
     .nav-drawer { max-height: 0; overflow: hidden; transition: max-height 320ms cubic-bezier(0.16,1,0.3,1); background: var(--color-surface); border-top: 1px solid transparent; }
     .nav-drawer.open { max-height: 400px; border-top-color: oklch(from var(--color-text) l c h / 0.07); }
-    .nav-drawer-inner { padding: var(--space-3) var(--space-4) var(--space-5); display: flex; flex-direction: column; gap: var(--space-1); }
+    .nav-drawer-inner { padding: var(--space-3) var(--space-4) var(--space-5); display: flex; flex-direction: column; align-items: flex-start; gap: var(--space-2); }
+    .nav-drawer-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--space-1); }
+    @media (max-width: 360px) { .nav-drawer-grid { grid-template-columns: repeat(3, 1fr); } }
     .nav-drawer a { display: block; padding: var(--space-3) var(--space-3); border-radius: var(--radius-lg); font-size: var(--text-sm); font-weight: 500; color: var(--color-text-muted); text-decoration: none; transition: background var(--transition-interactive), color var(--transition-interactive); }
     .nav-drawer a:hover { background: var(--color-surface-offset); color: var(--color-text); }
-    .nav-drawer-divider { height: 1px; background: oklch(from var(--color-text) l c h / 0.07); margin: var(--space-2) 0; }
-    .nav-drawer .nav-drawer-cta { background: var(--color-primary); color: var(--color-text-inverse); font-weight: 600; text-align: center; margin-top: var(--space-1); }
+    .nav-drawer-divider { height: 1px; background: oklch(from var(--color-text) l c h / 0.07); margin: var(--space-1) 0; }
+    .nav-drawer .nav-drawer-cta { background: var(--color-primary); color: var(--color-text-inverse); font-weight: 600; text-align: center; margin-top: var(--space-1); display: inline-block; width: auto; align-self: center; }
     .nav-drawer .nav-drawer-cta:hover { background: var(--color-primary-hover); color: var(--color-text-inverse); }
 
     /* Modals */
@@ -216,12 +218,14 @@
     </div>
     <div class="nav-drawer" id="nav-drawer" role="navigation" aria-label="Mobile menu">
       <div class="nav-drawer-inner">
-        <a href="./index.html#features" class="nav-drawer-link">Features</a>
-        <a href="./index.html#watch-mode" class="nav-drawer-link">Watch</a>
-        <a href="./index.html#stories" class="nav-drawer-link">Stories</a>
-        <a href="./faq.html" class="nav-drawer-link">FAQ</a>
-        <a href="./contact.html" class="nav-drawer-link">Contact</a>
-        <a href="./portadash-media-kit.html" target="_blank" rel="noopener noreferrer" class="nav-drawer-link">Press Kit</a>
+        <div class="nav-drawer-grid">
+          <a href="./index.html#features" class="nav-drawer-link">Features</a>
+          <a href="./index.html#watch-mode" class="nav-drawer-link">Watch</a>
+          <a href="./index.html#stories" class="nav-drawer-link">Stories</a>
+          <a href="./portadash-media-kit.html" target="_blank" rel="noopener noreferrer" class="nav-drawer-link">Press Kit</a>
+          <a href="./contact.html" class="nav-drawer-link">Contact</a>
+          <a href="./faq.html" class="nav-drawer-link">FAQ</a>
+        </div>
         <div class="nav-drawer-divider"></div>
         <a href="#" class="nav-drawer-cta" data-download-open>Download PortaDash free</a>
       </div>
