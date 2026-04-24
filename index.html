@@ -8,6 +8,8 @@
   <meta property="og:title" content="PortaDash — Find a Restroom Instantly" />
   <meta property="og:description" content="Free, ad-free, community-powered restroom finder for iPhone, Android, Apple Watch, and Wear OS." />
   <meta property="og:image" content="https://picsum.photos/seed/portadash-hero/1200/630" />
+  <link rel="icon" type="image/png" href="./assets/PortaDash_Circle.png">
+  <link rel="apple-touch-icon" href="./assets/PortaDash_Circle.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Work+Sans:wght@300..700&display=swap" rel="stylesheet">
@@ -92,8 +94,7 @@
     .download-modal p { color: var(--color-text-muted); margin-bottom: var(--space-6); }
     .download-modal-actions { display: grid; gap: var(--space-3); }
     .badge-link { display: inline-flex; justify-content: center; }
-    .store-badge { width: min(100%, 280px); height: auto; display: block; }
-    @media (max-width: 480px) { .store-badge { width: min(100%, 200px); } }
+    .store-badge { width: min(100%, 180px); height: auto; display: block; }
     .download-modal-close { position: absolute; top: var(--space-4); right: var(--space-4); width: 48px; height: 48px; border-radius: var(--radius-full); color: var(--color-text-muted); font-size: 1.5rem; }
     .download-modal-close:hover { background: var(--color-surface-offset); color: var(--color-text); }
 
@@ -190,11 +191,12 @@
     .contact-card p { font-size: var(--text-base); opacity: .9; margin-bottom: var(--space-6); max-width: 48ch; }
     .contact-card a { display:inline-flex; align-items:center; gap: var(--space-2); background: var(--color-text-inverse); color: var(--color-primary); padding: var(--space-4) var(--space-8); border-radius: var(--radius-full); font-weight: 700; font-size: var(--text-sm); text-decoration: none; }
 
-    .app-badges { display:flex; flex-wrap: wrap; gap: var(--space-3); margin-top: var(--space-6); }
-    .app-badge { display:inline-flex; align-items:center; gap: var(--space-3); background: var(--color-text); color: var(--color-text-inverse); padding: var(--space-3) var(--space-5); border-radius: var(--radius-lg); font-size: var(--text-sm); font-weight:500; text-decoration:none; }
+    .app-badges { display:grid; grid-template-columns: 1fr 1fr; gap: var(--space-3); margin-top: var(--space-6); }
+    .app-badge { display:inline-flex; align-items:center; justify-content:center; gap: var(--space-3); background: var(--color-text); color: var(--color-text-inverse); padding: var(--space-3) var(--space-5); border-radius: var(--radius-lg); font-size: var(--text-sm); font-weight:500; text-decoration:none; }
     .app-badge:hover { background: color-mix(in oklch, var(--color-text) 80%, transparent); }
     .app-badge small { font-size: var(--text-xs); opacity: .7; display:block; }
     .app-badge strong { display:block; font-size: var(--text-sm); }
+
 
     .site-footer { background: var(--color-surface); border-top: 1px solid var(--color-divider); padding: var(--space-12) var(--space-6) var(--space-10); }
     .footer-grid { max-width: var(--content-wide); margin-inline: auto; display:grid; grid-template-columns: 1.2fr .8fr .8fr; gap: var(--space-8); }
@@ -214,30 +216,12 @@
     .reveal { opacity: 0; transform: translateY(20px); transition: opacity .6s ease, transform .6s ease; }
     .reveal.visible { opacity: 1; transform: translateY(0); }
 
-    /* Android waitlist modal */
-    .waitlist-modal-backdrop { position: fixed; inset: 0; background: oklch(0.1 0.01 120 / 0.38); z-index: 140; }
-    .waitlist-modal { position: fixed; inset: 50% auto auto 50%; transform: translate(-50%, -50%); width: min(92vw, 460px); background: var(--color-surface-2); z-index: 150; border: 1px solid oklch(from var(--color-text) l c h / 0.1); border-radius: var(--radius-2xl); box-shadow: var(--shadow-lg); padding: var(--space-8); }
-    .waitlist-modal h2 { font-family: var(--font-display); font-size: var(--text-xl); font-weight: 400; margin-bottom: var(--space-3); }
-    .waitlist-modal p { color: var(--color-text-muted); margin-bottom: var(--space-5); }
-    .waitlist-modal-close { position: absolute; top: var(--space-4); right: var(--space-4); width: 48px; height: 48px; border-radius: var(--radius-full); color: var(--color-text-muted); font-size: 1.5rem; }
-    .waitlist-modal-close:hover { background: var(--color-surface-offset); color: var(--color-text); }
-    .waitlist-form { display: flex; flex-direction: column; gap: var(--space-3); }
-    .waitlist-input { width: 100%; padding: var(--space-3) var(--space-4); border-radius: var(--radius-lg); border: 1px solid var(--color-border); background: var(--color-surface-2); font-family: var(--font-body); font-size: var(--text-sm); color: var(--color-text); outline: none; transition: border-color var(--transition-interactive); }
-    .waitlist-input:focus { border-color: var(--color-primary); box-shadow: 0 0 0 3px oklch(from var(--color-primary) l c h / 0.12); }
-    .waitlist-submit { width: 100%; padding: var(--space-4); border-radius: var(--radius-full); background: var(--color-primary); color: var(--color-text-inverse); font-family: var(--font-body); font-size: var(--text-sm); font-weight: 600; border: none; cursor: pointer; transition: background var(--transition-interactive); }
-    .waitlist-submit:hover { background: var(--color-primary-hover); }
-    .waitlist-fine { font-size: var(--text-xs); color: var(--color-text-faint); text-align: center; }
-    .waitlist-success { display: none; text-align: center; padding: var(--space-4) 0; }
-    .waitlist-success-icon { width: 52px; height: 52px; border-radius: 50%; background: var(--color-primary-highlight); display: flex; align-items: center; justify-content: center; margin: 0 auto var(--space-4); color: var(--color-primary); }
-    .waitlist-success h3 { font-family: var(--font-display); font-size: var(--text-xl); font-weight: 400; margin-bottom: var(--space-2); }
-    .android-badge-soon { position: relative; }
-    .android-badge-soon .badge-coming-soon { position: absolute; top: -8px; right: -8px; background: var(--color-accent); color: #fff; font-size: 11px; font-weight: 700; letter-spacing: .04em; padding: 3px 10px; border-radius: var(--radius-full); text-transform: uppercase; pointer-events: none; }
 
     @media (max-width: 980px) {
       .hero-premium, .watch-grid, .contact-grid, .footer-grid { grid-template-columns: 1fr; }
       .hero-copy { text-align:center; }
       .hero h1, .hero-sub { margin-inline:auto; }
-      .hero-actions, .app-badges { justify-content:center; }
+      .hero-actions { justify-content:center; }
       .hero-proof { justify-content:flex-start; text-align:left; }
       .hero-stack { min-height: 560px; margin-inline:auto; width:min(100%, 420px); }
       .device-main { left: 0; }
@@ -322,30 +306,7 @@
     <p>Pick the store that matches your device.</p>
     <div class="download-modal-actions">
       <a href="https://apps.apple.com/us/app/portadash/id6755355109" target="_blank" rel="noopener noreferrer" class="badge-link"><img src="./assets/app-store-badge.svg" alt="Download on the App Store" class="store-badge"></a>
-      <button type="button" class="badge-link android-badge-soon" data-waitlist-open>
-        <span class="badge-coming-soon">Coming soon</span>
-        <img src="./assets/google-play-badge.svg" alt="Join the Android Waitlist" class="store-badge">
-      </button>
-    </div>
-  </div>
-
-  <div class="waitlist-modal-backdrop" data-waitlist-backdrop hidden></div>
-  <div class="waitlist-modal" data-waitlist-modal hidden aria-labelledby="waitlist-modal-title" aria-modal="true" role="dialog">
-    <button class="waitlist-modal-close" type="button" data-waitlist-close aria-label="Close">&times;</button>
-    <p class="section-label" style="margin-bottom: var(--space-3);">Android — coming soon</p>
-    <h2 id="waitlist-modal-title">Be first when PortaDash hits Google Play.</h2>
-    <p>Drop your email and we'll notify you the moment the Android app is live. No spam — just one email when it's ready.</p>
-    <div id="waitlist-form-wrap">
-      <form class="waitlist-form" data-waitlist-form>
-        <input class="waitlist-input" type="email" name="email" placeholder="your@email.com" required autocomplete="email">
-        <button type="submit" class="waitlist-submit">Notify me when it's live</button>
-        <p class="waitlist-fine">No spam. One email when the app launches. Unsubscribe any time.</p>
-      </form>
-    </div>
-    <div class="waitlist-success" data-waitlist-success>
-      <div class="waitlist-success-icon"><i data-lucide="check"></i></div>
-      <h3>You're on the list.</h3>
-      <p>We'll send one email when PortaDash is live on Google Play. See you on Android.</p>
+      <a href="https://play.google.com/store/apps/details?id=com.portadash.portadash_android" target="_blank" rel="noopener noreferrer" class="badge-link"><img src="./assets/google-play-badge.svg" alt="Get it on Google Play" class="store-badge"></a>
     </div>
   </div>
 
@@ -516,10 +477,7 @@
           <p>No ads. No subscriptions. Just the nearest restroom, right when you need it most — on iPhone, Android, Apple Watch, or Wear OS.</p>
           <div class="app-badges" id="download">
             <a href="https://apps.apple.com/us/app/portadash/id6755355109" target="_blank" rel="noopener noreferrer" class="app-badge"><div><small>Download on the</small><strong>App Store</strong></div></a>
-            <button type="button" class="app-badge android-badge-soon" data-waitlist-open>
-              <span class="badge-coming-soon">Coming soon</span>
-              <div><small>Join the</small><strong>Android Waitlist</strong></div>
-            </button>
+            <a href="https://play.google.com/store/apps/details?id=com.portadash.portadash_android" target="_blank" rel="noopener noreferrer" class="app-badge"><div><small>Get it on</small><strong>Google Play</strong></div></a>
           </div>
         </div>
         <div class="contact-card-panel reveal">
@@ -592,18 +550,6 @@
     downloadBackdrop?.addEventListener('click', closeDownloadModal);
     document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && downloadModal && !downloadModal.hidden) closeDownloadModal(); });
 
-    const waitlistOpenBtns = document.querySelectorAll('[data-waitlist-open]');
-    const waitlistModal = document.querySelector('[data-waitlist-modal]');
-    const waitlistBackdrop = document.querySelector('[data-waitlist-backdrop]');
-    const waitlistClose = document.querySelector('[data-waitlist-close]');
-    const waitlistForm = document.querySelector('[data-waitlist-form]');
-    const waitlistSuccess = document.querySelector('[data-waitlist-success]');
-    function openWaitlist() { waitlistModal.hidden = false; waitlistBackdrop.hidden = false; document.body.style.overflow = 'hidden'; }
-    function closeWaitlist() { waitlistModal.hidden = true; waitlistBackdrop.hidden = true; document.body.style.overflow = ''; }
-    waitlistOpenBtns.forEach(b => b.addEventListener('click', openWaitlist));
-    waitlistClose?.addEventListener('click', closeWaitlist);
-    waitlistBackdrop?.addEventListener('click', closeWaitlist);
-    document.addEventListener('keydown', e => { if (e.key === 'Escape' && waitlistModal && !waitlistModal.hidden) closeWaitlist(); });
     const navHamburger = document.getElementById('nav-hamburger');
     const navDrawer = document.getElementById('nav-drawer');
     function toggleNavDrawer() {
@@ -644,14 +590,6 @@
       statsObserver.observe(statsStrip);
     }
 
-    waitlistForm?.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const email = waitlistForm.email.value;
-      // TODO: POST email to your backend or a service like Mailchimp / ConvertKit
-      // await fetch('/api/waitlist', { method: 'POST', body: JSON.stringify({ email }) });
-      waitlistForm.closest('#waitlist-form-wrap').style.display = 'none';
-      waitlistSuccess.style.display = 'block';
-    });
     window.addEventListener('DOMContentLoaded', () => { if (window.lucide) lucide.createIcons(); });
     const observer = new IntersectionObserver((entries) => { entries.forEach((entry) => { if (entry.isIntersecting) entry.target.classList.add('visible'); }); }, { threshold: 0.12 });
     document.querySelectorAll('.reveal').forEach((el) => observer.observe(el));
