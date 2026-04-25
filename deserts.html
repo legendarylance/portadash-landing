@@ -169,27 +169,8 @@
     .search-result-item:last-child { border-bottom: none; }
     .search-result-item:hover { background: #f5f5f5; }
 
-    .map-wrapper { position: relative; height: 520px; border-radius: var(--radius-xl); overflow: hidden; border: 1px solid oklch(from var(--color-text-inverse) l c h / 0.1); }
-    /* Disable pointer events on map until activated */
-    #map { height: 100%; width: 100%; pointer-events: none; touch-action: pan-y; }
-    #map.active { pointer-events: auto; touch-action: none; }
-
-    /* Tap-to-interact overlay */
-    #map-activate-overlay {
-      position: absolute; inset: 0; z-index: 9999;
-      display: flex; flex-direction: column; align-items: center; justify-content: center;
-      gap: var(--space-3);
-      background: oklch(from var(--color-text) l c h / 0.4);
-      backdrop-filter: blur(2px);
-      cursor: pointer;
-      border-radius: var(--radius-xl);
-    }
-    #map-activate-overlay.hidden { display: none; }
-    #map-activate-overlay .overlay-icon { font-size: 2rem; line-height: 1; }
-    #map-activate-overlay .overlay-label {
-      color: #fff; font-size: 0.9rem; font-weight: 600; font-family: var(--font-sans);
-      text-align: center; padding: 0 var(--space-6);
-    }
+    .map-wrapper { position: relative; height: 520px; border-radius: var(--radius-xl); overflow: hidden; border: 1px solid var(--color-border); }
+    #map { height: 100%; width: 100%; }
 
     .map-footer-row { display: flex; justify-content: space-between; align-items: center; margin-top: var(--space-4); flex-wrap: wrap; gap: var(--space-3); }
     .map-data-note { font-size: var(--text-xs); color: var(--color-text-muted); }
@@ -470,12 +451,6 @@
     <div class="map-wrapper">
       <div id="map"></div>
 
-      <!-- Tap-to-interact overlay (prevents scroll trap) -->
-      <div id="map-activate-overlay" onclick="activateMap()">
-        <div class="overlay-icon">👆</div>
-        <div class="overlay-label">Click to interact with map</div>
-      </div>
-
       <!-- Stats bar -->
       <div id="map-stats">
         <div class="mstat"><div class="mstat-num" id="stat-community">—</div><div class="mstat-label">Community Pins</div></div>
@@ -645,35 +620,7 @@
   const PROJECT_ID = 'portadash-dd3fb';
 
   // ── Map init ─────────────────────────────────────────────────────────────────
-  const map = L.map('map', { scrollWheelZoom: false, dragging: false, tap: false }).setView([39.5, -98.35], 4);
-
-  // ── Tap-to-interact ───────────────────────────────────────────────────────────
-  const mapEl = document.getElementById('map');
-  const mapOverlay = document.getElementById('map-activate-overlay');
-
-  function activateMap() {
-    mapOverlay.classList.add('hidden');
-    mapEl.classList.add('active');
-    map.scrollWheelZoom.enable();
-    map.dragging.enable();
-  }
-
-  function deactivateMap() {
-    mapOverlay.classList.remove('hidden');
-    mapEl.classList.remove('active');
-    map.scrollWheelZoom.disable();
-    map.dragging.disable();
-  }
-
-  // Click/touch outside the map wrapper → deactivate
-  document.addEventListener('click', function(e) {
-    const wrapper = mapEl.closest('.map-wrapper');
-    if (wrapper && !wrapper.contains(e.target)) deactivateMap();
-  });
-  document.addEventListener('touchstart', function(e) {
-    const wrapper = mapEl.closest('.map-wrapper');
-    if (wrapper && !wrapper.contains(e.target)) deactivateMap();
-  }, { passive: true });
+  const map = L.map('map', { scrollWheelZoom: false, dragging: !L.Browser.mobile, tap: false }).setView([39.5, -98.35], 4);
   L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
     attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors © <a href="https://carto.com/">CARTO</a>',
     subdomains: 'abcd', maxZoom: 19
