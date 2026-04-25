@@ -179,8 +179,7 @@
     .feature-tag { display:inline-flex; align-items:center; gap: var(--space-2); margin-top: var(--space-4); padding: var(--space-2) var(--space-4); border-radius: var(--radius-full); background: var(--color-primary-highlight); color: var(--color-primary); font-size: var(--text-xs); font-weight: 700; }
 
     .stories-grid, .supporters-grid, .faq-grid { display:grid; gap: var(--space-5); grid-template-columns: repeat(auto-fill, minmax(min(280px, 100%), 1fr)); }
-    .story-card { background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius-xl); padding: var(--space-6); box-shadow: var(--shadow-sm); display: flex; flex-direction: column; justify-content: space-between; }
-    .supporter-card, .faq-item, .contact-card-panel { background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius-xl); padding: var(--space-6); box-shadow: var(--shadow-sm); }
+    .story-card, .supporter-card, .faq-item, .contact-card-panel { background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius-xl); padding: var(--space-6); box-shadow: var(--shadow-sm); }
     .story-quote { font-size: var(--text-base); color: var(--color-text); line-height: 1.7; margin-bottom: var(--space-5); font-style: italic; }
     .story-attr { display:flex; align-items:center; gap: var(--space-3); }
     .story-avatar { width:36px; height:36px; border-radius:50%; background: var(--color-primary-highlight); display:flex; align-items:center; justify-content:center; font-size: var(--text-xs); font-weight:700; color: var(--color-primary); flex-shrink:0; }
@@ -467,14 +466,15 @@
   <section class="section" id="stories">
     <div class="container">
       <div class="reveal">
-        <p class="section-label">Stories</p>
-        <h2 class="section-heading">What people are saying</h2>
-        <p class="section-body">Real reactions from real people who needed PortaDash.</p>
+        <p class=”section-label”>Stories</p>
+        <h2 class=”section-heading”>Real moments, real relief</h2>
+        <p class=”section-body”>Short stories from runners, travelers, and parents who need fast relief.</p>
+        <p style=”max-width: 54ch; color: var(--color-text-muted); font-size: var(--text-sm);”>A few real experiences that show how PortaDash helps in the moments people care about most.</p>
       </div>
-      <div class="stories-grid reveal" style="margin-top: var(--space-8);">
-        <article class=”story-card”><p class=”story-quote”>”Give this man a Nobel Prize. A true hero.”</p><div class=”story-attr”><div class=”story-avatar”>ER</div><div><div class=”story-name”>Elite runner</div><div class=”story-role”>Richmond, VA</div></div></div></article>
-        <article class=”story-card”><p class=”story-quote”>”Will there be a version for Android? This could also be a lifesaver for seniors and others with incontinence issues.”</p><div class=”story-attr”><div class=”story-avatar”>PU</div><div><div class=”story-name”>PortaDash user</div><div class=”story-role”>Via the App Store</div></div></div></article>
+      <div class=”stories-grid reveal”>
         <article class=”story-card”><p class=”story-quote”>”I checked PortaDash from my watch during a long run and found a restroom without stopping to dig for my phone.”</p><div class=”story-attr”><div class=”story-avatar”>JR</div><div><div class=”story-name”>Jamie</div><div class=”story-role”>Runner</div></div></div></article>
+        <article class=”story-card”><p class=”story-quote”>”Traveling with kids is a lot easier when you can pull up nearby options fast instead of guessing.”</p><div class=”story-attr”><div class=”story-avatar”>MS</div><div><div class=”story-name”>Morgan</div><div class=”story-role”>Parent</div></div></div></article>
+        <article class=”story-card”><p class=”story-quote”>”The app feels practical, fast, and weirdly comforting when you are in an unfamiliar part of town.”</p><div class=”story-attr”><div class=”story-avatar”>AL</div><div><div class=”story-name”>Alex</div><div class=”story-role”>Traveler</div></div></div></article>
       </div>
     </div>
   </section>
