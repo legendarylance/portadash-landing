@@ -180,6 +180,7 @@
 
     .stories-grid, .supporters-grid, .faq-grid { display:grid; gap: var(--space-5); grid-template-columns: repeat(auto-fill, minmax(min(280px, 100%), 1fr)); }
     .story-card, .supporter-card, .faq-item, .contact-card-panel { background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius-xl); padding: var(--space-6); box-shadow: var(--shadow-sm); }
+    .story-card { display: flex; flex-direction: column; justify-content: space-between; }
     .story-quote { font-size: var(--text-base); color: var(--color-text); line-height: 1.7; margin-bottom: var(--space-5); font-style: italic; }
     .story-attr { display:flex; align-items:center; gap: var(--space-3); }
     .story-avatar { width:36px; height:36px; border-radius:50%; background: var(--color-primary-highlight); display:flex; align-items:center; justify-content:center; font-size: var(--text-xs); font-weight:700; color: var(--color-primary); flex-shrink:0; }
@@ -469,7 +470,6 @@
         <p class="section-label">Stories</p>
         <h2 class="section-heading">What people are saying</h2>
         <p class="section-body">Real reactions from real people who needed PortaDash.</p>
-        <p style="max-width: 54ch; color: var(--color-text-muted); font-size: var(--text-sm);">A few real experiences that show how PortaDash helps in the moments people care about most.</p>
       </div>
       <div class="stories-grid reveal">
         <article class=”story-card”><p class=”story-quote”>”Give this man a Nobel Prize. A true hero.”</p><div class=”story-attr”><div class=”story-avatar”>ER</div><div><div class=”story-name”>Elite runner</div><div class=”story-role”>Richmond, VA</div></div></div></article>
