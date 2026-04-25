@@ -529,28 +529,8 @@
             <label class="switch"><input type="checkbox" id="t-library" checked onchange="onToggle()"><span class="slider"></span></label>
           </label>
           <label class="toggle-row">
-            <div class="toggle-left"><div class="toggle-dot" style="background:#D32F2F"></div><span class="toggle-label">Hospitals</span></div>
-            <label class="switch"><input type="checkbox" id="t-hospital" checked onchange="onToggle()"><span class="slider"></span></label>
-          </label>
-          <label class="toggle-row">
-            <div class="toggle-left"><div class="toggle-dot" style="background:#7B1FA2"></div><span class="toggle-label">Bus Stations</span></div>
-            <label class="switch"><input type="checkbox" id="t-bus" checked onchange="onToggle()"><span class="slider"></span></label>
-          </label>
-          <label class="toggle-row">
-            <div class="toggle-left"><div class="toggle-dot" style="background:#F9A825"></div><span class="toggle-label">Train Stations</span></div>
-            <label class="switch"><input type="checkbox" id="t-train" checked onchange="onToggle()"><span class="slider"></span></label>
-          </label>
-          <label class="toggle-row">
             <div class="toggle-left"><div class="toggle-dot" style="background:#5D4037"></div><span class="toggle-label">Museums</span></div>
             <label class="switch"><input type="checkbox" id="t-museum" checked onchange="onToggle()"><span class="slider"></span></label>
-          </label>
-          <label class="toggle-row">
-            <div class="toggle-left"><div class="toggle-dot" style="background:#00796B"></div><span class="toggle-label">Supermarkets</span></div>
-            <label class="switch"><input type="checkbox" id="t-supermarket" onchange="onToggle()"><span class="slider"></span></label>
-          </label>
-          <label class="toggle-row">
-            <div class="toggle-left"><div class="toggle-dot" style="background:#C2185B"></div><span class="toggle-label">Dept. Stores</span></div>
-            <label class="switch"><input type="checkbox" id="t-dept" onchange="onToggle()"><span class="slider"></span></label>
           </label>
           <div class="map-divider"></div>
           <div class="map-section-label">Boundaries</div>
@@ -579,9 +559,6 @@
           <div class="legend-row"><div class="legend-dot" style="background:#00897B"></div><span class="legend-text">Community Restroom</span></div>
           <div class="legend-row"><div class="legend-dot" style="background:#F57C00"></div><span class="legend-text">Porta Potty (user)</span></div>
           <div class="legend-row"><div class="legend-dot" style="background:#388E3C"></div><span class="legend-text">Library</span></div>
-          <div class="legend-row"><div class="legend-dot" style="background:#D32F2F"></div><span class="legend-text">Hospital</span></div>
-          <div class="legend-row"><div class="legend-dot" style="background:#7B1FA2"></div><span class="legend-text">Bus Station</span></div>
-          <div class="legend-row"><div class="legend-dot" style="background:#F9A825"></div><span class="legend-text">Train Station</span></div>
           <div class="legend-row"><div class="legend-dot" style="background:#5D4037"></div><span class="legend-text">Museum</span></div>
         </div>
       </div>
@@ -737,12 +714,7 @@
     community:   L.layerGroup(),
     porta:       L.layerGroup(),
     library:     L.layerGroup().addTo(map),
-    hospital:    L.layerGroup().addTo(map),
-    bus:         L.layerGroup().addTo(map),
-    train:       L.layerGroup().addTo(map),
     museum:      L.layerGroup().addTo(map),
-    supermarket: L.layerGroup(),
-    dept:        L.layerGroup(),
   };
 
   // ── Boundary layers ───────────────────────────────────────────────────────────
@@ -779,8 +751,7 @@
   }
 
   const layerData = {
-    osmRestroom: [], community: [], porta: [], library: [], hospital: [],
-    bus: [], train: [], museum: [], supermarket: [], dept: [],
+    osmRestroom: [], community: [], porta: [], library: [], museum: [],
   };
 
   let heatLayer = null;
@@ -794,8 +765,7 @@
 
   const colors = {
     osmRestroom: '#1976D2', community: '#00897B', porta: '#F57C00',
-    library: '#388E3C', hospital: '#D32F2F', bus: '#7B1FA2',
-    train: '#F9A825', museum: '#5D4037', supermarket: '#00796B', dept: '#C2185B',
+    library: '#388E3C', museum: '#5D4037',
   };
 
   function marker(lat, lon, color, title, extra = '') {
@@ -865,7 +835,7 @@
     const b = map.getBounds();
     const bbox = `${b.getSouth()},${b.getWest()},${b.getNorth()},${b.getEast()}`;
     setLoading('Fetching OSM data…');
-    const query = `[out:json][timeout:30];(node["amenity"="toilets"]["temporary"!="yes"]["portable"!="yes"](${bbox});way["amenity"="toilets"]["temporary"!="yes"]["portable"!="yes"](${bbox});node["amenity"="library"](${bbox});way["amenity"="library"](${bbox});node["amenity"="hospital"](${bbox});way["amenity"="hospital"](${bbox});node["amenity"="bus_station"](${bbox});node["highway"="bus_stop"](${bbox});node["shop"="supermarket"](${bbox});way["shop"="supermarket"](${bbox});node["shop"="department_store"](${bbox});way["shop"="department_store"](${bbox});node["tourism"="museum"](${bbox});way["tourism"="museum"](${bbox});node["railway"="station"](${bbox});way["railway"="station"](${bbox}););out center;`;
+    const query = `[out:json][timeout:30];(node["amenity"="toilets"]["temporary"!="yes"]["portable"!="yes"](${bbox});way["amenity"="toilets"]["temporary"!="yes"]["portable"!="yes"](${bbox});node["amenity"="library"](${bbox});way["amenity"="library"](${bbox});node["tourism"="museum"](${bbox});way["tourism"="museum"](${bbox}););out center;`;
     try {
       const endpoints = ['https://overpass-api.de/api/interpreter','https://overpass.kumi.systems/api/interpreter'];
       let data = null;
@@ -873,8 +843,8 @@
         try { const res = await fetch(ep, { method: 'POST', body: `data=${encodeURIComponent(query)}` }); data = await res.json(); if (data?.elements) break; } catch (_) {}
       }
       if (!data?.elements) return;
-      ['osmRestroom','library','hospital','bus','train','museum','supermarket','dept'].forEach(k => { layers[k].clearLayers(); layerData[k] = []; });
-      const labelMap = { library:'📚 Library', hospital:'🏥 Hospital', bus:'🚌 Bus Stop', train:'🚂 Train Station', museum:'🏛️ Museum', supermarket:'🛒 Supermarket', dept:'🏬 Dept. Store' };
+      ['osmRestroom','library','museum'].forEach(k => { layers[k].clearLayers(); layerData[k] = []; });
+      const labelMap = { library:'📚 Library', museum:'🏛️ Museum' };
       osmCount = 0;
       data.elements.forEach(el => {
         const lat = el.lat ?? el.center?.lat, lon = el.lon ?? el.center?.lon;
@@ -888,12 +858,7 @@
         }
         let key = null;
         if (tags.amenity === 'library') key = 'library';
-        if (tags.amenity === 'hospital') key = 'hospital';
-        if (tags.amenity === 'bus_station' || tags.highway === 'bus_stop') key = 'bus';
-        if (tags.railway === 'station') key = 'train';
         if (tags.tourism === 'museum') key = 'museum';
-        if (tags.shop === 'supermarket') key = 'supermarket';
-        if (tags.shop === 'department_store') key = 'dept';
         if (key) { layerData[key].push({ lat, lon }); marker(lat, lon, colors[key], name || labelMap[key], labelMap[key]).addTo(layers[key]); osmCount++; }
       });
       document.getElementById('stat-osm').textContent = osmCount;
@@ -906,7 +871,7 @@
   const DEAD_ZONE_RADIUS = 400;
 
   function computeDeadZones() {
-    const facilityKeys = ['osmRestroom','community','library','hospital','bus','train','museum','supermarket','dept'];
+    const facilityKeys = ['osmRestroom','community','library','museum'];
     const activeFacilities = facilityKeys.filter(k => document.getElementById(`t-${k}`)?.checked).flatMap(k => layerData[k]);
     if (activeFacilities.length === 0) return [];
     const b = map.getBounds();
@@ -999,7 +964,7 @@
     const south = b.getSouth(), north = b.getNorth(), west = b.getWest(), east = b.getEast();
     const latStep = Math.max((north-south)/120, 250/111000);
     const lonStep = Math.max((east-west)/120, latStep/Math.cos((south+north)/2*Math.PI/180));
-    const facilityKeys = ['osmRestroom','community','library','hospital','bus','train','museum','supermarket','dept'];
+    const facilityKeys = ['osmRestroom','community','library','museum'];
     const activeFacilities = facilityKeys.filter(k => document.getElementById(`t-${k}`)?.checked).flatMap(k => layerData[k]);
     let totalCells = 0, deadCells = 0;
     for (let lat = south+latStep/2; lat < north; lat += latStep) {
