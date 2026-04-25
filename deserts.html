@@ -171,6 +171,24 @@
     .map-wrapper { position: relative; height: 520px; border-radius: var(--radius-xl); overflow: hidden; border: 1px solid oklch(from var(--color-text-inverse) l c h / 0.1); }
     #map { height: 100%; width: 100%; }
 
+    /* Tap-to-interact overlay */
+    #map-activate-overlay {
+      position: absolute; inset: 0; z-index: 1000;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      gap: var(--space-3);
+      background: oklch(from var(--color-text) l c h / 0.35);
+      backdrop-filter: blur(2px);
+      cursor: pointer;
+      transition: opacity 0.2s;
+      border-radius: var(--radius-xl);
+    }
+    #map-activate-overlay.hidden { display: none; }
+    #map-activate-overlay .overlay-icon { font-size: 2rem; line-height: 1; }
+    #map-activate-overlay .overlay-label {
+      color: #fff; font-size: 0.9rem; font-weight: 600; font-family: var(--font-sans);
+      text-align: center; padding: 0 var(--space-6);
+    }
+
     .map-footer-row { display: flex; justify-content: space-between; align-items: center; margin-top: var(--space-4); flex-wrap: wrap; gap: var(--space-3); }
     .map-data-note { font-size: var(--text-xs); color: oklch(from var(--color-text-inverse) l c h / 0.35); }
     .map-report-link { font-size: var(--text-xs); color: oklch(0.88 0.08 80); text-decoration: none; font-weight: 600; }
@@ -445,6 +463,12 @@
     <div class="map-wrapper">
       <div id="map"></div>
 
+      <!-- Tap-to-interact overlay (prevents scroll trap) -->
+      <div id="map-activate-overlay" onclick="activateMap()">
+        <div class="overlay-icon">👆</div>
+        <div class="overlay-label">Click to interact with map</div>
+      </div>
+
       <!-- Toggle Panel -->
       <div id="panel">
         <div id="panel-header" onclick="togglePanel()">
@@ -661,7 +685,22 @@
   const PROJECT_ID = 'portadash-dd3fb';
 
   // ── Map init ─────────────────────────────────────────────────────────────────
-  const map = L.map('map').setView([39.5, -98.35], 4);
+  const map = L.map('map', { scrollWheelZoom: false, dragging: !L.Browser.mobile }).setView([39.5, -98.35], 4);
+
+  // ── Tap-to-interact ───────────────────────────────────────────────────────────
+  function activateMap() {
+    document.getElementById('map-activate-overlay').classList.add('hidden');
+    map.scrollWheelZoom.enable();
+    if (L.Browser.mobile) map.dragging.enable();
+  }
+  // Click outside map → re-show overlay and disable scroll capture
+  document.addEventListener('click', function(e) {
+    if (!document.getElementById('map').contains(e.target) &&
+        !document.getElementById('map-activate-overlay').contains(e.target)) {
+      document.getElementById('map-activate-overlay').classList.remove('hidden');
+      map.scrollWheelZoom.disable();
+    }
+  });
   L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
     attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors © <a href="https://carto.com/">CARTO</a>',
     subdomains: 'abcd', maxZoom: 19
