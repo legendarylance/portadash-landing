@@ -935,9 +935,8 @@
 
   let currentPeers = [];
 
-  function buildCompareSection(cityLabel, cityPop, stateName) {
-    const label = stateName ? `${cityLabel} (${stateName})` : cityLabel;
-    document.getElementById('compare-city-label').textContent = label;
+  function buildCompareSection(cityLabel, cityPop) {
+    document.getElementById('compare-city-label').textContent = cityLabel;
     document.getElementById('compare-peer-avg').style.display = 'none';
     document.getElementById('compare-peer-avg-val').textContent = '—';
     const cardsEl = document.getElementById('compare-cards');
@@ -1049,8 +1048,7 @@
           const nominatimPop = parseInt(r.extratags?.population);
           const peerMatch = PEER_CITIES.find(c => c.name.toLowerCase().includes(cityLabel.split(',')[0].toLowerCase().trim()));
           const cityPop = (nominatimPop > 0 ? nominatimPop : null) || peerMatch?.pop || popFromBbox(bbox);
-          const stateName = r.address?.state || null;
-          buildCompareSection(cityLabel, cityPop, stateName);
+          buildCompareSection(cityLabel, cityPop);
         };
         resultsEl.appendChild(item);
       });
