@@ -195,33 +195,12 @@
     .map-report-link { font-size: var(--text-xs); color: oklch(0.88 0.08 80); text-decoration: none; font-weight: 600; }
     .map-report-link:hover { text-decoration: underline; }
 
-    /* Controls row below map */
-    .map-controls { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-4); margin-top: var(--space-4); align-items: start; }
-    @media (max-width: 600px) { .map-controls { grid-template-columns: 1fr; } }
-
-    /* Layers panel */
-    #panel { background: white; border-radius: 12px; border: 1px solid #e8e8e8; overflow: hidden; }
-    #panel-header { display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; background: #f8f8f8; border-bottom: 1px solid #eee; cursor: pointer; }
-    #panel-header span { font-size: 13px; font-weight: 600; color: #333; }
-    #panel-header .arrow { font-size: 11px; color: #888; transition: transform 0.2s; }
-    #panel-header.collapsed .arrow { transform: rotate(-90deg); }
-    #panel-body { padding: 8px 0; max-height: 320px; overflow-y: auto; }
-    #panel-body.hidden { display: none; }
-    .map-section-label { font-size: 10px; font-weight: 700; color: #999; text-transform: uppercase; letter-spacing: 0.8px; padding: 8px 14px 4px; }
-    .toggle-row { display: flex; align-items: center; justify-content: space-between; padding: 6px 14px; cursor: pointer; transition: background 0.1s; }
-    .toggle-row:hover { background: #f5f5f5; }
-    .toggle-left { display: flex; align-items: center; gap: 8px; }
-    .toggle-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
-    .toggle-label { font-size: 13px; color: #333; }
-    .toggle-sub { font-size: 10px; color: #f57c00; font-weight: 600; }
-    .switch { position: relative; width: 34px; height: 20px; flex-shrink: 0; }
-    .switch input { opacity: 0; width: 0; height: 0; }
-    .slider { position: absolute; inset: 0; background: #ccc; border-radius: 20px; transition: 0.2s; cursor: pointer; }
-    .slider:before { content: ''; position: absolute; width: 14px; height: 14px; left: 3px; top: 3px; background: white; border-radius: 50%; transition: 0.2s; }
-    input:checked + .slider { background: #1976D2; }
-    input:checked + .slider:before { transform: translateX(14px); }
-    .heat-toggle input:checked + .slider { background: #e53935; }
-    .map-divider { height: 1px; background: #f0f0f0; margin: 6px 0; }
+    /* Map definition note */
+    .map-note { font-size: var(--text-sm); color: oklch(from var(--color-text-inverse) l c h / 0.5); margin-top: var(--space-3); display: flex; align-items: flex-start; gap: var(--space-2); }
+    .map-note-legend { display: flex; align-items: center; gap: var(--space-4); flex-wrap: wrap; margin-top: var(--space-3); }
+    .map-note-item { display: flex; align-items: center; gap: 6px; font-size: var(--text-xs); color: oklch(from var(--color-text-inverse) l c h / 0.55); }
+    .map-note-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+    .map-note-dot.hollow { background: white; box-shadow: 0 0 0 2px #00897B; }
 
     #compare-panel { position: absolute; top: 12px; right: 12px; z-index: 900; background: white; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.18); width: 200px; overflow: hidden; }
     #compare-header { display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; background: #f8f8f8; border-bottom: 1px solid #eee; cursor: pointer; }
@@ -241,13 +220,6 @@
     .city-stat.med { background: #FFF8E1; color: #F57F17; }
     .city-stat.low { background: #E8F5E9; color: #2E7D32; }
 
-    /* Legend card */
-    #legend { background: white; border-radius: 12px; border: 1px solid #e8e8e8; padding: 14px 16px; }
-    .legend-heading { font-size: 11px; font-weight: 700; color: #999; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 12px; }
-    .legend-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px 16px; }
-    .legend-row { display: flex; align-items: center; gap: 8px; }
-    .legend-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
-    .legend-text { font-size: 12px; color: #444; }
 
     #map-stats { position: absolute; bottom: 28px; left: 50%; transform: translateX(-50%); z-index: 900; background: white; border-radius: 20px; box-shadow: 0 2px 12px rgba(0,0,0,0.15); padding: 6px 18px; display: flex; gap: 20px; align-items: center; white-space: nowrap; }
     .mstat { text-align: center; }
@@ -456,7 +428,13 @@
       <div>
         <div class="map-eyebrow">Interactive Map</div>
         <div class="map-title">Find the deserts in your city.</div>
-        <div class="map-sub">Search any city to see verified restroom coverage and the gaps that remain. Zoom in to level 11+ for OSM data.</div>
+        <div class="map-sub">Search any city to see where public restrooms exist — and where they don't. Zoom in to level 11+ to load OSM data.</div>
+        <div class="map-note-legend">
+          <div class="map-note-item"><div class="map-note-dot" style="background:#1976D2"></div> Public restroom (verified)</div>
+          <div class="map-note-item"><div class="map-note-dot hollow"></div> Community pin (user-reported)</div>
+          <div class="map-note-item"><div class="map-note-dot" style="background:#e53935; border-radius: 3px;"></div> Desert zone (no facility within ½ mi)</div>
+        </div>
+        <p class="map-note">We count dedicated public toilets and park facilities. Commercial spaces like restaurants and retail are not included.</p>
       </div>
       <div class="map-search-wrap">
         <div class="map-search-bar">
@@ -496,72 +474,6 @@
 
       <div id="loading"><div class="spinner"></div><span id="loading-text">Loading community pins…</span></div>
       <div id="disclaimer">OSM data © OpenStreetMap contributors · Community pins from PortaDash users · For civic planning purposes only</div>
-    </div>
-
-    <!-- Layers + Legend controls below the map -->
-    <div class="map-controls">
-      <!-- Layers filter -->
-      <div id="panel">
-        <div id="panel-header" onclick="togglePanel()">
-          <span>📍 Layers</span>
-          <span class="arrow">▼</span>
-        </div>
-        <div id="panel-body">
-          <div class="map-section-label">OSM Data</div>
-          <label class="toggle-row">
-            <div class="toggle-left"><div class="toggle-dot" style="background:#1976D2"></div><span class="toggle-label">Public Restrooms</span></div>
-            <label class="switch"><input type="checkbox" id="t-osmRestroom" checked onchange="onToggle()"><span class="slider"></span></label>
-          </label>
-          <div class="map-divider"></div>
-          <div class="map-section-label">Community Pins</div>
-          <label class="toggle-row">
-            <div class="toggle-left"><div class="toggle-dot" style="background:#00897B"></div><span class="toggle-label">Community Restrooms</span></div>
-            <label class="switch"><input type="checkbox" id="t-community" onchange="onToggle()"><span class="slider"></span></label>
-          </label>
-          <label class="toggle-row">
-            <div class="toggle-left"><div class="toggle-dot" style="background:#F57C00"></div><div><div class="toggle-label">Porta Potties</div><div class="toggle-sub">User-reported</div></div></div>
-            <label class="switch"><input type="checkbox" id="t-porta" onchange="onToggle()"><span class="slider"></span></label>
-          </label>
-          <div class="map-divider"></div>
-          <div class="map-section-label">Public Facilities (OSM)</div>
-          <label class="toggle-row">
-            <div class="toggle-left"><div class="toggle-dot" style="background:#388E3C"></div><span class="toggle-label">Libraries</span></div>
-            <label class="switch"><input type="checkbox" id="t-library" checked onchange="onToggle()"><span class="slider"></span></label>
-          </label>
-          <label class="toggle-row">
-            <div class="toggle-left"><div class="toggle-dot" style="background:#5D4037"></div><span class="toggle-label">Museums</span></div>
-            <label class="switch"><input type="checkbox" id="t-museum" checked onchange="onToggle()"><span class="slider"></span></label>
-          </label>
-          <div class="map-divider"></div>
-          <div class="map-section-label">Boundaries</div>
-          <label class="toggle-row">
-            <div class="toggle-left"><div class="toggle-dot" style="background:#333;border-radius:2px;"></div><span class="toggle-label">County Lines</span></div>
-            <label class="switch"><input type="checkbox" id="t-counties" checked onchange="onToggle()"><span class="slider"></span></label>
-          </label>
-          <label class="toggle-row">
-            <div class="toggle-left"><div class="toggle-dot" style="background:#1565C0;border-radius:2px;"></div><span class="toggle-label">City Lines</span></div>
-            <label class="switch"><input type="checkbox" id="t-cities" checked onchange="onToggle()"><span class="slider"></span></label>
-          </label>
-          <div class="map-divider"></div>
-          <div class="map-section-label">Analysis</div>
-          <label class="toggle-row heat-toggle">
-            <div class="toggle-left"><div class="toggle-dot" style="background:linear-gradient(135deg,#e53935,#ff9800);border-radius:3px;width:10px;height:10px;"></div><div><div class="toggle-label">🔥 Desert Zones</div><div style="font-size:10px;color:#888;">Areas with no facility nearby</div></div></div>
-            <label class="switch heat-toggle"><input type="checkbox" id="t-heat" onchange="onToggle()"><span class="slider"></span></label>
-          </label>
-        </div>
-      </div>
-
-      <!-- Legend -->
-      <div id="legend">
-        <div class="legend-heading">Legend</div>
-        <div class="legend-grid">
-          <div class="legend-row"><div class="legend-dot" style="background:#1976D2"></div><span class="legend-text">Public Restroom (OSM)</span></div>
-          <div class="legend-row"><div class="legend-dot" style="background:#00897B"></div><span class="legend-text">Community Restroom</span></div>
-          <div class="legend-row"><div class="legend-dot" style="background:#F57C00"></div><span class="legend-text">Porta Potty (user)</span></div>
-          <div class="legend-row"><div class="legend-dot" style="background:#388E3C"></div><span class="legend-text">Library</span></div>
-          <div class="legend-row"><div class="legend-dot" style="background:#5D4037"></div><span class="legend-text">Museum</span></div>
-        </div>
-      </div>
     </div>
 
     <div class="map-footer-row">
@@ -805,6 +717,12 @@
     return lat && lon ? { lat: parseFloat(lat), lon: parseFloat(lon), name, isPortable } : null;
   }
 
+  function communityMarker(lat, lon, color, title, extra = '') {
+    return L.circleMarker([lat, lon], {
+      radius: 7, fillColor: 'white', color: color, weight: 2.5, fillOpacity: 0.95,
+    }).bindPopup(`<b>${title}</b>${extra ? '<br><span style="color:#888;font-size:12px">'+extra+'</span>' : ''}`);
+  }
+
   function renderCommunityPins(pins) {
     layers.community.clearLayers(); layers.porta.clearLayers();
     layerData.community = []; layerData.porta = [];
@@ -813,11 +731,11 @@
       if (!p) return;
       const key = p.isPortable ? 'porta' : 'community';
       layerData[key].push({ lat: p.lat, lon: p.lon });
-      marker(p.lat, p.lon, colors[key], p.name,
-        p.isPortable ? '🚽 User-reported porta potty' : '🏛️ Community permanent restroom').addTo(layers[key]);
+      communityMarker(p.lat, p.lon, colors[key], p.name,
+        p.isPortable ? '🚽 User-reported porta potty' : '📍 Community pin').addTo(layers[key]);
     });
     document.getElementById('stat-community').textContent = layerData.community.length + layerData.porta.length;
-    updateHeatmap(); updateVisibleCount();
+    updateHeatmap();
   }
 
   // ── OSM ───────────────────────────────────────────────────────────────────────
@@ -828,7 +746,7 @@
     if (map.getZoom() < 11) return;
     clearTimeout(osmFetchTimer);
     osmFetchTimer = setTimeout(fetchOSM, 600);
-    if (document.getElementById('t-heat').checked) updateHeatmap();
+    updateHeatmap();
   });
 
   async function fetchOSM() {
@@ -862,7 +780,7 @@
         if (key) { layerData[key].push({ lat, lon }); marker(lat, lon, colors[key], name || labelMap[key], labelMap[key]).addTo(layers[key]); osmCount++; }
       });
       document.getElementById('stat-osm').textContent = osmCount;
-      updateHeatmap(); updateVisibleCount();
+      updateHeatmap();
       if (pendingStatCity) { computeAndStoreCityStats(pendingStatCity); pendingStatCity = null; }
     } catch (e) { console.error('OSM fetch failed', e); } finally { hideLoading(); }
   }
@@ -891,28 +809,15 @@
 
   function updateHeatmap() {
     if (heatLayer) { map.removeLayer(heatLayer); heatLayer = null; }
-    if (!document.getElementById('t-heat').checked) return;
     const pts = computeDeadZones();
     if (pts.length === 0) return;
     heatLayer = L.heatLayer(pts, { radius: 30, blur: 20, maxZoom: 17, gradient: { 0.0: '#ffffb2', 0.4: '#fd8d3c', 0.8: '#e31a1c' } }).addTo(map);
   }
 
-  function onToggle() {
-    Object.keys(layers).forEach(key => { const cb = document.getElementById(`t-${key}`); if (!cb) return; if (cb.checked) map.addLayer(layers[key]); else map.removeLayer(layers[key]); });
-    if (document.getElementById('t-counties').checked) map.addLayer(countyLayer); else map.removeLayer(countyLayer);
-    if (document.getElementById('t-cities').checked)   map.addLayer(cityLayer);   else map.removeLayer(cityLayer);
-    updateHeatmap(); updateVisibleCount();
-  }
-
   function updateVisibleCount() {
     let count = 0;
-    Object.keys(layers).forEach(key => { const cb = document.getElementById(`t-${key}`); if (cb?.checked) count += layers[key].getLayers().length; });
+    Object.keys(layers).forEach(key => count += layers[key].getLayers().length);
     document.getElementById('stat-visible').textContent = count;
-  }
-
-  function togglePanel() {
-    document.getElementById('panel-header').classList.toggle('collapsed');
-    document.getElementById('panel-body').classList.toggle('hidden');
   }
 
   // ── Peer Cities ───────────────────────────────────────────────────────────────
@@ -954,7 +859,7 @@
       map.fitBounds([[parseFloat(bbox[0]), parseFloat(bbox[2])], [parseFloat(bbox[1]), parseFloat(bbox[3])]], { maxZoom: 13 });
       showHighlight(r.geojson || null);
       document.getElementById('search-input').value = cityName;
-      document.getElementById('t-heat').checked = true; onToggle();
+      updateHeatmap();
     } catch (e) { console.error('Jump to city failed', e); }
   }
 
@@ -992,7 +897,7 @@
     if (!geojson) return;
     highlightLayer = L.geoJSON(geojson, { style: { color: '#FF6F00', weight: 2.5, opacity: 0.9, fillColor: '#FF6F00', fillOpacity: 0.08 } }).addTo(map);
     highlightFeature = { type: 'Feature', geometry: geojson, properties: {} };
-    if (document.getElementById('t-heat').checked) updateHeatmap();
+    updateHeatmap();
   }
 
   async function searchLocation() {
