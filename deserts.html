@@ -195,13 +195,17 @@
     .map-report-link { font-size: var(--text-xs); color: oklch(0.88 0.08 80); text-decoration: none; font-weight: 600; }
     .map-report-link:hover { text-decoration: underline; }
 
-    /* Map overlay panels */
-    #panel { position: absolute; top: 12px; left: 12px; z-index: 900; background: white; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.18); width: 220px; overflow: hidden; }
+    /* Controls row below map */
+    .map-controls { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-4); margin-top: var(--space-4); align-items: start; }
+    @media (max-width: 600px) { .map-controls { grid-template-columns: 1fr; } }
+
+    /* Layers panel */
+    #panel { background: white; border-radius: 12px; border: 1px solid #e8e8e8; overflow: hidden; }
     #panel-header { display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; background: #f8f8f8; border-bottom: 1px solid #eee; cursor: pointer; }
     #panel-header span { font-size: 13px; font-weight: 600; color: #333; }
     #panel-header .arrow { font-size: 11px; color: #888; transition: transform 0.2s; }
     #panel-header.collapsed .arrow { transform: rotate(-90deg); }
-    #panel-body { padding: 8px 0; max-height: 340px; overflow-y: auto; }
+    #panel-body { padding: 8px 0; max-height: 320px; overflow-y: auto; }
     #panel-body.hidden { display: none; }
     .map-section-label { font-size: 10px; font-weight: 700; color: #999; text-transform: uppercase; letter-spacing: 0.8px; padding: 8px 14px 4px; }
     .toggle-row { display: flex; align-items: center; justify-content: space-between; padding: 6px 14px; cursor: pointer; transition: background 0.1s; }
@@ -237,9 +241,11 @@
     .city-stat.med { background: #FFF8E1; color: #F57F17; }
     .city-stat.low { background: #E8F5E9; color: #2E7D32; }
 
-    #legend { position: absolute; bottom: 28px; right: 12px; z-index: 900; background: white; border-radius: 10px; box-shadow: 0 2px 12px rgba(0,0,0,0.15); padding: 10px 14px; min-width: 170px; }
-    #legend h4 { font-size: 11px; font-weight: 700; color: #999; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 8px; }
-    .legend-row { display: flex; align-items: center; gap: 8px; margin-bottom: 5px; }
+    /* Legend card */
+    #legend { background: white; border-radius: 12px; border: 1px solid #e8e8e8; padding: 14px 16px; }
+    .legend-heading { font-size: 11px; font-weight: 700; color: #999; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 12px; }
+    .legend-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px 16px; }
+    .legend-row { display: flex; align-items: center; gap: 8px; }
     .legend-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
     .legend-text { font-size: 12px; color: #444; }
 
@@ -470,7 +476,31 @@
         <div class="overlay-label">Click to interact with map</div>
       </div>
 
-      <!-- Toggle Panel -->
+      <!-- Compare Panel -->
+      <div id="compare-panel">
+        <div id="compare-header" onclick="toggleCompare()">
+          <span>📊 Peer Cities</span>
+          <span class="arrow">▼</span>
+        </div>
+        <div id="compare-body"></div>
+      </div>
+
+      <!-- Stats bar -->
+      <div id="map-stats">
+        <div class="mstat"><div class="mstat-num" id="stat-community">—</div><div class="mstat-label">Community Pins</div></div>
+        <div class="mstat-divider"></div>
+        <div class="mstat"><div class="mstat-num" id="stat-osm">—</div><div class="mstat-label">OSM Facilities</div></div>
+        <div class="mstat-divider"></div>
+        <div class="mstat"><div class="mstat-num" id="stat-visible">—</div><div class="mstat-label">Visible on Map</div></div>
+      </div>
+
+      <div id="loading"><div class="spinner"></div><span id="loading-text">Loading community pins…</span></div>
+      <div id="disclaimer">OSM data © OpenStreetMap contributors · Community pins from PortaDash users · For civic planning purposes only</div>
+    </div>
+
+    <!-- Layers + Legend controls below the map -->
+    <div class="map-controls">
+      <!-- Layers filter -->
       <div id="panel">
         <div id="panel-header" onclick="togglePanel()">
           <span>📍 Layers</span>
@@ -541,39 +571,20 @@
         </div>
       </div>
 
-      <!-- Compare Panel -->
-      <div id="compare-panel">
-        <div id="compare-header" onclick="toggleCompare()">
-          <span>📊 Peer Cities</span>
-          <span class="arrow">▼</span>
-        </div>
-        <div id="compare-body"></div>
-      </div>
-
-      <!-- Stats bar -->
-      <div id="map-stats">
-        <div class="mstat"><div class="mstat-num" id="stat-community">—</div><div class="mstat-label">Community Pins</div></div>
-        <div class="mstat-divider"></div>
-        <div class="mstat"><div class="mstat-num" id="stat-osm">—</div><div class="mstat-label">OSM Facilities</div></div>
-        <div class="mstat-divider"></div>
-        <div class="mstat"><div class="mstat-num" id="stat-visible">—</div><div class="mstat-label">Visible on Map</div></div>
-      </div>
-
       <!-- Legend -->
       <div id="legend">
-        <h4>Legend</h4>
-        <div class="legend-row"><div class="legend-dot" style="background:#1976D2"></div><span class="legend-text">Public Restroom (OSM)</span></div>
-        <div class="legend-row"><div class="legend-dot" style="background:#00897B"></div><span class="legend-text">Community Restroom</span></div>
-        <div class="legend-row"><div class="legend-dot" style="background:#F57C00"></div><span class="legend-text">Porta Potty (user)</span></div>
-        <div class="legend-row"><div class="legend-dot" style="background:#388E3C"></div><span class="legend-text">Library</span></div>
-        <div class="legend-row"><div class="legend-dot" style="background:#D32F2F"></div><span class="legend-text">Hospital</span></div>
-        <div class="legend-row"><div class="legend-dot" style="background:#7B1FA2"></div><span class="legend-text">Bus Station</span></div>
-        <div class="legend-row"><div class="legend-dot" style="background:#F9A825"></div><span class="legend-text">Train Station</span></div>
-        <div class="legend-row"><div class="legend-dot" style="background:#5D4037"></div><span class="legend-text">Museum</span></div>
+        <div class="legend-heading">Legend</div>
+        <div class="legend-grid">
+          <div class="legend-row"><div class="legend-dot" style="background:#1976D2"></div><span class="legend-text">Public Restroom (OSM)</span></div>
+          <div class="legend-row"><div class="legend-dot" style="background:#00897B"></div><span class="legend-text">Community Restroom</span></div>
+          <div class="legend-row"><div class="legend-dot" style="background:#F57C00"></div><span class="legend-text">Porta Potty (user)</span></div>
+          <div class="legend-row"><div class="legend-dot" style="background:#388E3C"></div><span class="legend-text">Library</span></div>
+          <div class="legend-row"><div class="legend-dot" style="background:#D32F2F"></div><span class="legend-text">Hospital</span></div>
+          <div class="legend-row"><div class="legend-dot" style="background:#7B1FA2"></div><span class="legend-text">Bus Station</span></div>
+          <div class="legend-row"><div class="legend-dot" style="background:#F9A825"></div><span class="legend-text">Train Station</span></div>
+          <div class="legend-row"><div class="legend-dot" style="background:#5D4037"></div><span class="legend-text">Museum</span></div>
+        </div>
       </div>
-
-      <div id="loading"><div class="spinner"></div><span id="loading-text">Loading community pins…</span></div>
-      <div id="disclaimer">OSM data © OpenStreetMap contributors · Community pins from PortaDash users · For civic planning purposes only</div>
     </div>
 
     <div class="map-footer-row">
