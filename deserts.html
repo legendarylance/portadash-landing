@@ -1,0 +1,978 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Restroom Deserts — PortaDash</title>
+  <link rel="icon" type="image/png" href="./assets/PortaDash_Circle.png">
+  <link rel="apple-touch-icon" href="./assets/PortaDash_Circle.png">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="https://unpkg.com/leaflet.heat@0.2.0/dist/leaflet-heat.js"></script>
+  <script src="https://unpkg.com/@turf/turf@6/turf.min.js"></script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #1a35cc; }
+
+    #header {
+      display: flex; align-items: center; gap: 12px;
+      padding: 0 16px; background: #1a35cc; color: white;
+      height: 52px; z-index: 1000; position: relative;
+    }
+    #header-logo { height: 28px; width: auto; display: block; }
+    #header-divider { width: 1px; height: 20px; background: rgba(255,255,255,0.25); }
+    #header h1 { font-size: 14px; font-weight: 600; letter-spacing: 0.2px; white-space: nowrap; }
+    #header-sub { font-size: 12px; color: rgba(255,255,255,0.6); white-space: nowrap; }
+    #back-link { margin-left: auto; font-size: 12px; color: rgba(255,255,255,0.7); text-decoration: none; white-space: nowrap; }
+    #back-link:hover { color: white; }
+
+    #map { height: calc(100vh - 52px); width: 100%; }
+
+    /* ── Search ── */
+    #search-box {
+      margin-left: auto; position: relative; display: flex; align-items: center; gap: 6px;
+    }
+    #search-input {
+      padding: 6px 12px; border-radius: 20px; border: none;
+      font-size: 13px; width: 220px; outline: none;
+      background: rgba(255,255,255,0.12); color: white;
+    }
+    #search-input::placeholder { color: rgba(255,255,255,0.45); }
+    #search-input:focus { background: rgba(255,255,255,0.2); }
+    #search-box button {
+      padding: 6px 14px; border-radius: 20px; border: none;
+      background: rgba(255,255,255,0.25); color: white; font-size: 13px;
+      cursor: pointer; white-space: nowrap;
+    }
+    #search-box button:hover { background: rgba(255,255,255,0.35); }
+    #search-results {
+      position: absolute; top: 36px; left: 0; right: 0;
+      background: white; border-radius: 10px; overflow: hidden;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.2); z-index: 2000;
+      display: none;
+    }
+    .search-result-item {
+      padding: 9px 14px; font-size: 13px; color: #333; cursor: pointer;
+      border-bottom: 1px solid #f0f0f0;
+    }
+    .search-result-item:last-child { border-bottom: none; }
+    .search-result-item:hover { background: #f5f5f5; }
+
+    /* ── Compare Panel ── */
+    #compare-panel {
+      position: absolute; top: 68px; right: 12px; z-index: 900;
+      background: white; border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.18);
+      width: 200px; overflow: hidden;
+    }
+    #compare-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 10px 14px; background: #f8f8f8;
+      border-bottom: 1px solid #eee; cursor: pointer;
+    }
+    #compare-header span { font-size: 13px; font-weight: 600; color: #333; }
+    #compare-header .arrow { font-size: 11px; color: #888; transition: transform 0.2s; }
+    #compare-header.collapsed .arrow { transform: rotate(-90deg); }
+    #compare-body { max-height: 420px; overflow-y: auto; }
+    #compare-body.hidden { display: none; }
+
+    .city-row {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 7px 14px; cursor: pointer; transition: background 0.1s;
+      border-bottom: 1px solid #f5f5f5;
+    }
+    .city-row:last-child { border-bottom: none; }
+    .city-row:hover { background: #f5f5f5; }
+    .city-row.active { background: #FFF3E0; }
+    .city-name { font-size: 12px; color: #333; font-weight: 500; }
+    .city-stat {
+      font-size: 11px; font-weight: 700; padding: 2px 6px;
+      border-radius: 10px; white-space: nowrap;
+    }
+    .city-stat.loading { color: #bbb; font-weight: 400; }
+    .city-stat.high   { background: #FFEBEE; color: #C62828; }
+    .city-stat.med    { background: #FFF8E1; color: #F57F17; }
+    .city-stat.low    { background: #E8F5E9; color: #2E7D32; }
+
+    /* ── Toggle Panel ── */
+    #panel {
+      position: absolute; top: 68px; left: 12px; z-index: 900;
+      background: white; border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.18);
+      width: 220px; overflow: hidden;
+    }
+    #panel-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 10px 14px; background: #f8f8f8;
+      border-bottom: 1px solid #eee; cursor: pointer;
+    }
+    #panel-header span { font-size: 13px; font-weight: 600; color: #333; }
+    #panel-header .arrow { font-size: 11px; color: #888; transition: transform 0.2s; }
+    #panel-header.collapsed .arrow { transform: rotate(-90deg); }
+    #panel-body { padding: 8px 0; }
+    #panel-body.hidden { display: none; }
+
+    .section-label {
+      font-size: 10px; font-weight: 700; color: #999;
+      text-transform: uppercase; letter-spacing: 0.8px;
+      padding: 8px 14px 4px;
+    }
+    .toggle-row {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 6px 14px; cursor: pointer; transition: background 0.1s;
+    }
+    .toggle-row:hover { background: #f5f5f5; }
+    .toggle-left { display: flex; align-items: center; gap: 8px; }
+    .toggle-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+    .toggle-label { font-size: 13px; color: #333; }
+    .toggle-sub { font-size: 10px; color: #f57c00; font-weight: 600; }
+
+    /* Toggle switch */
+    .switch { position: relative; width: 34px; height: 20px; flex-shrink: 0; }
+    .switch input { opacity: 0; width: 0; height: 0; }
+    .slider {
+      position: absolute; inset: 0; background: #ccc;
+      border-radius: 20px; transition: 0.2s; cursor: pointer;
+    }
+    .slider:before {
+      content: ''; position: absolute;
+      width: 14px; height: 14px; left: 3px; top: 3px;
+      background: white; border-radius: 50%; transition: 0.2s;
+    }
+    input:checked + .slider { background: #1976D2; }
+    input:checked + .slider:before { transform: translateX(14px); }
+
+    /* Heat toggle color */
+    .heat-toggle input:checked + .slider { background: #e53935; }
+
+    /* Divider */
+    .divider { height: 1px; background: #f0f0f0; margin: 6px 0; }
+
+    /* ── Legend ── */
+    #legend {
+      position: absolute; bottom: 28px; right: 12px; z-index: 900;
+      background: white; border-radius: 10px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.15);
+      padding: 10px 14px; min-width: 160px;
+    }
+    #legend h4 { font-size: 11px; font-weight: 700; color: #999; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 8px; }
+    .legend-row { display: flex; align-items: center; gap: 8px; margin-bottom: 5px; }
+    .legend-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+    .legend-text { font-size: 12px; color: #444; }
+
+    /* ── Loading ── */
+    #loading {
+      position: absolute; top: 50%; left: 50%; z-index: 1100;
+      transform: translate(-50%, -50%);
+      background: rgba(26,26,46,0.88); color: white;
+      padding: 16px 24px; border-radius: 12px;
+      font-size: 14px; display: flex; align-items: center; gap: 10px;
+    }
+    .spinner {
+      width: 18px; height: 18px; border: 2px solid rgba(255,255,255,0.3);
+      border-top-color: white; border-radius: 50%; animation: spin 0.7s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    #loading.hidden { display: none; }
+
+    /* ── Stats bar ── */
+    #stats {
+      position: absolute; bottom: 28px; left: 50%; transform: translateX(-50%);
+      z-index: 900; background: white; border-radius: 20px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.15);
+      padding: 6px 18px; display: flex; gap: 20px; align-items: center;
+    }
+    .stat { text-align: center; }
+    .stat-num { font-size: 16px; font-weight: 700; color: #1a1a2e; }
+    .stat-label { font-size: 10px; color: #999; text-transform: uppercase; letter-spacing: 0.5px; }
+    .stat-divider { width: 1px; height: 28px; background: #eee; }
+
+    /* ── Footer disclaimer ── */
+    #disclaimer {
+      position: absolute; bottom: 6px; left: 50%; transform: translateX(-50%);
+      z-index: 900; font-size: 10px; color: rgba(0,0,0,0.35);
+      white-space: nowrap;
+    }
+  </style>
+</head>
+<body>
+
+<div id="header">
+  <img id="header-logo" src="./assets/PortaDash_Logo_Horizontal.png" alt="PortaDash">
+  <div id="header-divider"></div>
+  <h1>Restroom Deserts</h1>
+  <span id="header-sub">Coverage &amp; gap analysis</span>
+  <a id="back-link" href="./index.html">← portadash.com</a>
+  <div id="search-box">
+    <input id="search-input" type="text" placeholder="Search city or state…" autocomplete="off"
+      onkeydown="if(event.key==='Enter') searchLocation()" />
+    <button onclick="searchLocation()">Go</button>
+    <div id="search-results"></div>
+  </div>
+</div>
+
+<div id="map"></div>
+
+<!-- Toggle Panel -->
+<div id="panel">
+  <div id="panel-header" onclick="togglePanel()">
+    <span>📍 Layers</span>
+    <span class="arrow">▼</span>
+  </div>
+  <div id="panel-body">
+    <div class="section-label">OSM Data</div>
+    <label class="toggle-row">
+      <div class="toggle-left">
+        <div class="toggle-dot" style="background:#1976D2"></div>
+        <span class="toggle-label">Public Restrooms</span>
+      </div>
+      <label class="switch"><input type="checkbox" id="t-osmRestroom" checked onchange="onToggle()"><span class="slider"></span></label>
+    </label>
+
+    <div class="divider"></div>
+    <div class="section-label">Community Pins</div>
+    <label class="toggle-row">
+      <div class="toggle-left">
+        <div class="toggle-dot" style="background:#00897B"></div>
+        <span class="toggle-label">Community Restrooms</span>
+      </div>
+      <label class="switch"><input type="checkbox" id="t-community" onchange="onToggle()"><span class="slider"></span></label>
+    </label>
+    <label class="toggle-row">
+      <div class="toggle-left">
+        <div class="toggle-dot" style="background:#F57C00"></div>
+        <div>
+          <div class="toggle-label">Porta Potties</div>
+          <div class="toggle-sub">User-reported</div>
+        </div>
+      </div>
+      <label class="switch"><input type="checkbox" id="t-porta" onchange="onToggle()"><span class="slider"></span></label>
+    </label>
+
+    <div class="divider"></div>
+    <div class="section-label">Public Facilities (OSM)</div>
+    <label class="toggle-row">
+      <div class="toggle-left">
+        <div class="toggle-dot" style="background:#388E3C"></div>
+        <span class="toggle-label">Libraries</span>
+      </div>
+      <label class="switch"><input type="checkbox" id="t-library" checked onchange="onToggle()"><span class="slider"></span></label>
+    </label>
+    <label class="toggle-row">
+      <div class="toggle-left">
+        <div class="toggle-dot" style="background:#D32F2F"></div>
+        <span class="toggle-label">Hospitals</span>
+      </div>
+      <label class="switch"><input type="checkbox" id="t-hospital" checked onchange="onToggle()"><span class="slider"></span></label>
+    </label>
+    <label class="toggle-row">
+      <div class="toggle-left">
+        <div class="toggle-dot" style="background:#7B1FA2"></div>
+        <span class="toggle-label">Bus Stations</span>
+      </div>
+      <label class="switch"><input type="checkbox" id="t-bus" checked onchange="onToggle()"><span class="slider"></span></label>
+    </label>
+    <label class="toggle-row">
+      <div class="toggle-left">
+        <div class="toggle-dot" style="background:#F9A825"></div>
+        <span class="toggle-label">Train Stations</span>
+      </div>
+      <label class="switch"><input type="checkbox" id="t-train" checked onchange="onToggle()"><span class="slider"></span></label>
+    </label>
+    <label class="toggle-row">
+      <div class="toggle-left">
+        <div class="toggle-dot" style="background:#5D4037"></div>
+        <span class="toggle-label">Museums</span>
+      </div>
+      <label class="switch"><input type="checkbox" id="t-museum" checked onchange="onToggle()"><span class="slider"></span></label>
+    </label>
+    <label class="toggle-row">
+      <div class="toggle-left">
+        <div class="toggle-dot" style="background:#00796B"></div>
+        <span class="toggle-label">Supermarkets</span>
+      </div>
+      <label class="switch"><input type="checkbox" id="t-supermarket" onchange="onToggle()"><span class="slider"></span></label>
+    </label>
+    <label class="toggle-row">
+      <div class="toggle-left">
+        <div class="toggle-dot" style="background:#C2185B"></div>
+        <span class="toggle-label">Dept. Stores</span>
+      </div>
+      <label class="switch"><input type="checkbox" id="t-dept" onchange="onToggle()"><span class="slider"></span></label>
+    </label>
+
+    <div class="divider"></div>
+    <div class="section-label">Boundaries</div>
+    <label class="toggle-row">
+      <div class="toggle-left">
+        <div class="toggle-dot" style="background:#333; border-radius:2px;"></div>
+        <span class="toggle-label">County Lines</span>
+      </div>
+      <label class="switch"><input type="checkbox" id="t-counties" checked onchange="onToggle()"><span class="slider"></span></label>
+    </label>
+    <label class="toggle-row">
+      <div class="toggle-left">
+        <div class="toggle-dot" style="background:#1565C0; border-radius:2px;"></div>
+        <span class="toggle-label">City Lines</span>
+      </div>
+      <label class="switch"><input type="checkbox" id="t-cities" checked onchange="onToggle()"><span class="slider"></span></label>
+    </label>
+
+    <div class="divider"></div>
+    <div class="section-label">Analysis</div>
+    <label class="toggle-row heat-toggle">
+      <div class="toggle-left">
+        <div class="toggle-dot" style="background: linear-gradient(135deg,#e53935,#ff9800); border-radius:3px; width:10px; height:10px;"></div>
+        <div>
+          <div class="toggle-label">🔥 Dead Zones</div>
+          <div style="font-size:10px;color:#888;">Porta potties with no facility nearby</div>
+        </div>
+      </div>
+      <label class="switch heat-toggle"><input type="checkbox" id="t-heat" onchange="onToggle()"><span class="slider"></span></label>
+    </label>
+  </div>
+</div>
+
+<!-- Compare Panel -->
+<div id="compare-panel">
+  <div id="compare-header" onclick="toggleCompare()">
+    <span>📊 Peer Cities</span>
+    <span class="arrow">▼</span>
+  </div>
+  <div id="compare-body" id="city-list">
+    <!-- populated by JS -->
+  </div>
+</div>
+
+<!-- Stats -->
+<div id="stats">
+  <div class="stat">
+    <div class="stat-num" id="stat-community">—</div>
+    <div class="stat-label">Community Pins</div>
+  </div>
+  <div class="stat-divider"></div>
+  <div class="stat">
+    <div class="stat-num" id="stat-osm">—</div>
+    <div class="stat-label">OSM Facilities</div>
+  </div>
+  <div class="stat-divider"></div>
+  <div class="stat">
+    <div class="stat-num" id="stat-visible">—</div>
+    <div class="stat-label">Visible on Map</div>
+  </div>
+</div>
+
+<!-- Legend -->
+<div id="legend">
+  <h4>Legend</h4>
+  <div class="legend-row"><div class="legend-dot" style="background:#1976D2"></div><span class="legend-text">Public Restroom (OSM)</span></div>
+  <div class="legend-row"><div class="legend-dot" style="background:#00897B"></div><span class="legend-text">Community Restroom</span></div>
+  <div class="legend-row"><div class="legend-dot" style="background:#F57C00"></div><span class="legend-text">Porta Potty (user)</span></div>
+  <div class="legend-row"><div class="legend-dot" style="background:#388E3C"></div><span class="legend-text">Library</span></div>
+  <div class="legend-row"><div class="legend-dot" style="background:#D32F2F"></div><span class="legend-text">Hospital</span></div>
+  <div class="legend-row"><div class="legend-dot" style="background:#7B1FA2"></div><span class="legend-text">Bus Station</span></div>
+  <div class="legend-row"><div class="legend-dot" style="background:#F9A825"></div><span class="legend-text">Train Station</span></div>
+  <div class="legend-row"><div class="legend-dot" style="background:#5D4037"></div><span class="legend-text">Museum</span></div>
+</div>
+
+<!-- Loading -->
+<div id="loading"><div class="spinner"></div><span id="loading-text">Loading community pins…</span></div>
+
+<!-- Disclaimer -->
+<div id="disclaimer">OSM data © OpenStreetMap contributors · Community pins from PortaDash users · For civic planning purposes only</div>
+
+<script>
+  // ── Config ──────────────────────────────────────────────────────────────────
+  const API_KEY    = 'AIzaSyDbvihOLc2cyU4aQ8hTy-GgakBgcuD2Wa4';
+  const PROJECT_ID = 'portadash-dd3fb';
+
+  // ── Map init ─────────────────────────────────────────────────────────────────
+  const map = L.map('map').setView([39.5, -98.35], 4);
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+    attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors © <a href="https://carto.com/">CARTO</a>',
+    subdomains: 'abcd', maxZoom: 19
+  }).addTo(map);
+
+  // ── Layer groups ─────────────────────────────────────────────────────────────
+  const layers = {
+    osmRestroom: L.layerGroup().addTo(map),
+    community:   L.layerGroup(),
+    porta:       L.layerGroup(),
+    library:     L.layerGroup().addTo(map),
+    hospital:    L.layerGroup().addTo(map),
+    bus:         L.layerGroup().addTo(map),
+    train:       L.layerGroup().addTo(map),
+    museum:      L.layerGroup().addTo(map),
+    supermarket: L.layerGroup(),
+    dept:        L.layerGroup(),
+  };
+
+  // ── Boundary layers ───────────────────────────────────────────────────────────
+  let countyLayer = L.geoJSON(null, {
+    style: { color: '#333', weight: 1.5, dashArray: '5,4', fill: false, opacity: 0.6 },
+    onEachFeature: (f, l) => l.bindTooltip(f.properties.NAME + ' County', { sticky: true }),
+  }).addTo(map);
+
+  let cityLayer = L.geoJSON(null, {
+    style: { color: '#1565C0', weight: 1.5, dashArray: '3,3', fill: false, opacity: 0.7 },
+    onEachFeature: (f, l) => l.bindTooltip(f.properties.NAME, { sticky: true }),
+  }).addTo(map);
+
+  let boundaryFetchTimer = null;
+
+  async function fetchBoundaries() {
+    if (map.getZoom() < 8) return;
+    const b = map.getBounds();
+    const geom = encodeURIComponent(JSON.stringify({
+      xmin: b.getWest(), ymin: b.getSouth(), xmax: b.getEast(), ymax: b.getNorth(),
+      spatialReference: { wkid: 4326 },
+    }));
+    const base = 'https://tigerweb.geo.census.gov/arcgis/rest/services/TIGERweb/tigerWMS_Current/MapServer';
+    const params = `geometry=${geom}&geometryType=esriGeometryEnvelope&inSR=4326&outSR=4326&spatialRel=esriSpatialRelIntersects&outFields=NAME&f=geojson&returnGeometry=true&where=1%3D1`;
+
+    try {
+      const [countyRes, cityRes] = await Promise.all([
+        fetch(`${base}/84/query?${params}`),  // Counties
+        fetch(`${base}/28/query?${params}`),  // Incorporated places
+      ]);
+      const [countyData, cityData] = await Promise.all([countyRes.json(), cityRes.json()]);
+
+      if (countyData.features) { countyLayer.clearLayers(); countyLayer.addData(countyData); }
+      if (cityData.features)   { cityLayer.clearLayers();  cityLayer.addData(cityData); }
+    } catch (e) {
+      console.error('Boundary fetch failed', e);
+    }
+  }
+
+  // Raw coordinate store for dead zone calculation (separate from Leaflet markers)
+  const layerData = {
+    osmRestroom: [], community: [], porta: [], library: [], hospital: [],
+    bus: [], train: [], museum: [], supermarket: [], dept: [],
+  };
+
+  let heatLayer = null;
+  let osmCount = 0;
+
+  // ── Haversine distance (metres) ───────────────────────────────────────────────
+  function haversine(lat1, lon1, lat2, lon2) {
+    const R = 6371000;
+    const dLat = (lat2 - lat1) * Math.PI / 180;
+    const dLon = (lon2 - lon1) * Math.PI / 180;
+    const a = Math.sin(dLat/2) ** 2 +
+              Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+              Math.sin(dLon/2) ** 2;
+    return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  }
+
+  const colors = {
+    osmRestroom: '#1976D2', community: '#00897B', porta: '#F57C00',
+    library: '#388E3C', hospital: '#D32F2F', bus: '#7B1FA2',
+    train: '#F9A825', museum: '#5D4037', supermarket: '#00796B', dept: '#C2185B',
+  };
+
+  function marker(lat, lon, color, title, extra = '') {
+    return L.circleMarker([lat, lon], {
+      radius: 7, fillColor: color, color: 'white',
+      weight: 1.5, fillOpacity: 0.9,
+    }).bindPopup(`<b>${title}</b>${extra ? '<br><span style="color:#888;font-size:12px">'+extra+'</span>' : ''}`);
+  }
+
+  // ── Auth + Firestore ─────────────────────────────────────────────────────────
+  async function getToken() {
+    const res = await fetch(
+      `https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=${API_KEY}`,
+      { method: 'POST', headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({returnSecureToken: true}) }
+    );
+    const d = await res.json();
+    return d.idToken;
+  }
+
+  async function fetchCommunityPins(token) {
+    let pins = [], nextPage = null;
+    do {
+      const url = `https://firestore.googleapis.com/v1/projects/${PROJECT_ID}/databases/(default)/documents/community_pins?pageSize=300${nextPage ? '&pageToken='+nextPage : ''}`;
+      const res = await fetch(url, { headers: { Authorization: `Bearer ${token}` } });
+      const d = await res.json();
+      if (d.documents) pins = pins.concat(d.documents);
+      nextPage = d.nextPageToken || null;
+    } while (nextPage);
+    return pins;
+  }
+
+  function parsePin(doc) {
+    const f = doc.fields || {};
+    const lat = f.lat?.doubleValue ?? f.lat?.integerValue;
+    const lon = f.lon?.doubleValue ?? f.lon?.integerValue;
+    const type = f.type?.stringValue || '';
+    const name = f.name?.stringValue || (type === 'porta_potty' ? 'Porta Potty' : 'Community Restroom');
+    const isPortable = type === 'porta_potty';
+    return lat && lon ? { lat: parseFloat(lat), lon: parseFloat(lon), name, isPortable } : null;
+  }
+
+  function renderCommunityPins(pins) {
+    layers.community.clearLayers();
+    layers.porta.clearLayers();
+    layerData.community = [];
+    layerData.porta = [];
+
+    pins.forEach(doc => {
+      const p = parsePin(doc);
+      if (!p) return;
+      const key = p.isPortable ? 'porta' : 'community';
+      layerData[key].push({ lat: p.lat, lon: p.lon });
+      const m = marker(p.lat, p.lon, colors[key], p.name,
+        p.isPortable ? '🚽 User-reported porta potty' : '🏛️ Community permanent restroom');
+      layers[key].addLayer(m);
+    });
+
+    const total = layerData.community.length + layerData.porta.length;
+    document.getElementById('stat-community').textContent = total;
+    updateHeatmap();
+    updateVisibleCount();
+  }
+
+  // ── OSM / Overpass ───────────────────────────────────────────────────────────
+  let osmFetchTimer = null;
+
+  map.on('moveend zoomend', () => {
+    clearTimeout(boundaryFetchTimer);
+    boundaryFetchTimer = setTimeout(fetchBoundaries, 400);
+    if (map.getZoom() < 11) return;
+    clearTimeout(osmFetchTimer);
+    osmFetchTimer = setTimeout(fetchOSM, 600);
+    if (document.getElementById('t-heat').checked) updateHeatmap();
+  });
+
+  async function fetchOSM() {
+    const b = map.getBounds();
+    const bbox = `${b.getSouth()},${b.getWest()},${b.getNorth()},${b.getEast()}`;
+    setLoading('Fetching OSM data…');
+
+    const query = `[out:json][timeout:30];
+      (
+        node["amenity"="toilets"]["temporary"!="yes"]["portable"!="yes"](${bbox});
+        way["amenity"="toilets"]["temporary"!="yes"]["portable"!="yes"](${bbox});
+        node["amenity"="library"](${bbox});
+        way["amenity"="library"](${bbox});
+        node["amenity"="hospital"](${bbox});
+        way["amenity"="hospital"](${bbox});
+        node["amenity"="bus_station"](${bbox});
+        node["highway"="bus_stop"](${bbox});
+        node["shop"="supermarket"](${bbox});
+        way["shop"="supermarket"](${bbox});
+        node["shop"="department_store"](${bbox});
+        way["shop"="department_store"](${bbox});
+        node["tourism"="museum"](${bbox});
+        way["tourism"="museum"](${bbox});
+        node["railway"="station"](${bbox});
+        way["railway"="station"](${bbox});
+      );
+      out center;`;
+
+    try {
+      const endpoints = [
+        'https://overpass-api.de/api/interpreter',
+        'https://overpass.kumi.systems/api/interpreter',
+      ];
+      let data = null;
+      for (const ep of endpoints) {
+        try {
+          const res = await fetch(ep, { method: 'POST', body: `data=${encodeURIComponent(query)}` });
+          data = await res.json();
+          if (data?.elements) break;
+        } catch (_) {}
+      }
+      if (!data?.elements) return;
+
+      // Clear OSM layers and their raw data (preserve community pin data)
+      ['osmRestroom','library','hospital','bus','train','museum','supermarket','dept'].forEach(k => {
+        layers[k].clearLayers();
+        layerData[k] = [];
+      });
+
+      const labelMap = { library:'📚 Library', hospital:'🏥 Hospital', bus:'🚌 Bus Stop',
+        train:'🚂 Train Station', museum:'🏛️ Museum', supermarket:'🛒 Supermarket', dept:'🏬 Dept. Store' };
+
+      osmCount = 0;
+      data.elements.forEach(el => {
+        const lat = el.lat ?? el.center?.lat;
+        const lon = el.lon ?? el.center?.lon;
+        if (!lat || !lon) return;
+        const tags = el.tags || {};
+        const name = tags.name || tags['name:en'] || '';
+
+        if (tags.amenity === 'toilets') {
+          // Skip any remaining portable/temporary toilets not caught by the Overpass filter
+          if (tags.temporary === 'yes' || tags.portable === 'yes' ||
+              tags['toilets:type'] === 'portable' || tags.building === 'no') return;
+          layerData.osmRestroom.push({ lat, lon });
+          marker(lat, lon, colors.osmRestroom, name || 'Public Restroom', '🏛️ OSM public restroom')
+            .addTo(layers.osmRestroom);
+          osmCount++; return;
+        }
+
+        let key = null;
+        if (tags.amenity === 'library')       key = 'library';
+        if (tags.amenity === 'hospital')      key = 'hospital';
+        if (tags.amenity === 'bus_station' || tags.highway === 'bus_stop') key = 'bus';
+        if (tags.railway === 'station')       key = 'train';
+        if (tags.tourism === 'museum')        key = 'museum';
+        if (tags.shop === 'supermarket')      key = 'supermarket';
+        if (tags.shop === 'department_store') key = 'dept';
+
+        if (key) {
+          layerData[key].push({ lat, lon });
+          marker(lat, lon, colors[key], name || labelMap[key], labelMap[key]).addTo(layers[key]);
+          osmCount++;
+        }
+      });
+
+      document.getElementById('stat-osm').textContent = osmCount;
+      updateHeatmap();
+      updateVisibleCount();
+      // Compute stats for the pending city after OSM data is ready
+      if (pendingStatCity) {
+        computeAndStoreCityStats(pendingStatCity);
+        pendingStatCity = null;
+      }
+    } catch (e) {
+      console.error('OSM fetch failed', e);
+    } finally {
+      hideLoading();
+    }
+  }
+
+  // ── Dead Zone heat map ────────────────────────────────────────────────────────
+  // Grid-based: divide the visible map into cells, mark any cell that has no
+  // toggled-on facility within DEAD_ZONE_RADIUS metres as a dead zone.
+  const DEAD_ZONE_RADIUS = 400; // metres (~5 min walk)
+
+  // Fast flat-earth distance in metres (accurate enough under ~10 km)
+  function flatDist(lat1, lon1, lat2, lon2) {
+    const dlat = (lat2 - lat1) * 111000;
+    const dlon = (lon2 - lon1) * 111000 * Math.cos(lat1 * Math.PI / 180);
+    return Math.sqrt(dlat * dlat + dlon * dlon);
+  }
+
+  function computeDeadZones() {
+    const facilityKeys = ['osmRestroom', 'community', 'library', 'hospital', 'bus', 'train', 'museum', 'supermarket', 'dept'];
+    const activeFacilities = facilityKeys
+      .filter(k => document.getElementById(`t-${k}`)?.checked)
+      .flatMap(k => layerData[k]);
+
+    // Need OSM data loaded — if no facilities yet, skip
+    if (activeFacilities.length === 0) return [];
+
+    const b = map.getBounds();
+    const south = b.getSouth(), north = b.getNorth();
+    const west  = b.getWest(),  east  = b.getEast();
+
+    // Grid spacing: ~250m, capped so we never exceed 120×120 = 14 400 cells
+    const latSpan = north - south;
+    const lonSpan = east  - west;
+    const latStep = Math.max(latSpan / 120, 250 / 111000);
+    const lonStep = Math.max(lonSpan / 120, latStep / Math.cos((south + north) / 2 * Math.PI / 180));
+
+    const pts = [];
+    for (let lat = south + latStep / 2; lat < north; lat += latStep) {
+      for (let lon = west + lonStep / 2; lon < east; lon += lonStep) {
+        // If a boundary is highlighted, only include points inside it
+        if (highlightFeature) {
+          const pt = turf.point([lon, lat]);
+          if (!turf.booleanPointInPolygon(pt, highlightFeature)) continue;
+        }
+        const covered = activeFacilities.some(f => flatDist(lat, lon, f.lat, f.lon) <= DEAD_ZONE_RADIUS);
+        if (!covered) pts.push([lat, lon, 1]);
+      }
+    }
+    return pts;
+  }
+
+  function updateHeatmap() {
+    if (heatLayer) { map.removeLayer(heatLayer); heatLayer = null; }
+    if (!document.getElementById('t-heat').checked) return;
+    const pts = computeDeadZones();
+    if (pts.length === 0) return;
+    heatLayer = L.heatLayer(pts, {
+      radius: 30, blur: 20, maxZoom: 17,
+      gradient: { 0.0: '#ffffb2', 0.4: '#fd8d3c', 0.8: '#e31a1c' },
+    }).addTo(map);
+  }
+
+  // ── Toggles ──────────────────────────────────────────────────────────────────
+  function onToggle() {
+    Object.keys(layers).forEach(key => {
+      const cb = document.getElementById(`t-${key}`);
+      if (!cb) return;
+      if (cb.checked) map.addLayer(layers[key]);
+      else map.removeLayer(layers[key]);
+    });
+    // County / city boundary toggles
+    const showCounties = document.getElementById('t-counties').checked;
+    const showCities   = document.getElementById('t-cities').checked;
+    if (showCounties) map.addLayer(countyLayer); else map.removeLayer(countyLayer);
+    if (showCities)   map.addLayer(cityLayer);   else map.removeLayer(cityLayer);
+
+    updateHeatmap();
+    updateVisibleCount();
+  }
+
+  function updateVisibleCount() {
+    let count = 0;
+    Object.keys(layers).forEach(key => {
+      const cb = document.getElementById(`t-${key}`);
+      if (cb?.checked) count += layers[key].getLayers().length;
+    });
+    document.getElementById('stat-visible').textContent = count;
+  }
+
+  function togglePanel() {
+    const header = document.getElementById('panel-header');
+    const body = document.getElementById('panel-body');
+    header.classList.toggle('collapsed');
+    body.classList.toggle('hidden');
+  }
+
+  // ── Search (Nominatim) ───────────────────────────────────────────────────────
+  // ── Peer Cities ───────────────────────────────────────────────────────────────
+  const PEER_CITIES = [
+    { name: 'Richmond, VA' },
+    { name: 'Raleigh, NC' },
+    { name: 'Columbia, SC' },
+    { name: 'Norfolk, VA' },
+    { name: 'Baton Rouge, LA' },
+    { name: 'Chattanooga, TN' },
+    { name: 'Knoxville, TN' },
+    { name: 'Savannah, GA' },
+    { name: 'Lexington, KY' },
+    { name: 'Augusta, GA' },
+    { name: 'Greensboro, NC' },
+    { name: 'Little Rock, AR' },
+  ];
+
+  const cityStats = {}; // name → { pct, totalCells, deadCells }
+  let activeCity = null;
+  let pendingStatCity = null; // set when jumping to a city, resolved after OSM loads
+
+  function buildComparePanel() {
+    const body = document.getElementById('compare-body');
+    body.innerHTML = '';
+    PEER_CITIES.forEach(c => {
+      const row = document.createElement('div');
+      row.className = 'city-row' + (activeCity === c.name ? ' active' : '');
+      row.id = `city-row-${c.name.replace(/[^a-z]/gi, '')}`;
+      const cityName = c.name;
+      row.addEventListener('click', () => window.jumpToCity(cityName));
+
+      const nameEl = document.createElement('div');
+      nameEl.className = 'city-name';
+      nameEl.textContent = c.name;
+
+      const statEl = document.createElement('div');
+      statEl.className = 'city-stat';
+      statEl.id = `city-stat-${c.name.replace(/[^a-z]/gi, '')}`;
+      const s = cityStats[c.name];
+      if (s) {
+        statEl.textContent = `${s.pct}% gap`;
+        statEl.className = 'city-stat ' + (s.pct >= 50 ? 'high' : s.pct >= 25 ? 'med' : 'low');
+      } else {
+        statEl.textContent = '—';
+        statEl.className = 'city-stat loading';
+      }
+
+      row.appendChild(nameEl);
+      row.appendChild(statEl);
+      body.appendChild(row);
+    });
+  }
+
+  window.jumpToCity = async function jumpToCity(cityName) {
+    activeCity = cityName;
+    pendingStatCity = cityName;
+    buildComparePanel();
+
+    try {
+      const res = await fetch(
+        `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(cityName)}&format=json&limit=1&polygon_geojson=1`,
+        { headers: { 'Accept-Language': 'en' } }
+      );
+      const results = await res.json();
+      if (!results.length) return;
+      const r = results[0];
+      const bbox = r.boundingbox;
+      map.fitBounds([
+        [parseFloat(bbox[0]), parseFloat(bbox[2])],
+        [parseFloat(bbox[1]), parseFloat(bbox[3])],
+      ], { maxZoom: 13 });
+      showHighlight(r.geojson || null);
+      document.getElementById('search-input').value = cityName;
+      // Auto-enable dead zones so stats compute correctly
+      document.getElementById('t-heat').checked = true;
+      onToggle();
+    } catch (e) {
+      console.error('Jump to city failed', e);
+    }
+  }
+
+  function computeAndStoreCityStats(cityName) {
+    if (!highlightFeature) return;
+    const b = map.getBounds();
+    const south = b.getSouth(), north = b.getNorth();
+    const west  = b.getWest(),  east  = b.getEast();
+    const latSpan = north - south, lonSpan = east - west;
+    const latStep = Math.max(latSpan / 120, 250 / 111000);
+    const lonStep = Math.max(lonSpan / 120, latStep / Math.cos((south + north) / 2 * Math.PI / 180));
+
+    const facilityKeys = ['osmRestroom', 'community', 'library', 'hospital', 'bus', 'train', 'museum', 'supermarket', 'dept'];
+    const activeFacilities = facilityKeys
+      .filter(k => document.getElementById(`t-${k}`)?.checked)
+      .flatMap(k => layerData[k]);
+
+    let totalCells = 0, deadCells = 0;
+    for (let lat = south + latStep / 2; lat < north; lat += latStep) {
+      for (let lon = west + lonStep / 2; lon < east; lon += lonStep) {
+        const pt = turf.point([lon, lat]);
+        if (!turf.booleanPointInPolygon(pt, highlightFeature)) continue;
+        totalCells++;
+        const covered = activeFacilities.some(f => flatDist(lat, lon, f.lat, f.lon) <= DEAD_ZONE_RADIUS);
+        if (!covered) deadCells++;
+      }
+    }
+
+    const pct = totalCells > 0 ? Math.round((deadCells / totalCells) * 100) : 0;
+    cityStats[cityName] = { pct, totalCells, deadCells };
+
+    // Update just that city's stat badge
+    const id = cityName.replace(/[^a-z]/gi, '');
+    const el = document.getElementById(`city-stat-${id}`);
+    if (el) {
+      el.textContent = `${pct}% gap`;
+      el.className = 'city-stat ' + (pct >= 50 ? 'high' : pct >= 25 ? 'med' : 'low');
+    }
+  }
+
+  function toggleCompare() {
+    const header = document.getElementById('compare-header');
+    const body = document.getElementById('compare-body');
+    header.classList.toggle('collapsed');
+    body.classList.toggle('hidden');
+  }
+
+  // Highlight layer — shows boundary of the selected search result
+  let highlightLayer = null;
+  let highlightFeature = null; // turf Feature for point-in-polygon checks
+
+  function showHighlight(geojson) {
+    if (highlightLayer) { map.removeLayer(highlightLayer); highlightLayer = null; }
+    highlightFeature = null;
+    if (!geojson) return;
+    highlightLayer = L.geoJSON(geojson, {
+      style: {
+        color: '#FF6F00', weight: 2.5, opacity: 0.9,
+        fillColor: '#FF6F00', fillOpacity: 0.08,
+      },
+    }).addTo(map);
+    // Wrap geometry as a Feature so Turf can use it
+    highlightFeature = { type: 'Feature', geometry: geojson, properties: {} };
+    // Recalculate dead zones clipped to the new boundary
+    if (document.getElementById('t-heat').checked) updateHeatmap();
+  }
+
+  async function searchLocation() {
+    const q = document.getElementById('search-input').value.trim();
+    if (!q) return;
+    const resultsEl = document.getElementById('search-results');
+    resultsEl.innerHTML = '<div class="search-result-item">Searching…</div>';
+    resultsEl.style.display = 'block';
+
+    try {
+      const res = await fetch(
+        `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(q)}&format=json&limit=5&polygon_geojson=1`,
+        { headers: { 'Accept-Language': 'en' } }
+      );
+      const results = await res.json();
+      resultsEl.innerHTML = '';
+
+      if (results.length === 0) {
+        resultsEl.innerHTML = '<div class="search-result-item" style="color:#999">No results found</div>';
+        return;
+      }
+
+      results.forEach(r => {
+        const item = document.createElement('div');
+        item.className = 'search-result-item';
+        item.textContent = r.display_name;
+        item.onclick = () => {
+          const bbox = r.boundingbox; // [south, north, west, east]
+          map.fitBounds([
+            [parseFloat(bbox[0]), parseFloat(bbox[2])],
+            [parseFloat(bbox[1]), parseFloat(bbox[3])],
+          ], { maxZoom: 13 });
+          document.getElementById('search-input').value = r.display_name.split(',').slice(0, 2).join(',');
+          resultsEl.style.display = 'none';
+          showHighlight(r.geojson || null);
+        };
+        resultsEl.appendChild(item);
+      });
+    } catch (e) {
+      resultsEl.innerHTML = '<div class="search-result-item" style="color:#999">Search failed</div>';
+    }
+  }
+
+  // Close search results when clicking elsewhere
+  document.addEventListener('click', e => {
+    if (!document.getElementById('search-box').contains(e.target)) {
+      document.getElementById('search-results').style.display = 'none';
+    }
+  });
+
+  // ── Loading helpers ──────────────────────────────────────────────────────────
+  function setLoading(msg) {
+    document.getElementById('loading-text').textContent = msg;
+    document.getElementById('loading').classList.remove('hidden');
+  }
+  function hideLoading() {
+    document.getElementById('loading').classList.add('hidden');
+  }
+
+  // ── Bootstrap ────────────────────────────────────────────────────────────────
+  // Build compare panel immediately — don't wait for Firestore
+  buildComparePanel();
+
+  (async () => {
+    try {
+      setLoading('Authenticating…');
+      const token = await getToken();
+
+      setLoading('Loading community pins…');
+      const docs = await fetchCommunityPins(token);
+      renderCommunityPins(docs);
+
+      // Zoom to community pins if any, otherwise prompt to zoom in for OSM
+      const allPins = layerData.community.concat(layerData.porta);
+      if (allPins.length > 0) {
+        const lats = allPins.map(p => p.lat);
+        const lons = allPins.map(p => p.lon);
+        const bounds = L.latLngBounds(
+          [Math.min(...lats), Math.min(...lons)],
+          [Math.max(...lats), Math.max(...lons)]
+        );
+        map.fitBounds(bounds, { padding: [40, 40], maxZoom: 13 });
+      }
+
+      hideLoading();
+
+      buildComparePanel();
+      fetchBoundaries();
+      if (map.getZoom() >= 11) fetchOSM();
+    } catch (e) {
+      console.error('Bootstrap failed', e);
+      hideLoading();
+      buildComparePanel();
+    }
+  })();
+</script>
+</body>
+</html>
