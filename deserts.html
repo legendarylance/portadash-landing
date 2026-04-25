@@ -252,6 +252,20 @@
     .r-stat-label { font-size: var(--text-xs); color: var(--color-text-muted); line-height: 1.4; }
     @media (max-width: 720px) { .richmond-inner { grid-template-columns: 1fr; } }
 
+    /* ── Vision ── */
+    .vision-section { padding: clamp(var(--space-12), 6vw, var(--space-20)) var(--space-4); background: var(--color-bg); }
+    .vision-inner { max-width: var(--content-default); margin-inline: auto; }
+    .vision-heading { font-family: var(--font-display); font-size: var(--text-2xl); font-weight: 400; color: var(--color-text); max-width: 22ch; margin-bottom: var(--space-4); line-height: 1.15; }
+    .vision-sub { font-size: var(--text-base); color: var(--color-text-muted); max-width: 58ch; line-height: 1.75; margin-bottom: var(--space-10); }
+    .vision-phases { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-4); }
+    .vision-phase { border: 1px solid var(--color-border); border-radius: var(--radius-xl); padding: var(--space-6); position: relative; }
+    .vision-phase-status { display: inline-block; font-size: var(--text-xs); font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; padding: var(--space-1) var(--space-3); border-radius: var(--radius-full); margin-bottom: var(--space-4); background: var(--color-surface-offset); color: var(--color-text-muted); }
+    .vision-phase-status.active { background: var(--color-primary-highlight); color: var(--color-primary); }
+    .vision-phase-num { font-size: var(--text-xs); font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--color-text-muted); margin-bottom: var(--space-2); }
+    .vision-phase-title { font-family: var(--font-display); font-size: var(--text-lg); font-weight: 400; color: var(--color-text); margin-bottom: var(--space-3); line-height: 1.2; }
+    .vision-phase-desc { font-size: var(--text-sm); color: var(--color-text-muted); line-height: 1.65; }
+    @media (max-width: 720px) { .vision-phases { grid-template-columns: 1fr; } }
+
     /* ── CTA ── */
     .cta-section { background: var(--color-primary); padding: clamp(var(--space-16), 8vw, var(--space-20)) var(--space-4); text-align: center; }
     .cta-section h2 { font-family: var(--font-display); font-size: var(--text-xl); font-weight: 400; color: var(--color-text-inverse); margin-bottom: var(--space-4); }
@@ -531,6 +545,35 @@
       <div class="r-stat">
         <div class="r-stat-num">City</div>
         <div class="r-stat-label">Council engagement underway — data available on request</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- VISION -->
+<section class="vision-section">
+  <div class="vision-inner reveal">
+    <p class="section-label">Our Ambition</p>
+    <h2 class="vision-heading">The first neighborhood-by-neighborhood map of restroom deserts in America.</h2>
+    <p class="vision-sub">We started in Richmond. We are not stopping there. Our goal is every census tract, every city, every state — the most comprehensive public restroom access dataset ever created, so no community gets left behind.</p>
+    <div class="vision-phases">
+      <div class="vision-phase">
+        <div class="vision-phase-status active">In progress</div>
+        <div class="vision-phase-num">Phase 1</div>
+        <div class="vision-phase-title">Richmond, Virginia</div>
+        <div class="vision-phase-desc">Tract-level gap analysis. Best and worst five neighborhoods. A real report in the hands of city council.</div>
+      </div>
+      <div class="vision-phase">
+        <div class="vision-phase-status">Next</div>
+        <div class="vision-phase-num">Phase 2</div>
+        <div class="vision-phase-title">50 U.S. Cities</div>
+        <div class="vision-phase-desc">Peer city comparisons at neighborhood scale. Enough data to show national patterns and earn press coverage.</div>
+      </div>
+      <div class="vision-phase">
+        <div class="vision-phase-status">Future</div>
+        <div class="vision-phase-num">Phase 3</div>
+        <div class="vision-phase-title">Every City. Every State.</div>
+        <div class="vision-phase-desc">All 73,000 U.S. census tracts. State and national averages. A public dataset any city council, researcher, or resident can use.</div>
       </div>
     </div>
   </div>
