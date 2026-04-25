@@ -138,12 +138,14 @@
 
     .platform-strip { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--space-4); margin-top: var(--space-12); }
     /* ── As seen in ── */
-    .press-strip { padding: var(--space-8) var(--space-4); background: var(--color-surface-offset); border-top: 1px solid var(--color-divider); border-bottom: 1px solid var(--color-divider); }
-    .press-strip-inner { max-width: var(--content-default); margin-inline: auto; display: flex; align-items: center; gap: var(--space-8); flex-wrap: wrap; justify-content: center; }
-    .press-strip-label { font-size: var(--text-xs); font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--color-text-faint); white-space: nowrap; flex-shrink: 0; }
+    .press-strip { padding: clamp(var(--space-10), 5vw, var(--space-14)) var(--space-4); background: var(--color-primary); }
+    .press-strip-inner { max-width: var(--content-default); margin-inline: auto; display: flex; flex-direction: column; align-items: center; gap: var(--space-6); text-align: center; }
+    .press-strip-label { font-size: var(--text-xs); font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: oklch(from var(--color-text-inverse) l c h / 0.5); }
     .press-strip-outlets { display: flex; align-items: center; gap: clamp(var(--space-6), 4vw, var(--space-10)); flex-wrap: wrap; justify-content: center; }
-    .press-outlet { font-size: var(--text-sm); font-weight: 700; color: var(--color-text-muted); text-decoration: none; letter-spacing: 0.01em; transition: color var(--transition-interactive); }
-    .press-outlet:hover { color: var(--color-primary); }
+    .press-outlet { font-size: var(--text-sm); font-weight: 700; color: oklch(from var(--color-text-inverse) l c h / 0.75); text-decoration: none; letter-spacing: 0.01em; transition: color var(--transition-interactive); }
+    .press-outlet:hover { color: var(--color-text-inverse); }
+    .press-strip-quote { font-family: var(--font-display); font-size: var(--text-lg); font-weight: 400; font-style: italic; color: var(--color-text-inverse); max-width: 52ch; line-height: 1.6; }
+    .press-strip-attr { font-size: var(--text-xs); color: oklch(from var(--color-text-inverse) l c h / 0.5); margin-top: var(--space-1); }
     .platform-card { background: var(--color-surface); border: 1px solid oklch(from var(--color-text) l c h / 0.08); border-radius: var(--radius-xl); padding: var(--space-5); box-shadow: var(--shadow-sm); text-align: center; }
     .platform-card h3 { font-size: var(--text-sm); margin-bottom: var(--space-2); }
     .platform-card p { font-size: var(--text-xs); color: var(--color-text-muted); }
@@ -394,6 +396,8 @@
         <a href="https://richmondmagazine.com/news/portadash/" target="_blank" rel="noopener noreferrer" class="press-outlet">Richmond Magazine</a>
         <a href="https://www.thedp.com/article/2026/04/penn-engineering-student-porta-potty-tracking-app" target="_blank" rel="noopener noreferrer" class="press-outlet">The Daily Pennsylvanian</a>
       </div>
+      <p class="press-strip-quote">"Users include runners, cyclists, parents — and, surprisingly, senior citizens, who Song says really seemed to need it."</p>
+      <p class="press-strip-attr">— Axios Richmond</p>
     </div>
   </div>
 
