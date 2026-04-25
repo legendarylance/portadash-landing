@@ -169,17 +169,18 @@
     .search-result-item:hover { background: #f5f5f5; }
 
     .map-wrapper { position: relative; height: 520px; border-radius: var(--radius-xl); overflow: hidden; border: 1px solid oklch(from var(--color-text-inverse) l c h / 0.1); }
-    #map { height: 100%; width: 100%; }
+    /* Disable pointer events on map until activated */
+    #map { height: 100%; width: 100%; pointer-events: none; touch-action: pan-y; }
+    #map.active { pointer-events: auto; touch-action: none; }
 
     /* Tap-to-interact overlay */
     #map-activate-overlay {
-      position: absolute; inset: 0; z-index: 1000;
+      position: absolute; inset: 0; z-index: 9999;
       display: flex; flex-direction: column; align-items: center; justify-content: center;
       gap: var(--space-3);
-      background: oklch(from var(--color-text) l c h / 0.35);
+      background: oklch(from var(--color-text) l c h / 0.4);
       backdrop-filter: blur(2px);
       cursor: pointer;
-      transition: opacity 0.2s;
       border-radius: var(--radius-xl);
     }
     #map-activate-overlay.hidden { display: none; }
@@ -443,7 +444,7 @@
 </section>
 
 <!-- INTERACTIVE MAP -->
-<section class="map-section" id="map">
+<section class="map-section" id="map-section">
   <div class="map-section-inner">
     <div class="map-header">
       <div>
@@ -685,22 +686,35 @@
   const PROJECT_ID = 'portadash-dd3fb';
 
   // ── Map init ─────────────────────────────────────────────────────────────────
-  const map = L.map('map', { scrollWheelZoom: false, dragging: !L.Browser.mobile }).setView([39.5, -98.35], 4);
+  const map = L.map('map', { scrollWheelZoom: false, dragging: false, tap: false }).setView([39.5, -98.35], 4);
 
   // ── Tap-to-interact ───────────────────────────────────────────────────────────
+  const mapEl = document.getElementById('map');
+  const mapOverlay = document.getElementById('map-activate-overlay');
+
   function activateMap() {
-    document.getElementById('map-activate-overlay').classList.add('hidden');
+    mapOverlay.classList.add('hidden');
+    mapEl.classList.add('active');
     map.scrollWheelZoom.enable();
-    if (L.Browser.mobile) map.dragging.enable();
+    map.dragging.enable();
   }
-  // Click outside map → re-show overlay and disable scroll capture
+
+  function deactivateMap() {
+    mapOverlay.classList.remove('hidden');
+    mapEl.classList.remove('active');
+    map.scrollWheelZoom.disable();
+    map.dragging.disable();
+  }
+
+  // Click/touch outside the map wrapper → deactivate
   document.addEventListener('click', function(e) {
-    if (!document.getElementById('map').contains(e.target) &&
-        !document.getElementById('map-activate-overlay').contains(e.target)) {
-      document.getElementById('map-activate-overlay').classList.remove('hidden');
-      map.scrollWheelZoom.disable();
-    }
+    const wrapper = mapEl.closest('.map-wrapper');
+    if (wrapper && !wrapper.contains(e.target)) deactivateMap();
   });
+  document.addEventListener('touchstart', function(e) {
+    const wrapper = mapEl.closest('.map-wrapper');
+    if (wrapper && !wrapper.contains(e.target)) deactivateMap();
+  }, { passive: true });
   L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
     attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors © <a href="https://carto.com/">CARTO</a>',
     subdomains: 'abcd', maxZoom: 19
