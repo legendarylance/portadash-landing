@@ -185,6 +185,16 @@
     .bmc-btn-sm { display: inline-flex; align-items: center; gap: var(--space-2); background: #FFDD00; color: var(--color-text-muted); padding: var(--space-2) var(--space-4); border-radius: var(--radius-md); font-weight: 700; font-size: var(--text-xs); text-decoration: none; }
     .bmc-btn-sm:hover { background: #f0cf00; color: var(--color-text); }
 
+    .access-sub-label { font-size: var(--text-xs); font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--color-text-muted); margin-bottom: var(--space-5); }
+    .access-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(210px, 100%), 1fr)); gap: var(--space-4); }
+    .access-card { background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius-xl); padding: var(--space-5); box-shadow: var(--shadow-sm); }
+    .access-card svg { color: var(--color-primary); margin-bottom: var(--space-3); }
+    .access-card h4 { font-size: var(--text-sm); font-weight: 700; margin-bottom: var(--space-1); color: var(--color-text); }
+    .access-card p { font-size: var(--text-xs); color: var(--color-text-muted); line-height: 1.6; }
+    .access-card-soon { border-style: dashed; opacity: 0.85; }
+    .access-card-soon svg { color: var(--color-accent); }
+    .access-soon-tag { display: inline-flex; align-items: center; margin-top: var(--space-3); padding: 2px var(--space-3); border-radius: var(--radius-full); background: var(--color-accent-highlight); color: var(--color-accent); font-size: var(--text-xs); font-weight: 700; }
+
     .contact-grid { display:grid; grid-template-columns: 1.1fr .9fr; gap: var(--space-8); }
     .contact-card { background: var(--color-primary); border-radius: var(--radius-2xl); padding: var(--space-12); color: var(--color-text-inverse); }
     .contact-card h2 { font-family: var(--font-display); font-size: var(--text-2xl); font-weight: 400; margin-bottom: var(--space-4); }
@@ -275,6 +285,7 @@
         <li><a href="#features">Features</a></li>
         <li><a href="#watch-mode">Watch</a></li>
         <li><a href="#stories">Stories</a></li>
+        <li><a href="#accessibility">Accessibility</a></li>
         <li><a href="./faq.html">FAQ</a></li>
         <li><a href="#contact">Contact</a></li>
         <li><a href="./portadash-media-kit.html" target="_blank" rel="noopener noreferrer">Press Kit</a></li>
@@ -290,6 +301,7 @@
           <a href="#features" class="nav-drawer-link">Features</a>
           <a href="#watch-mode" class="nav-drawer-link">Watch</a>
           <a href="#stories" class="nav-drawer-link">Stories</a>
+          <a href="#accessibility" class="nav-drawer-link">Accessibility</a>
           <a href="./portadash-media-kit.html" target="_blank" rel="noopener noreferrer" class="nav-drawer-link">Press Kit</a>
           <a href="#contact" class="nav-drawer-link">Contact</a>
           <a href="./faq.html" class="nav-drawer-link">FAQ</a>
@@ -317,13 +329,13 @@
           <div class="hero-badge"><span>Free</span><span>Ad-Free</span><span>iPhone + Android + Watch</span></div>
           <p class="hero-social-proof"><span class="hero-stars">★★★★★</span> 10,000+ people have found relief</p>
           <h1>Find a restroom <em>before</em> it becomes a problem.</h1>
-          <p class="hero-sub">PortaDash shows you the nearest restroom or porta potty instantly on iPhone, Android, Apple Watch, and Wear OS when you are mid-run, traveling, commuting, or just caught in a bad moment.</p>
+          <p class="hero-sub">PortaDash shows you the nearest restroom or porta potty instantly on iPhone, Android, Apple Watch, and Wear OS — whether you're mid-run, traveling, need an accessible facility, or just caught in a bad moment.</p>
           <div class="hero-actions">
             <button type="button" class="btn-primary" data-download-open>Download PortaDash</button>
             <a href="#features" class="btn-secondary">Explore features</a>
           </div>
           <div class="hero-proof">
-            <div class="proof-item"><span class="proof-dot"></span><span>Built for runners, parents, travelers, and commuters</span></div>
+            <div class="proof-item"><span class="proof-dot"></span><span>Built for all ages, all abilities, and every kind of urgency</span></div>
             <div class="proof-item"><span class="proof-dot"></span><span>Works across phone and watch experiences</span></div>
             <div class="proof-item"><span class="proof-dot"></span><span>Community-powered and free to use</span></div>
           </div>
@@ -438,6 +450,105 @@
         <article class="story-card"><p class="story-quote">“I checked PortaDash from my watch during a long run and found a restroom without stopping to dig for my phone.”</p><div class="story-attr"><div class="story-avatar">JR</div><div><div class="story-name">Jamie</div><div class="story-role">Runner</div></div></div></article>
         <article class="story-card"><p class="story-quote">“Traveling with kids is a lot easier when you can pull up nearby options fast instead of guessing.”</p><div class="story-attr"><div class="story-avatar">MS</div><div><div class="story-name">Morgan</div><div class="story-role">Parent</div></div></div></article>
         <article class="story-card"><p class="story-quote">“The app feels practical, fast, and weirdly comforting when you are in an unfamiliar part of town.”</p><div class="story-attr"><div class="story-avatar">AL</div><div><div class="story-name">Alex</div><div class="story-role">Traveler</div></div></div></article>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="accessibility">
+    <div class="container">
+      <div class="reveal">
+        <p class="section-label">Accessibility</p>
+        <h2 class="section-heading">Built for everyone who needs to go.</h2>
+        <p class="section-body">PortaDash is committed to making restroom access easier for people with disabilities, caregivers, and families. Every pin carries details that matter — not just where to go, but whether you can.</p>
+      </div>
+
+      <div class="reveal">
+        <p class="access-sub-label">Available now</p>
+        <div class="access-grid">
+          <div class="access-card">
+            <i data-lucide="accessibility" style="width:24px;height:24px;"></i>
+            <h4>Wheelchair Accessible</h4>
+            <p>Every pin includes a field indicating whether the facility is wheelchair accessible.</p>
+          </div>
+          <div class="access-card">
+            <i data-lucide="baby" style="width:24px;height:24px;"></i>
+            <h4>Baby Changing Station</h4>
+            <p>Know before you go whether a changing table is available at the location.</p>
+          </div>
+          <div class="access-card">
+            <i data-lucide="lock-open" style="width:24px;height:24px;"></i>
+            <h4>Public or Private</h4>
+            <p>See whether a restroom is open to the public or restricted to customers or members.</p>
+          </div>
+          <div class="access-card">
+            <i data-lucide="badge-dollar-sign" style="width:24px;height:24px;"></i>
+            <h4>Free or Paid</h4>
+            <p>No surprises — know upfront if there is a fee to access the facility.</p>
+          </div>
+          <div class="access-card">
+            <i data-lucide="users" style="width:24px;height:24px;"></i>
+            <h4>Unisex Designation</h4>
+            <p>Find gender-neutral restroom options when you need them, mapped and filterable.</p>
+          </div>
+          <div class="access-card">
+            <i data-lucide="star" style="width:24px;height:24px;"></i>
+            <h4>Ratings &amp; Notes</h4>
+            <p>Community-written reviews surface real accessibility insights beyond what fields alone can capture.</p>
+          </div>
+          <div class="access-card">
+            <i data-lucide="shield-check" style="width:24px;height:24px;"></i>
+            <h4>Community Verification</h4>
+            <p>Pins are verified by real users to keep accessibility details accurate and up to date.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="reveal" style="margin-top: var(--space-12);">
+        <p class="access-sub-label">On the roadmap</p>
+        <div class="access-grid">
+          <div class="access-card access-card-soon">
+            <i data-lucide="filter" style="width:24px;height:24px;"></i>
+            <h4>Accessibility-Only Filter</h4>
+            <p>Filter the map to show only wheelchair-accessible restrooms in one tap.</p>
+            <span class="access-soon-tag">Coming soon</span>
+          </div>
+          <div class="access-card access-card-soon">
+            <i data-lucide="grip-vertical" style="width:24px;height:24px;"></i>
+            <h4>Grab Bar Details</h4>
+            <p>Know whether grab bars are present and where they are located before you arrive.</p>
+            <span class="access-soon-tag">Coming soon</span>
+          </div>
+          <div class="access-card access-card-soon">
+            <i data-lucide="move-horizontal" style="width:24px;height:24px;"></i>
+            <h4>Door Width</h4>
+            <p>Critical clearance information for wheelchair and mobility device users.</p>
+            <span class="access-soon-tag">Coming soon</span>
+          </div>
+          <div class="access-card access-card-soon">
+            <i data-lucide="rotate-ccw" style="width:24px;height:24px;"></i>
+            <h4>Turning Radius</h4>
+            <p>Interior space details to confirm safe maneuverability before making the trip.</p>
+            <span class="access-soon-tag">Coming soon</span>
+          </div>
+          <div class="access-card access-card-soon">
+            <i data-lucide="ear" style="width:24px;height:24px;"></i>
+            <h4>Sensory Information</h4>
+            <p>Lighting levels and noise environment details for sensory-sensitive users.</p>
+            <span class="access-soon-tag">Coming soon</span>
+          </div>
+          <div class="access-card access-card-soon">
+            <i data-lucide="mic" style="width:24px;height:24px;"></i>
+            <h4>VoiceOver Compatibility</h4>
+            <p>Improved screen reader support throughout the app for blind and low-vision users.</p>
+            <span class="access-soon-tag">Coming soon</span>
+          </div>
+          <div class="access-card access-card-soon">
+            <i data-lucide="sun" style="width:24px;height:24px;"></i>
+            <h4>High Contrast &amp; Large Text</h4>
+            <p>Visual accessibility modes that make the app usable for low-vision users.</p>
+            <span class="access-soon-tag">Coming soon</span>
+          </div>
+        </div>
       </div>
     </div>
   </section>
