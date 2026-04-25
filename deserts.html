@@ -201,6 +201,7 @@
     .map-note-item { display: flex; align-items: center; gap: 6px; font-size: var(--text-xs); color: oklch(from var(--color-text-inverse) l c h / 0.55); }
     .map-note-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
     .map-note-dot.hollow { background: white; box-shadow: 0 0 0 2px #00897B; }
+    .map-note-dot.hollow-orange { background: white; box-shadow: 0 0 0 2px #F57C00; }
 
     #compare-panel { position: absolute; top: 12px; right: 12px; z-index: 900; background: white; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.18); width: 200px; overflow: hidden; }
     #compare-header { display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; background: #f8f8f8; border-bottom: 1px solid #eee; cursor: pointer; }
@@ -432,6 +433,9 @@
         <div class="map-note-legend">
           <div class="map-note-item"><div class="map-note-dot" style="background:#1976D2"></div> Public restroom (verified)</div>
           <div class="map-note-item"><div class="map-note-dot hollow"></div> Community pin (user-reported)</div>
+          <div class="map-note-item"><div class="map-note-dot hollow-orange"></div> Porta potty (user-reported)</div>
+          <div class="map-note-item"><div class="map-note-dot" style="background:#388E3C"></div> Library</div>
+          <div class="map-note-item"><div class="map-note-dot" style="background:#5D4037"></div> Museum</div>
           <div class="map-note-item"><div class="map-note-dot" style="background:#e53935; border-radius: 3px;"></div> Desert zone (no facility within ½ mi)</div>
         </div>
         <p class="map-note">We count dedicated public toilets and park facilities. Commercial spaces like restaurants and retail are not included.</p>
