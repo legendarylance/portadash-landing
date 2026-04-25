@@ -798,7 +798,7 @@
 
   function computeDeadZones() {
     const facilityKeys = ['osmRestroom','community','library','museum'];
-    const activeFacilities = facilityKeys.filter(k => document.getElementById(`t-${k}`)?.checked).flatMap(k => layerData[k]);
+    const activeFacilities = facilityKeys.flatMap(k => layerData[k]);
     if (activeFacilities.length === 0) return [];
     const b = map.getBounds();
     const south = b.getSouth(), north = b.getNorth(), west = b.getWest(), east = b.getEast();
