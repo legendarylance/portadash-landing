@@ -205,9 +205,12 @@
 
     /* City comparison section */
     .city-compare { margin-top: var(--space-8); }
-    .city-compare-header { margin-bottom: var(--space-4); }
+    .city-compare-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: var(--space-4); gap: var(--space-4); }
     .city-compare-title { font-size: var(--text-sm); color: var(--color-text-inverse); font-weight: 600; }
     .city-compare-hint { font-size: var(--text-xs); color: oklch(from var(--color-text-inverse) l c h / 0.4); margin-top: var(--space-1); }
+    .compare-peer-avg { text-align: right; flex-shrink: 0; }
+    .compare-peer-avg-label { font-size: var(--text-xs); color: oklch(from var(--color-text-inverse) l c h / 0.4); margin-bottom: 2px; }
+    .compare-peer-avg-val { font-size: 1.4rem; font-weight: 700; color: var(--color-text-inverse); }
     .compare-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: var(--space-3); }
     .compare-card { background: oklch(from var(--color-text-inverse) l c h / 0.06); border: 1px solid oklch(from var(--color-text-inverse) l c h / 0.1); border-radius: var(--radius-lg); padding: var(--space-4); cursor: pointer; transition: background 0.15s, border-color 0.15s; }
     .compare-card:hover { background: oklch(from var(--color-text-inverse) l c h / 0.11); }
@@ -479,8 +482,14 @@
     <!-- Peer city comparison — shown after search -->
     <div id="city-compare" class="city-compare" style="display:none">
       <div class="city-compare-header">
-        <div class="city-compare-title">How <strong id="compare-city-label">—</strong> compares to similar-sized cities</div>
-        <div class="city-compare-hint">Click a city to explore its map</div>
+        <div>
+          <div class="city-compare-title">How <strong id="compare-city-label">—</strong> compares to similar-sized cities</div>
+          <div class="city-compare-hint">Click a city to explore its map</div>
+        </div>
+        <div id="compare-peer-avg" class="compare-peer-avg" style="display:none">
+          <div class="compare-peer-avg-label">Peer avg</div>
+          <div class="compare-peer-avg-val" id="compare-peer-avg-val">—</div>
+        </div>
       </div>
 
       <div id="compare-cards" class="compare-cards"></div>
@@ -924,11 +933,17 @@
     return 80000;
   }
 
-  function buildCompareSection(cityLabel, cityPop) {
-    document.getElementById('compare-city-label').textContent = cityLabel;
+  let currentPeers = [];
+
+  function buildCompareSection(cityLabel, cityPop, stateName) {
+    const label = stateName ? `${cityLabel} (${stateName})` : cityLabel;
+    document.getElementById('compare-city-label').textContent = label;
+    document.getElementById('compare-peer-avg').style.display = 'none';
+    document.getElementById('compare-peer-avg-val').textContent = '—';
     const cardsEl = document.getElementById('compare-cards');
     cardsEl.innerHTML = '';
-    findPeers(cityPop, cityLabel).forEach(c => {
+    currentPeers = findPeers(cityPop, cityLabel);
+    currentPeers.forEach(c => {
       const id = c.name.replace(/[^a-z]/gi, '');
       const s = cityStats[c.name];
       const statClass = s ? (s.pct >= 50 ? 'high' : s.pct >= 25 ? 'med' : 'low') : 'pending';
@@ -951,6 +966,16 @@
     if (!s) return;
     el.textContent = `${s.pct}% gap`;
     el.className = 'compare-card-stat ' + (s.pct >= 50 ? 'high' : s.pct >= 25 ? 'med' : 'low');
+    updatePeerAvg();
+  }
+
+  function updatePeerAvg() {
+    const loaded = currentPeers.filter(c => cityStats[c.name]);
+    if (loaded.length === 0) return;
+    const avg = Math.round(loaded.reduce((sum, c) => sum + cityStats[c.name].pct, 0) / loaded.length);
+    const avgEl = document.getElementById('compare-peer-avg-val');
+    avgEl.textContent = `${avg}% gap`;
+    document.getElementById('compare-peer-avg').style.display = 'block';
   }
 
   window.jumpToCity = async function(cityName) {
@@ -1006,7 +1031,7 @@
     resultsEl.innerHTML = '<div class="search-result-item">Searching…</div>';
     resultsEl.style.display = 'block';
     try {
-      const res = await fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(q)}&format=json&limit=5&polygon_geojson=1&extratags=1`, { headers: { 'Accept-Language': 'en' } });
+      const res = await fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(q)}&format=json&limit=5&polygon_geojson=1&extratags=1&addressdetails=1`, { headers: { 'Accept-Language': 'en' } });
       const results = await res.json();
       resultsEl.innerHTML = '';
       if (results.length === 0) { resultsEl.innerHTML = '<div class="search-result-item" style="color:#999">No results found</div>'; return; }
@@ -1024,7 +1049,8 @@
           const nominatimPop = parseInt(r.extratags?.population);
           const peerMatch = PEER_CITIES.find(c => c.name.toLowerCase().includes(cityLabel.split(',')[0].toLowerCase().trim()));
           const cityPop = (nominatimPop > 0 ? nominatimPop : null) || peerMatch?.pop || popFromBbox(bbox);
-          buildCompareSection(cityLabel, cityPop);
+          const stateName = r.address?.state || null;
+          buildCompareSection(cityLabel, cityPop, stateName);
         };
         resultsEl.appendChild(item);
       });
