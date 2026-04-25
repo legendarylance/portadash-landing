@@ -203,23 +203,22 @@
     .map-note-dot.hollow { background: white; box-shadow: 0 0 0 2px #00897B; }
     .map-note-dot.hollow-orange { background: white; box-shadow: 0 0 0 2px #F57C00; }
 
-    #compare-panel { position: absolute; top: 12px; right: 12px; z-index: 900; background: white; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.18); width: 200px; overflow: hidden; }
-    #compare-header { display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; background: #f8f8f8; border-bottom: 1px solid #eee; cursor: pointer; }
-    #compare-header span { font-size: 13px; font-weight: 600; color: #333; }
-    #compare-header .arrow { font-size: 11px; color: #888; transition: transform 0.2s; }
-    #compare-header.collapsed .arrow { transform: rotate(-90deg); }
-    #compare-body { max-height: 360px; overflow-y: auto; }
-    #compare-body.hidden { display: none; }
-    .city-row { display: flex; align-items: center; justify-content: space-between; padding: 7px 14px; cursor: pointer; transition: background 0.1s; border-bottom: 1px solid #f5f5f5; }
-    .city-row:last-child { border-bottom: none; }
-    .city-row:hover { background: #f5f5f5; }
-    .city-row.active { background: #EEF2FF; }
-    .city-name { font-size: 12px; color: #333; font-weight: 500; }
-    .city-stat { font-size: 11px; font-weight: 700; padding: 2px 6px; border-radius: 10px; white-space: nowrap; }
-    .city-stat.loading { color: #bbb; font-weight: 400; }
-    .city-stat.high { background: #FFEBEE; color: #C62828; }
-    .city-stat.med { background: #FFF8E1; color: #F57F17; }
-    .city-stat.low { background: #E8F5E9; color: #2E7D32; }
+    /* City comparison section */
+    .city-compare { margin-top: var(--space-8); }
+    .city-compare-header { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: var(--space-4); flex-wrap: wrap; gap: var(--space-2); }
+    .city-compare-title { font-size: var(--text-sm); color: var(--color-text-inverse); font-weight: 600; }
+    .city-compare-hint { font-size: var(--text-xs); color: oklch(from var(--color-text-inverse) l c h / 0.4); }
+    .compare-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: var(--space-3); }
+    .compare-card { background: oklch(from var(--color-text-inverse) l c h / 0.06); border: 1px solid oklch(from var(--color-text-inverse) l c h / 0.1); border-radius: var(--radius-lg); padding: var(--space-4); cursor: pointer; transition: background 0.15s, border-color 0.15s; }
+    .compare-card:hover { background: oklch(from var(--color-text-inverse) l c h / 0.11); }
+    .compare-card.active { border-color: var(--color-primary-highlight); }
+    .compare-card-name { font-size: var(--text-sm); font-weight: 600; color: var(--color-text-inverse); margin-bottom: 2px; }
+    .compare-card-pop { font-size: var(--text-xs); color: oklch(from var(--color-text-inverse) l c h / 0.4); margin-bottom: var(--space-3); }
+    .compare-card-stat { font-size: 1.1rem; font-weight: 700; }
+    .compare-card-stat.pending { font-size: var(--text-xs); color: oklch(from var(--color-text-inverse) l c h / 0.35); font-weight: 400; }
+    .compare-card-stat.high { color: #f87171; }
+    .compare-card-stat.med  { color: #fbbf24; }
+    .compare-card-stat.low  { color: #4ade80; }
 
 
     #map-stats { position: absolute; bottom: 28px; left: 50%; transform: translateX(-50%); z-index: 900; background: white; border-radius: 20px; box-shadow: 0 2px 12px rgba(0,0,0,0.15); padding: 6px 18px; display: flex; gap: 20px; align-items: center; white-space: nowrap; }
@@ -458,15 +457,6 @@
         <div class="overlay-label">Click to interact with map</div>
       </div>
 
-      <!-- Compare Panel -->
-      <div id="compare-panel">
-        <div id="compare-header" onclick="toggleCompare()">
-          <span>📊 Peer Cities</span>
-          <span class="arrow">▼</span>
-        </div>
-        <div id="compare-body"></div>
-      </div>
-
       <!-- Stats bar -->
       <div id="map-stats">
         <div class="mstat"><div class="mstat-num" id="stat-community">—</div><div class="mstat-label">Community Pins</div></div>
@@ -483,6 +473,15 @@
     <div class="map-footer-row">
       <span class="map-data-note">Data updated continuously by the PortaDash community.</span>
       <a href="./contact.html" class="map-report-link">Request a city report for your council →</a>
+    </div>
+
+    <!-- Peer city comparison — shown after search -->
+    <div id="city-compare" class="city-compare" style="display:none">
+      <div class="city-compare-header">
+        <div class="city-compare-title">How <strong id="compare-city-label">—</strong> compares to similar-sized cities</div>
+        <div class="city-compare-hint">Click a city to explore its map</div>
+      </div>
+      <div id="compare-cards" class="compare-cards"></div>
     </div>
   </div>
 </section>
@@ -826,35 +825,135 @@
 
   // ── Peer Cities ───────────────────────────────────────────────────────────────
   const PEER_CITIES = [
-    { name: 'Richmond, VA' }, { name: 'Raleigh, NC' }, { name: 'Columbia, SC' },
-    { name: 'Norfolk, VA' }, { name: 'Baton Rouge, LA' }, { name: 'Chattanooga, TN' },
-    { name: 'Knoxville, TN' }, { name: 'Savannah, GA' }, { name: 'Lexington, KY' },
-    { name: 'Augusta, GA' }, { name: 'Greensboro, NC' }, { name: 'Little Rock, AR' },
+    { name: 'New York, NY',         pop: 8336817 },
+    { name: 'Los Angeles, CA',      pop: 3979576 },
+    { name: 'Chicago, IL',          pop: 2693976 },
+    { name: 'Houston, TX',          pop: 2304580 },
+    { name: 'Phoenix, AZ',          pop: 1608139 },
+    { name: 'Philadelphia, PA',     pop: 1603797 },
+    { name: 'San Antonio, TX',      pop: 1434625 },
+    { name: 'San Diego, CA',        pop: 1386932 },
+    { name: 'Dallas, TX',           pop: 1304379 },
+    { name: 'San Jose, CA',         pop: 1013240 },
+    { name: 'Austin, TX',           pop: 978908  },
+    { name: 'Jacksonville, FL',     pop: 949611  },
+    { name: 'Columbus, OH',         pop: 905748  },
+    { name: 'Charlotte, NC',        pop: 874579  },
+    { name: 'Indianapolis, IN',     pop: 887642  },
+    { name: 'San Francisco, CA',    pop: 873965  },
+    { name: 'Seattle, WA',          pop: 737255  },
+    { name: 'Denver, CO',           pop: 715522  },
+    { name: 'Nashville, TN',        pop: 689447  },
+    { name: 'Washington, DC',       pop: 670050  },
+    { name: 'Louisville, KY',       pop: 633045  },
+    { name: 'Las Vegas, NV',        pop: 641903  },
+    { name: 'Milwaukee, WI',        pop: 577222  },
+    { name: 'Albuquerque, NM',      pop: 564559  },
+    { name: 'Tucson, AZ',           pop: 542629  },
+    { name: 'Sacramento, CA',       pop: 524943  },
+    { name: 'Kansas City, MO',      pop: 508090  },
+    { name: 'Atlanta, GA',          pop: 498715  },
+    { name: 'Omaha, NE',            pop: 486051  },
+    { name: 'Colorado Springs, CO', pop: 478221  },
+    { name: 'Raleigh, NC',          pop: 467665  },
+    { name: 'Virginia Beach, VA',   pop: 459470  },
+    { name: 'Minneapolis, MN',      pop: 429606  },
+    { name: 'Tampa, FL',            pop: 399700  },
+    { name: 'New Orleans, LA',      pop: 383997  },
+    { name: 'Cleveland, OH',        pop: 372624  },
+    { name: 'Orlando, FL',          pop: 307573  },
+    { name: 'Cincinnati, OH',       pop: 309317  },
+    { name: 'Pittsburgh, PA',       pop: 302971  },
+    { name: 'St. Louis, MO',        pop: 301578  },
+    { name: 'Lexington, KY',        pop: 320154  },
+    { name: 'Greensboro, NC',       pop: 296710  },
+    { name: 'Durham, NC',           pop: 283506  },
+    { name: 'Madison, WI',          pop: 269840  },
+    { name: 'Fort Wayne, IN',       pop: 264488  },
+    { name: 'Reno, NV',             pop: 264165  },
+    { name: 'Norfolk, VA',          pop: 238005  },
+    { name: 'Spokane, WA',          pop: 228989  },
+    { name: 'Richmond, VA',         pop: 226610  },
+    { name: 'Baton Rouge, LA',      pop: 220236  },
+    { name: 'Birmingham, AL',       pop: 212237  },
+    { name: 'Rochester, NY',        pop: 211328  },
+    { name: 'Salt Lake City, UT',   pop: 200567  },
+    { name: 'Augusta, GA',          pop: 202081  },
+    { name: 'Grand Rapids, MI',     pop: 198917  },
+    { name: 'Little Rock, AR',      pop: 197357  },
+    { name: 'Tallahassee, FL',      pop: 196169  },
+    { name: 'Huntsville, AL',       pop: 190582  },
+    { name: 'Knoxville, TN',        pop: 190740  },
+    { name: 'Providence, RI',       pop: 190934  },
+    { name: 'Worcester, MA',        pop: 185428  },
+    { name: 'Chattanooga, TN',      pop: 181099  },
+    { name: 'Eugene, OR',           pop: 172270  },
+    { name: 'Springfield, MO',      pop: 167319  },
+    { name: 'Fort Collins, CO',     pop: 161175  },
+    { name: 'Macon, GA',            pop: 157346  },
+    { name: 'Jackson, MS',          pop: 153701  },
+    { name: 'Syracuse, NY',         pop: 148620  },
+    { name: 'Savannah, GA',         pop: 147780  },
+    { name: 'Columbia, SC',         pop: 136632  },
   ];
 
   const cityStats = {};
   let activeCity = null, pendingStatCity = null;
 
-  function buildComparePanel() {
-    const body = document.getElementById('compare-body');
-    body.innerHTML = '';
-    PEER_CITIES.forEach(c => {
-      const row = document.createElement('div');
-      row.className = 'city-row' + (activeCity === c.name ? ' active' : '');
-      row.id = `city-row-${c.name.replace(/[^a-z]/gi, '')}`;
-      row.addEventListener('click', () => window.jumpToCity(c.name));
-      const nameEl = document.createElement('div'); nameEl.className = 'city-name'; nameEl.textContent = c.name;
-      const statEl = document.createElement('div');
-      statEl.className = 'city-stat'; statEl.id = `city-stat-${c.name.replace(/[^a-z]/gi, '')}`;
+  function formatPop(n) {
+    if (n >= 1000000) return (n / 1000000).toFixed(1) + 'M';
+    return Math.round(n / 1000) + 'k';
+  }
+
+  function findPeers(targetPop, excludeName) {
+    return PEER_CITIES
+      .filter(c => c.name.toLowerCase() !== (excludeName || '').toLowerCase())
+      .map(c => ({ ...c, diff: Math.abs(c.pop - targetPop) }))
+      .sort((a, b) => a.diff - b.diff)
+      .slice(0, 5);
+  }
+
+  function popFromBbox(bbox) {
+    const area = (parseFloat(bbox[1]) - parseFloat(bbox[0])) * (parseFloat(bbox[3]) - parseFloat(bbox[2]));
+    if (area > 2) return 2000000;
+    if (area > 0.6) return 700000;
+    if (area > 0.15) return 300000;
+    return 80000;
+  }
+
+  function buildCompareSection(cityLabel, cityPop) {
+    document.getElementById('compare-city-label').textContent = cityLabel;
+    const cardsEl = document.getElementById('compare-cards');
+    cardsEl.innerHTML = '';
+    findPeers(cityPop, cityLabel).forEach(c => {
+      const id = c.name.replace(/[^a-z]/gi, '');
       const s = cityStats[c.name];
-      if (s) { statEl.textContent = `${s.pct}% gap`; statEl.className = 'city-stat ' + (s.pct >= 50 ? 'high' : s.pct >= 25 ? 'med' : 'low'); }
-      else { statEl.textContent = '—'; statEl.className = 'city-stat loading'; }
-      row.appendChild(nameEl); row.appendChild(statEl); body.appendChild(row);
+      const statClass = s ? (s.pct >= 50 ? 'high' : s.pct >= 25 ? 'med' : 'low') : 'pending';
+      const statText  = s ? `${s.pct}% gap` : 'Tap to load';
+      const card = document.createElement('div');
+      card.className = 'compare-card' + (activeCity === c.name ? ' active' : '');
+      card.id = `ccard-${id}`;
+      card.onclick = () => window.jumpToCity(c.name);
+      card.innerHTML = `<div class="compare-card-name">${c.name}</div><div class="compare-card-pop">${formatPop(c.pop)} residents</div><div class="compare-card-stat ${statClass}" id="cstat-${id}">${statText}</div>`;
+      cardsEl.appendChild(card);
     });
+    document.getElementById('city-compare').style.display = 'block';
+  }
+
+  function updateCompareCard(cityName) {
+    const id = cityName.replace(/[^a-z]/gi, '');
+    const el = document.getElementById(`cstat-${id}`);
+    if (!el) return;
+    const s = cityStats[cityName];
+    if (!s) return;
+    el.textContent = `${s.pct}% gap`;
+    el.className = 'compare-card-stat ' + (s.pct >= 50 ? 'high' : s.pct >= 25 ? 'med' : 'low');
   }
 
   window.jumpToCity = async function(cityName) {
-    activeCity = cityName; pendingStatCity = cityName; buildComparePanel();
+    activeCity = cityName; pendingStatCity = cityName;
+    // Refresh active state on compare cards
+    document.querySelectorAll('.compare-card').forEach(el => el.classList.toggle('active', el.id === `ccard-${cityName.replace(/[^a-z]/gi,'')}`));
     try {
       const res = await fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(cityName)}&format=json&limit=1&polygon_geojson=1`, { headers: { 'Accept-Language': 'en' } });
       const results = await res.json();
@@ -873,25 +972,18 @@
     const south = b.getSouth(), north = b.getNorth(), west = b.getWest(), east = b.getEast();
     const latStep = Math.max((north-south)/120, 250/111000);
     const lonStep = Math.max((east-west)/120, latStep/Math.cos((south+north)/2*Math.PI/180));
-    const facilityKeys = ['osmRestroom','community','library','museum'];
-    const activeFacilities = facilityKeys.filter(k => document.getElementById(`t-${k}`)?.checked).flatMap(k => layerData[k]);
+    const allFacilities = ['osmRestroom','community','library','museum'].flatMap(k => layerData[k]);
     let totalCells = 0, deadCells = 0;
     for (let lat = south+latStep/2; lat < north; lat += latStep) {
       for (let lon = west+lonStep/2; lon < east; lon += lonStep) {
         if (!turf.booleanPointInPolygon(turf.point([lon, lat]), highlightFeature)) continue;
         totalCells++;
-        if (!activeFacilities.some(f => flatDist(lat, lon, f.lat, f.lon) <= DEAD_ZONE_RADIUS)) deadCells++;
+        if (!allFacilities.some(f => flatDist(lat, lon, f.lat, f.lon) <= DEAD_ZONE_RADIUS)) deadCells++;
       }
     }
     const pct = totalCells > 0 ? Math.round((deadCells/totalCells)*100) : 0;
     cityStats[cityName] = { pct, totalCells, deadCells };
-    const el = document.getElementById(`city-stat-${cityName.replace(/[^a-z]/gi,'')}`);
-    if (el) { el.textContent = `${pct}% gap`; el.className = 'city-stat ' + (pct >= 50 ? 'high' : pct >= 25 ? 'med' : 'low'); }
-  }
-
-  function toggleCompare() {
-    document.getElementById('compare-header').classList.toggle('collapsed');
-    document.getElementById('compare-body').classList.toggle('hidden');
+    updateCompareCard(cityName);
   }
 
   let highlightLayer = null, highlightFeature = null;
@@ -911,7 +1003,7 @@
     resultsEl.innerHTML = '<div class="search-result-item">Searching…</div>';
     resultsEl.style.display = 'block';
     try {
-      const res = await fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(q)}&format=json&limit=5&polygon_geojson=1`, { headers: { 'Accept-Language': 'en' } });
+      const res = await fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(q)}&format=json&limit=5&polygon_geojson=1&extratags=1`, { headers: { 'Accept-Language': 'en' } });
       const results = await res.json();
       resultsEl.innerHTML = '';
       if (results.length === 0) { resultsEl.innerHTML = '<div class="search-result-item" style="color:#999">No results found</div>'; return; }
@@ -921,8 +1013,15 @@
         item.onclick = () => {
           const bbox = r.boundingbox;
           map.fitBounds([[parseFloat(bbox[0]), parseFloat(bbox[2])], [parseFloat(bbox[1]), parseFloat(bbox[3])]], { maxZoom: 13 });
-          document.getElementById('search-input').value = r.display_name.split(',').slice(0,2).join(',');
-          resultsEl.style.display = 'none'; showHighlight(r.geojson || null);
+          const cityLabel = r.display_name.split(',').slice(0,2).join(',').trim();
+          document.getElementById('search-input').value = cityLabel;
+          resultsEl.style.display = 'none';
+          showHighlight(r.geojson || null);
+          // Detect population and show peer comparison
+          const nominatimPop = parseInt(r.extratags?.population);
+          const peerMatch = PEER_CITIES.find(c => c.name.toLowerCase().includes(cityLabel.split(',')[0].toLowerCase().trim()));
+          const cityPop = (nominatimPop > 0 ? nominatimPop : null) || peerMatch?.pop || popFromBbox(bbox);
+          buildCompareSection(cityLabel, cityPop);
         };
         resultsEl.appendChild(item);
       });
