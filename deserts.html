@@ -219,6 +219,7 @@
     .compare-card-stat.high { color: #f87171; }
     .compare-card-stat.med  { color: #fbbf24; }
     .compare-card-stat.low  { color: #4ade80; }
+    .city-compare-footnote { margin-top: var(--space-3); font-size: var(--text-xs); color: oklch(from var(--color-text-inverse) l c h / 0.35); }
 
 
     #map-stats { position: absolute; bottom: 28px; left: 50%; transform: translateX(-50%); z-index: 900; background: white; border-radius: 20px; box-shadow: 0 2px 12px rgba(0,0,0,0.15); padding: 6px 18px; display: flex; gap: 20px; align-items: center; white-space: nowrap; }
@@ -479,9 +480,10 @@
     <div id="city-compare" class="city-compare" style="display:none">
       <div class="city-compare-header">
         <div class="city-compare-title">How <strong id="compare-city-label">—</strong> compares to similar-sized cities</div>
-        <div class="city-compare-hint">% gap = share of city area with no public restroom within ½ mile · Click a city to explore its map</div>
+        <div class="city-compare-hint">Click a city to explore its map</div>
       </div>
       <div id="compare-cards" class="compare-cards"></div>
+      <p class="city-compare-footnote">% gap = share of city area with no public restroom within ½ mile</p>
     </div>
   </div>
 </section>
