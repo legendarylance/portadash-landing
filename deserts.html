@@ -205,9 +205,9 @@
 
     /* City comparison section */
     .city-compare { margin-top: var(--space-8); }
-    .city-compare-header { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: var(--space-4); flex-wrap: wrap; gap: var(--space-2); }
+    .city-compare-header { margin-bottom: var(--space-4); }
     .city-compare-title { font-size: var(--text-sm); color: var(--color-text-inverse); font-weight: 600; }
-    .city-compare-hint { font-size: var(--text-xs); color: oklch(from var(--color-text-inverse) l c h / 0.4); }
+    .city-compare-hint { font-size: var(--text-xs); color: oklch(from var(--color-text-inverse) l c h / 0.4); margin-top: var(--space-1); }
     .compare-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: var(--space-3); }
     .compare-card { background: oklch(from var(--color-text-inverse) l c h / 0.06); border: 1px solid oklch(from var(--color-text-inverse) l c h / 0.1); border-radius: var(--radius-lg); padding: var(--space-4); cursor: pointer; transition: background 0.15s, border-color 0.15s; }
     .compare-card:hover { background: oklch(from var(--color-text-inverse) l c h / 0.11); }
@@ -482,6 +482,7 @@
         <div class="city-compare-title">How <strong id="compare-city-label">—</strong> compares to similar-sized cities</div>
         <div class="city-compare-hint">Click a city to explore its map</div>
       </div>
+
       <div id="compare-cards" class="compare-cards"></div>
       <p class="city-compare-footnote">% gap = share of city area with no public restroom within ½ mile</p>
     </div>
