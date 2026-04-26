@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Restroom Deserts — PortaDash</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap');
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --sand: #F5EFE0; --clay: #C4622D; --rust: #E07B3A;
+    --deep: #1A1208; --bark: #3D2B1A; --mist: #EAE4D5;
+  }
+  html { scroll-behavior: smooth; }
+  body { font-family: 'DM Sans', sans-serif; background: var(--sand); color: var(--deep); overflow-x: hidden; }
+
+  nav {
+    position: sticky; top: 0; z-index: 100;
+    background: var(--deep); padding: 14px 40px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .nav-logo { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.1rem; color: var(--sand); }
+  .nav-links { display: flex; gap: 28px; }
+  .nav-links a { font-size: 0.78rem; color: rgba(245,239,224,0.6); text-decoration: none; font-weight: 500; letter-spacing: 0.05em; text-transform: uppercase; }
+  .nav-links a.active { color: var(--rust); }
+  .nav-cta { background: var(--rust); color: white; padding: 8px 18px; border-radius: 4px; font-family: 'Syne', sans-serif; font-size: 0.8rem; font-weight: 700; text-decoration: none; }
+
+  .hero { background: var(--deep); padding: 90px 40px 80px; position: relative; overflow: hidden; }
+  .hero::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse at 70% 50%, rgba(196,98,45,0.18) 0%, transparent 65%); }
+  .hero-inner { max-width: 1100px; margin: 0 auto; position: relative; z-index: 1; }
+  .hero-tag { display: inline-block; font-family: 'Syne', sans-serif; font-size: 0.7rem; font-weight: 700; letter-spacing: 0.15em; text-transform: uppercase; color: var(--rust); border: 1px solid rgba(224,123,58,0.4); padding: 5px 14px; border-radius: 20px; margin-bottom: 28px; }
+  .hero h1 { font-family: 'Syne', sans-serif; font-size: clamp(2.8rem, 6vw, 5rem); font-weight: 800; line-height: 1.05; letter-spacing: -0.03em; color: var(--sand); max-width: 700px; margin-bottom: 24px; }
+  .hero h1 em { font-style: normal; color: var(--rust); }
+  .hero-sub { font-size: 1.1rem; line-height: 1.7; color: rgba(245,239,224,0.65); max-width: 520px; font-weight: 300; margin-bottom: 40px; }
+  .hero-ctas { display: flex; gap: 14px; flex-wrap: wrap; }
+  .btn-primary { background: var(--rust); color: white; padding: 13px 28px; border-radius: 5px; font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.9rem; text-decoration: none; }
+  .btn-ghost { border: 1px solid rgba(245,239,224,0.25); color: rgba(245,239,224,0.75); padding: 13px 28px; border-radius: 5px; font-family: 'Syne', sans-serif; font-weight: 600; font-size: 0.9rem; text-decoration: none; }
+
+  .definition-section { background: var(--mist); padding: 80px 40px; }
+  .definition-inner { max-width: 1100px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: center; }
+  .def-label { font-family: 'Syne', sans-serif; font-size: 0.68rem; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--rust); margin-bottom: 14px; }
+  .def-heading { font-family: 'Syne', sans-serif; font-size: 2rem; font-weight: 800; line-height: 1.15; letter-spacing: -0.02em; color: var(--bark); margin-bottom: 20px; }
+  .def-body { font-size: 1rem; line-height: 1.75; color: #5a4535; font-weight: 300; }
+  .def-body p + p { margin-top: 14px; }
+  .def-quote { border-left: 3px solid var(--rust); padding: 20px 24px; background: white; border-radius: 0 8px 8px 0; font-family: 'Syne', sans-serif; font-size: 1rem; font-weight: 600; color: var(--bark); line-height: 1.5; font-style: italic; }
+  .def-quote cite { display: block; margin-top: 10px; font-size: 0.75rem; font-weight: 400; color: var(--rust); font-style: normal; letter-spacing: 0.05em; text-transform: uppercase; }
+
+  .stats-section { background: var(--bark); padding: 70px 40px; }
+  .stats-inner { max-width: 1000px; margin: 0 auto; }
+  .stats-label { font-family: 'Syne', sans-serif; font-size: 0.68rem; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(245,239,224,0.4); margin-bottom: 40px; text-align: center; }
+  .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; }
+  .stat-card { background: rgba(255,255,255,0.05); padding: 36px 28px; text-align: center; }
+  .stat-card:first-child { border-radius: 8px 0 0 8px; }
+  .stat-card:last-child { border-radius: 0 8px 8px 0; }
+  .stat-num { font-family: 'Syne', sans-serif; font-size: 3rem; font-weight: 800; color: var(--rust); letter-spacing: -0.03em; line-height: 1; margin-bottom: 8px; }
+  .stat-label { font-size: 0.85rem; color: rgba(245,239,224,0.55); line-height: 1.5; font-weight: 300; }
+
+  .why-section { padding: 80px 40px; background: var(--sand); }
+  .why-inner { max-width: 1100px; margin: 0 auto; }
+  .section-tag { font-family: 'Syne', sans-serif; font-size: 0.68rem; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--rust); margin-bottom: 12px; }
+  .section-title { font-family: 'Syne', sans-serif; font-size: 2.2rem; font-weight: 800; letter-spacing: -0.02em; color: var(--bark); line-height: 1.15; max-width: 500px; margin-bottom: 48px; }
+  .who-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+  .who-card { background: white; border-radius: 10px; padding: 28px 24px; border-top: 3px solid transparent; }
+  .who-icon { font-size: 1.8rem; margin-bottom: 14px; }
+  .who-title { font-family: 'Syne', sans-serif; font-size: 0.95rem; font-weight: 700; color: var(--bark); margin-bottom: 8px; }
+  .who-text { font-size: 0.85rem; line-height: 1.65; color: #6b5442; font-weight: 300; }
+
+  .map-section { background: var(--deep); padding: 80px 40px; }
+  .map-inner { max-width: 1100px; margin: 0 auto; }
+  .map-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 32px; flex-wrap: wrap; gap: 20px; }
+  .map-title { font-family: 'Syne', sans-serif; font-size: 2rem; font-weight: 800; color: var(--sand); letter-spacing: -0.02em; }
+  .map-sub { font-size: 0.9rem; color: rgba(245,239,224,0.5); font-weight: 300; margin-top: 8px; max-width: 400px; }
+  .map-search { display: flex; gap: 10px; }
+  .map-input { background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.12); color: var(--sand); padding: 10px 16px; border-radius: 6px; font-family: 'DM Sans', sans-serif; font-size: 0.9rem; outline: none; width: 220px; }
+  .map-btn { background: var(--rust); color: white; border: none; padding: 10px 20px; border-radius: 6px; font-family: 'Syne', sans-serif; font-size: 0.8rem; font-weight: 700; cursor: pointer; }
+  .map-canvas { width: 100%; height: 400px; background: #0f1a2e; border-radius: 10px; position: relative; overflow: hidden; border: 1px solid rgba(255,255,255,0.08); }
+  .map-grid { position: absolute; inset: 0; background-image: linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.04) 1px, transparent 1px); background-size: 40px 40px; }
+  .road { position: absolute; background: rgba(255,255,255,0.09); }
+  .road.h { height: 2px; left: 0; right: 0; }
+  .road.v { width: 2px; top: 0; bottom: 0; }
+  .heat { position: absolute; border-radius: 50%; filter: blur(35px); pointer-events: none; }
+  .pin { position: absolute; width: 10px; height: 10px; border-radius: 50%; background: #4299E1; border: 2px solid white; transform: translate(-50%,-50%); box-shadow: 0 0 8px rgba(66,153,225,0.7); }
+  .map-legend { position: absolute; bottom: 16px; left: 16px; background: rgba(0,0,0,0.65); backdrop-filter: blur(8px); padding: 12px 16px; border-radius: 8px; display: flex; flex-direction: column; gap: 8px; }
+  .legend-item { display: flex; align-items: center; gap: 8px; font-size: 0.75rem; color: rgba(255,255,255,0.75); }
+  .legend-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+  .legend-heat { width: 14px; height: 10px; border-radius: 3px; flex-shrink: 0; background: rgba(197,48,48,0.7); }
+  .map-city-label { position: absolute; font-family: 'Syne', sans-serif; font-size: 0.65rem; font-weight: 600; color: rgba(255,255,255,0.25); letter-spacing: 0.1em; text-transform: uppercase; }
+  .desert-badge { position: absolute; background: rgba(197,48,48,0.85); color: white; font-family: 'Syne', sans-serif; font-size: 0.6rem; font-weight: 700; padding: 3px 8px; border-radius: 3px; letter-spacing: 0.07em; text-transform: uppercase; }
+
+  .richmond-section { padding: 70px 40px; background: var(--mist); }
+  .richmond-inner { max-width: 1100px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: center; }
+  .richmond-tag { font-family: 'Syne', sans-serif; font-size: 0.68rem; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--rust); margin-bottom: 14px; }
+  .richmond-title { font-family: 'Syne', sans-serif; font-size: 1.9rem; font-weight: 800; letter-spacing: -0.02em; color: var(--bark); line-height: 1.2; margin-bottom: 18px; }
+  .richmond-body { font-size: 0.95rem; line-height: 1.75; color: #5a4535; font-weight: 300; }
+  .richmond-body p + p { margin-top: 12px; }
+  .desert-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 22px; }
+  .desert-tag-pill { background: white; border: 1px solid rgba(196,98,45,0.2); color: var(--clay); font-family: 'Syne', sans-serif; font-size: 0.72rem; font-weight: 700; padding: 5px 14px; border-radius: 20px; }
+  .richmond-stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .r-stat { background: white; border-radius: 8px; padding: 22px 20px; border-left: 3px solid var(--rust); }
+  .r-stat-num { font-family: 'Syne', sans-serif; font-size: 2rem; font-weight: 800; color: var(--rust); letter-spacing: -0.02em; }
+  .r-stat-label { font-size: 0.78rem; color: #7a6250; margin-top: 4px; font-weight: 300; line-height: 1.4; }
+
+  .cta-section { background: var(--rust); padding: 80px 40px; text-align: center; }
+  .cta-title { font-family: 'Syne', sans-serif; font-size: 2.4rem; font-weight: 800; color: white; letter-spacing: -0.02em; margin-bottom: 16px; }
+  .cta-sub { font-size: 1rem; color: rgba(255,255,255,0.8); font-weight: 300; margin-bottom: 36px; max-width: 480px; margin-left: auto; margin-right: auto; line-height: 1.65; }
+  .cta-buttons { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
+  .cta-btn-white { background: white; color: var(--rust); padding: 13px 28px; border-radius: 5px; font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.9rem; text-decoration: none; }
+  .cta-btn-outline { border: 2px solid rgba(255,255,255,0.4); color: white; padding: 13px 28px; border-radius: 5px; font-family: 'Syne', sans-serif; font-weight: 600; font-size: 0.9rem; text-decoration: none; }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-logo">PortaDash</div>
+  <div class="nav-links">
+    <a href="#">Features</a>
+    <a href="#">Watch</a>
+    <a href="#" class="active">Restroom Deserts</a>
+    <a href="#">Accessibility</a>
+  </div>
+  <a href="#" class="nav-cta">Download Free</a>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-inner">
+    <div class="hero-tag">Restroom Deserts</div>
+    <h1>You need to go.<br>There's <em>nowhere</em> to go.</h1>
+    <p class="hero-sub">A Restroom Desert is a high-traffic area with no public restroom in reach. They're not accidents — they're the result of decades of policy neglect. And they affect millions of people every day.</p>
+    <div class="hero-ctas">
+      <a href="#map" class="btn-primary">See your city's deserts →</a>
+      <a href="#why" class="btn-ghost">Why this matters</a>
+    </div>
+  </div>
+</section>
+
+<!-- DEFINITION -->
+<section class="definition-section">
+  <div class="definition-inner">
+    <div>
+      <div class="def-label">What Is a Restroom Desert?</div>
+      <div class="def-heading">A gap in coverage where people are left without options.</div>
+      <div class="def-body">
+        <p>A <strong>Restroom Desert</strong> is any high-traffic area — a park, a neighborhood, a trail corridor, a commercial strip — where public restroom access is non-existent or severely inadequate given the volume of people present.</p>
+        <p>The term was coined by the nonprofit PHLUSH and cited by AARP as a critical lens for understanding public space equity. PortaDash uses community-verified data to map these gaps across U.S. cities.</p>
+      </div>
+    </div>
+    <div class="def-quote">
+      "Cities do not have sufficient public restrooms, and those that are available often do not accommodate people with a variety of needs."
+      <cite>— AARP Principles in Action, 2022</cite>
+    </div>
+  </div>
+</section>
+
+<!-- STATS -->
+<section class="stats-section">
+  <div class="stats-inner">
+    <div class="stats-label">The numbers don't lie</div>
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-num">8</div>
+        <div class="stat-label">Public restrooms per 100,000 people in the U.S. — compared to 56 in Iceland</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num">5×</div>
+        <div class="stat-label">Average number of restroom visits per person per day, according to the Dutch Toilet Organization</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num">~1M</div>
+        <div class="stat-label">Americans who lack basic sanitation — the majority in urban, low-income communities</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- WHY IT MATTERS -->
+<section class="why-section" id="why">
+  <div class="why-inner">
+    <div class="section-tag">Why It Matters</div>
+    <div class="section-title">Restroom access is an equity issue, not a convenience one.</div>
+    <div class="who-grid">
+      <div class="who-card">
+        <div class="who-icon">🏃</div>
+        <div class="who-title">Runners & Cyclists</div>
+        <div class="who-text">Long-distance routes through restroom deserts force detours, early stops, or worse. Access along trails and greenways is a basic infrastructure need.</div>
+      </div>
+      <div class="who-card">
+        <div class="who-icon">👴</div>
+        <div class="who-title">Older Adults</div>
+        <div class="who-text">Uncertainty about restroom access leads older adults to limit outdoor activity and social participation — reinforcing isolation and health decline.</div>
+      </div>
+      <div class="who-card">
+        <div class="who-icon">👶</div>
+        <div class="who-title">Parents & Caregivers</div>
+        <div class="who-text">Traveling with young children requires predictable access. Restroom deserts make entire neighborhoods feel off-limits for families.</div>
+      </div>
+      <div class="who-card">
+        <div class="who-icon">♿</div>
+        <div class="who-title">People with Disabilities</div>
+        <div class="who-text">Accessible facilities are rare even where restrooms exist. For people with mobility or medical conditions, a desert isn't just inconvenient — it's exclusionary.</div>
+      </div>
+      <div class="who-card">
+        <div class="who-icon">🏥</div>
+        <div class="who-title">Chronic Health Conditions</div>
+        <div class="who-text">People with Crohn's, IBS, incontinence, or other conditions need reliable nearby access. Deserts can confine them to their homes.</div>
+      </div>
+      <div class="who-card">
+        <div class="who-icon">🏙️</div>
+        <div class="who-title">Everyone Who Walks</div>
+        <div class="who-text">Walkability, tourism, and public life all suffer when people can't confidently venture out. Restrooms are infrastructure — like sidewalks.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- MAP -->
+<section class="map-section" id="map">
+  <div class="map-inner">
+    <div class="map-header">
+      <div>
+        <div style="font-family:'Syne',sans-serif;font-size:0.68rem;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:var(--rust);margin-bottom:8px;">Interactive Map</div>
+        <div class="map-title">Find the deserts in your city.</div>
+        <div class="map-sub">Search any U.S. city to see verified restroom coverage and the gaps that remain.</div>
+      </div>
+      <div class="map-search">
+        <input class="map-input" placeholder="City or zip code..." />
+        <button class="map-btn">Search</button>
+      </div>
+    </div>
+    <div class="map-canvas">
+      <div class="map-grid"></div>
+      <div class="road h" style="top:25%"></div>
+      <div class="road h" style="top:42%"></div>
+      <div class="road h" style="top:62%"></div>
+      <div class="road h" style="top:79%"></div>
+      <div class="road v" style="left:20%"></div>
+      <div class="road v" style="left:38%"></div>
+      <div class="road v" style="left:58%"></div>
+      <div class="road v" style="left:77%"></div>
+      <div class="heat" style="width:200px;height:160px;background:rgba(197,48,48,0.35);top:40%;left:5%;"></div>
+      <div class="heat" style="width:180px;height:150px;background:rgba(197,48,48,0.3);top:20%;left:60%;"></div>
+      <div class="heat" style="width:150px;height:130px;background:rgba(197,48,48,0.28);top:55%;left:70%;"></div>
+      <div class="pin" style="top:42%;left:38%"></div>
+      <div class="pin" style="top:60%;left:58%"></div>
+      <div class="pin" style="top:26%;left:20%"></div>
+      <div class="pin" style="top:44%;left:57%"></div>
+      <div class="pin" style="top:25%;left:39%"></div>
+      <div class="pin" style="top:62%;left:20%"></div>
+      <div class="pin" style="top:79%;left:38%"></div>
+      <div class="pin" style="top:42%;left:77%"></div>
+      <div class="desert-badge" style="top:53%;left:7%">Southside Desert</div>
+      <div class="desert-badge" style="top:18%;left:62%">Northside Desert</div>
+      <div class="desert-badge" style="top:68%;left:68%">East End Desert</div>
+      <div class="map-city-label" style="top:10%;left:40%">City Center</div>
+      <div class="map-city-label" style="top:86%;left:55%">Riverfront</div>
+      <div class="map-legend">
+        <div class="legend-item"><div class="legend-dot" style="background:#4299E1;border:2px solid white;"></div> Verified public restroom</div>
+        <div class="legend-item"><div class="legend-heat"></div> Restroom desert zone</div>
+      </div>
+    </div>
+    <div style="margin-top:16px;display:flex;gap:24px;flex-wrap:wrap;align-items:center;">
+      <div style="font-size:0.78rem;color:rgba(245,239,224,0.4);font-weight:300;">Data updated continuously by the PortaDash community.</div>
+      <a href="#" style="font-size:0.78rem;color:var(--rust);text-decoration:none;font-weight:500;">Request a city report for your council →</a>
+    </div>
+  </div>
+</section>
+
+<!-- RICHMOND CASE STUDY -->
+<section class="richmond-section">
+  <div class="richmond-inner">
+    <div>
+      <div class="richmond-tag">Case Study — Richmond, Virginia</div>
+      <div class="richmond-title">Our home city. Our data. Our starting point.</div>
+      <div class="richmond-body">
+        <p>PortaDash was built in Richmond, and Richmond is where we first mapped the gaps. While the city center and specific riverfront areas have reasonable coverage, significant deserts persist across entire neighborhoods.</p>
+        <p>We've shared this data with city council and are actively working with Parks & Recreation and Public Works to make the case for targeted infrastructure investment.</p>
+      </div>
+      <div class="desert-tags">
+        <span class="desert-tag-pill">Southside</span>
+        <span class="desert-tag-pill">Northside</span>
+        <span class="desert-tag-pill">East End</span>
+      </div>
+    </div>
+    <div class="richmond-stat-grid">
+      <div class="r-stat">
+        <div class="r-stat-num">3</div>
+        <div class="r-stat-label">Major neighborhood deserts identified in Richmond</div>
+      </div>
+      <div class="r-stat">
+        <div class="r-stat-num">↑40%</div>
+        <div class="r-stat-label">Of high-traffic areas lack any verified public facility</div>
+      </div>
+      <div class="r-stat">
+        <div class="r-stat-num">0</div>
+        <div class="r-stat-label">Public restrooms along key Southside trail corridors</div>
+      </div>
+      <div class="r-stat">
+        <div class="r-stat-num">City</div>
+        <div class="r-stat-label">Council engagement underway — data available on request</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section">
+  <div class="cta-title">This changes when we map it together.</div>
+  <p class="cta-sub">Every pin added to PortaDash makes the picture clearer. Download the app, add your local restrooms, and help us turn data into action.</p>
+  <div class="cta-buttons">
+    <a href="#" class="cta-btn-white">Download PortaDash Free</a>
+    <a href="#" class="cta-btn-outline">Request a City Report</a>
+  </div>
+</section>
+
+</body>
+</html>
