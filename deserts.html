@@ -1073,7 +1073,7 @@
         };
         resultsEl.appendChild(item);
       });
-    } catch (e) { resultsEl.innerHTML = '<div class="search-result-item" style="color:#999">Search failed</div>'; }
+    } catch (e) { console.error('Search failed', e); resultsEl.innerHTML = '<div class="search-result-item" style="color:#999">Search failed</div>'; }
   }
 
   document.addEventListener('click', e => {
@@ -1112,8 +1112,6 @@
   document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
 
   // ── Bootstrap ─────────────────────────────────────────────────────────────────
-  buildComparePanel();
-
   (async () => {
     try {
       setLoading('Authenticating…');
@@ -1127,10 +1125,9 @@
         map.fitBounds(L.latLngBounds([Math.min(...lats), Math.min(...lons)], [Math.max(...lats), Math.max(...lons)]), { padding: [40, 40], maxZoom: 13 });
       }
       hideLoading();
-      buildComparePanel();
       fetchBoundaries();
       if (map.getZoom() >= 11) fetchOSM();
-    } catch (e) { console.error('Bootstrap failed', e); hideLoading(); buildComparePanel(); }
+    } catch (e) { console.error('Bootstrap failed', e); hideLoading(); }
   })();
 </script>
 </body>
