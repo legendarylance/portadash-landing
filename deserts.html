@@ -742,7 +742,7 @@
       communityMarker(p.lat, p.lon, colors[key], p.name,
         p.isPortable ? '🚽 User-reported porta potty' : '📍 Community pin').addTo(layers[key]);
     });
-    updateStats();
+    try { updateStats(); } catch (e) { console.error('updateStats failed', e); }
     updateHeatmap();
   }
 
@@ -787,7 +787,7 @@
         if (tags.tourism === 'museum') key = 'museum';
         if (key) { layerData[key].push({ lat, lon }); marker(lat, lon, colors[key], name || labelMap[key], labelMap[key]).addTo(layers[key]); osmCount++; }
       });
-      updateStats();
+      try { updateStats(); } catch (e) { console.error('updateStats failed', e); }
       updateHeatmap();
       if (pendingStatCity) { computeAndStoreCityStats(pendingStatCity); pendingStatCity = null; }
     } catch (e) { console.error('OSM fetch failed', e); } finally { hideLoading(); }
@@ -874,6 +874,7 @@
     { name: 'Seattle, WA',          pop: 737255  },
     { name: 'Denver, CO',           pop: 715522  },
     { name: 'Nashville, TN',        pop: 689447  },
+    { name: 'Boston, MA',           pop: 675647  },
     { name: 'Washington, DC',       pop: 670050  },
     { name: 'Louisville, KY',       pop: 633045  },
     { name: 'Las Vegas, NV',        pop: 641903  },
@@ -1039,7 +1040,7 @@
     highlightLayer = L.geoJSON(geojson, { style: { color: '#FF6F00', weight: 2.5, opacity: 0.9, fillColor: '#FF6F00', fillOpacity: 0.08 } }).addTo(map);
     highlightFeature = { type: 'Feature', geometry: geojson, properties: {} };
     updateHeatmap();
-    updateStats();
+    try { updateStats(); } catch (e) { console.error('updateStats failed', e); }
   }
 
   async function searchLocation() {
