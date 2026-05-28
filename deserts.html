@@ -454,11 +454,11 @@
 
       <!-- Stats bar -->
       <div id="map-stats">
-        <div class="mstat"><div class="mstat-num" id="stat-community">—</div><div class="mstat-label">Community Pins</div></div>
+        <div class="mstat"><div class="mstat-num" id="stat-community">—</div><div class="mstat-label" id="stat-community-label">Community Pins</div></div>
         <div class="mstat-divider"></div>
-        <div class="mstat"><div class="mstat-num" id="stat-osm">—</div><div class="mstat-label">OSM Facilities</div></div>
+        <div class="mstat"><div class="mstat-num" id="stat-osm">—</div><div class="mstat-label" id="stat-osm-label">OSM Facilities</div></div>
         <div class="mstat-divider"></div>
-        <div class="mstat"><div class="mstat-num" id="stat-visible">—</div><div class="mstat-label">Visible on Map</div></div>
+        <div class="mstat"><div class="mstat-num" id="stat-visible">—</div><div class="mstat-label" id="stat-visible-label">Visible on Map</div></div>
       </div>
 
       <div id="loading"><div class="spinner"></div><span id="loading-text">Loading community pins…</span></div>
@@ -742,7 +742,7 @@
       communityMarker(p.lat, p.lon, colors[key], p.name,
         p.isPortable ? '🚽 User-reported porta potty' : '📍 Community pin').addTo(layers[key]);
     });
-    document.getElementById('stat-community').textContent = layerData.community.length + layerData.porta.length;
+    updateStats();
     updateHeatmap();
   }
 
@@ -787,7 +787,7 @@
         if (tags.tourism === 'museum') key = 'museum';
         if (key) { layerData[key].push({ lat, lon }); marker(lat, lon, colors[key], name || labelMap[key], labelMap[key]).addTo(layers[key]); osmCount++; }
       });
-      document.getElementById('stat-osm').textContent = osmCount;
+      updateStats();
       updateHeatmap();
       if (pendingStatCity) { computeAndStoreCityStats(pendingStatCity); pendingStatCity = null; }
     } catch (e) { console.error('OSM fetch failed', e); } finally { hideLoading(); }
@@ -826,6 +826,31 @@
     let count = 0;
     Object.keys(layers).forEach(key => count += layers[key].getLayers().length);
     document.getElementById('stat-visible').textContent = count;
+  }
+
+  function updateStats() {
+    if (!highlightFeature) {
+      // No city selected — show global counts
+      document.getElementById('stat-community').textContent = layerData.community.length + layerData.porta.length;
+      document.getElementById('stat-osm').textContent = osmCount;
+      let visible = 0;
+      Object.keys(layers).forEach(k => visible += layers[k].getLayers().length);
+      document.getElementById('stat-visible').textContent = visible;
+      document.getElementById('stat-community-label').textContent = 'Community Pins';
+      document.getElementById('stat-osm-label').textContent = 'OSM Facilities';
+      document.getElementById('stat-visible-label').textContent = 'Visible on Map';
+      return;
+    }
+    const inBoundary = (lat, lon) => turf.booleanPointInPolygon(turf.point([lon, lat]), highlightFeature);
+    const communityInCity = (layerData.community.concat(layerData.porta)).filter(p => inBoundary(p.lat, p.lon)).length;
+    const osmInCity = ['osmRestroom','library','museum'].flatMap(k => layerData[k]).filter(p => inBoundary(p.lat, p.lon)).length;
+    const visibleInCity = communityInCity + osmInCity;
+    document.getElementById('stat-community').textContent = communityInCity;
+    document.getElementById('stat-osm').textContent = osmInCity;
+    document.getElementById('stat-visible').textContent = visibleInCity;
+    document.getElementById('stat-community-label').textContent = 'Community Pins (city)';
+    document.getElementById('stat-osm-label').textContent = 'OSM Facilities (city)';
+    document.getElementById('stat-visible-label').textContent = 'Total in City';
   }
 
   // ── Peer Cities ───────────────────────────────────────────────────────────────
@@ -1014,6 +1039,7 @@
     highlightLayer = L.geoJSON(geojson, { style: { color: '#FF6F00', weight: 2.5, opacity: 0.9, fillColor: '#FF6F00', fillOpacity: 0.08 } }).addTo(map);
     highlightFeature = { type: 'Feature', geometry: geojson, properties: {} };
     updateHeatmap();
+    updateStats();
   }
 
   async function searchLocation() {
