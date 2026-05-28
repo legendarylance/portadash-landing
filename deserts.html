@@ -874,7 +874,6 @@
     { name: 'Seattle, WA',          pop: 737255  },
     { name: 'Denver, CO',           pop: 715522  },
     { name: 'Nashville, TN',        pop: 689447  },
-    { name: 'Boston, MA',           pop: 675647  },
     { name: 'Washington, DC',       pop: 670050  },
     { name: 'Louisville, KY',       pop: 633045  },
     { name: 'Las Vegas, NV',        pop: 641903  },
@@ -1060,14 +1059,13 @@
         item.onclick = () => {
           const bbox = r.boundingbox;
           map.fitBounds([[parseFloat(bbox[0]), parseFloat(bbox[2])], [parseFloat(bbox[1]), parseFloat(bbox[3])]], { maxZoom: 13 });
-          const rawCity = r.display_name.split(',')[0].trim();
-          const peerMatch = PEER_CITIES.find(c => c.name.toLowerCase().startsWith(rawCity.toLowerCase()));
-          const cityLabel = peerMatch ? peerMatch.name : r.display_name.split(',').slice(0,2).join(',').trim();
+          const cityLabel = r.display_name.split(',').slice(0,2).join(',').trim();
           document.getElementById('search-input').value = cityLabel;
           resultsEl.style.display = 'none';
           showHighlight(r.geojson || null);
           // Detect population and show peer comparison
           const nominatimPop = parseInt(r.extratags?.population);
+          const peerMatch = PEER_CITIES.find(c => c.name.toLowerCase().includes(cityLabel.split(',')[0].toLowerCase().trim()));
           const cityPop = (nominatimPop > 0 ? nominatimPop : null) || peerMatch?.pop || popFromBbox(bbox);
           buildCompareSection(cityLabel, cityPop);
         };
