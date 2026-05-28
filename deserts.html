@@ -1049,10 +1049,11 @@
     resultsEl.innerHTML = '<div class="search-result-item">Searching…</div>';
     resultsEl.style.display = 'block';
     try {
-      const res = await fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(q)}&format=json&limit=5&polygon_geojson=1&extratags=1&addressdetails=1`, { headers: { 'Accept-Language': 'en' } });
+      const res = await fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(q)}&format=json&limit=5&polygon_geojson=1&extratags=1&addressdetails=1`);
+      if (!res.ok) { resultsEl.innerHTML = '<div class="search-result-item" style="color:#999">Search unavailable — try again</div>'; return; }
       const results = await res.json();
       resultsEl.innerHTML = '';
-      if (results.length === 0) { resultsEl.innerHTML = '<div class="search-result-item" style="color:#999">No results found</div>'; return; }
+      if (!Array.isArray(results) || results.length === 0) { resultsEl.innerHTML = '<div class="search-result-item" style="color:#999">No results found</div>'; return; }
       results.forEach(r => {
         const item = document.createElement('div');
         item.className = 'search-result-item'; item.textContent = r.display_name;
@@ -1071,7 +1072,7 @@
         };
         resultsEl.appendChild(item);
       });
-    } catch (e) { console.error('Search failed', e); resultsEl.innerHTML = '<div class="search-result-item" style="color:#999">Search failed</div>'; }
+    } catch (e) { console.error('Search failed', e); resultsEl.innerHTML = `<div class="search-result-item" style="color:#999">Search failed: ${e.message}</div>`; }
   }
 
   document.addEventListener('click', e => {
