@@ -32,3 +32,5 @@ build/
 
 # Claude Code
 .claude/
+pipeline/node_modules/
+pipeline/results/

@@ -1,0 +1,13 @@
+{
+  "name": "restroom-desert-pipeline",
+  "version": "1.0.0",
+  "description": "Restroom Desert Report — data pipeline for social media rankings",
+  "type": "module",
+  "main": "pipeline.js",
+  "scripts": {
+    "start": "node pipeline.js"
+  },
+  "dependencies": {
+    "@turf/turf": "^6.5.0"
+  }
+}
