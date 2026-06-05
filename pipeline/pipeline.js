@@ -1,14 +1,21 @@
 /**
  * Restroom Desert Report — Data Pipeline
  *
- * Usage:
+ * Single state:
  *   node pipeline.js --state "Virginia"
- *   node pipeline.js --state "California" --top 10
+ *
+ * Batch (multiple states at once):
+ *   node pipeline.js --batch "Virginia,North Carolina,Tennessee,Georgia,South Carolina"
+ *
+ * Generate a full posting schedule (no scoring):
+ *   node pipeline.js --schedule --start "2026-07-01" --cadence 3
+ *
+ * List available states:
  *   node pipeline.js --list-states
  *
- * Output:
+ * Output per state:
  *   results/<state>_<date>.json   — full ranked data
- *   results/<state>_<date>.txt    — human-readable summary for social captions
+ *   results/<state>_<date>.txt    — worst-5 social caption ready to post
  */
 
 import { CITIES_BY_STATE, STATE_NAMES } from './cities.js';
@@ -191,67 +198,73 @@ async function scoreCity(city, index, total) {
   }
 }
 
-// ── Format social media caption ───────────────────────────────────────────────
+// ── Format social media caption (worst-only Series 1) ────────────────────────
 function formatCaption(state, ranked, topN) {
   const worst = ranked.slice(0, topN);
-  const best  = ranked.slice(-topN).reverse();
   const date  = new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
-
-  const worstLines = worst.map((c, i) => `${i + 1}. ${c.name} — ${c.gapPct}% desert`).join('\n');
-  const bestLines  = best.map((c, i) =>  `${i + 1}. ${c.name} — ${c.gapPct}% desert`).join('\n');
+  const stateTag = state.replace(/\s/g, '');
+  const worstLines = worst.map((c, i) => `${i + 1}. ${c.name} — ${c.gapPct}% restroom desert`).join('\n');
+  const worstCity  = worst[0]?.name.split(',')[0] || state;
 
   return `
 🌵 RESTROOM DESERT REPORT — ${state.toUpperCase()}
 📅 ${date}
 
-━━ WORST ${topN} ━━
+Bottom 5 worst cities for public restrooms in ${state}:
+
 ${worstLines}
 
-━━ BEST ${topN} ━━
-${bestLines}
+A Restroom Desert is any area where no public restroom exists within a 5-minute walk. These cities have the highest share of their land area with zero coverage.
 
-A Restroom Desert = any area where no public restroom exists within a 5-minute walk.
-Score = % of city with no facility within 400m (OSM data + community pins).
+Think we got it wrong? Add missing facilities at portadash.com/deserts — your corrections improve the next report.
 
-Think we missed a facility in your city? Add it → portadash.com/deserts
-Download PortaDash → portadash.com
+${worstCity}, do you agree? Drop your experience below 👇
 
-#RestroomDesert #PublicRestrooms #${state.replace(/\s/g, '')} #PortaDash #CivicData
+#RestroomDesert #PublicRestrooms #${stateTag} #PortaDash #CivicData #PublicHealth
 `.trim();
 }
 
-// ── Main ──────────────────────────────────────────────────────────────────────
-async function main() {
-  const args = process.argv.slice(2);
+// ── Generate posting schedule ─────────────────────────────────────────────────
+function generateSchedule(startDateStr, postsPerWeek) {
+  const POSTING_DAYS = {
+    1: [1],         // 1x/week — Monday
+    2: [1, 4],      // 2x/week — Mon, Thu
+    3: [1, 3, 5],   // 3x/week — Mon, Wed, Fri
+  }[postsPerWeek] || [1, 3, 5];
 
-  if (args.includes('--list-states')) {
-    console.log('\nAvailable states:\n');
-    STATE_NAMES.forEach(s => console.log(`  ${s} (${CITIES_BY_STATE[s].length} cities)`));
-    console.log();
-    return;
+  const start = new Date(startDateStr);
+  const schedule = [];
+  let current = new Date(start);
+  let stateIndex = 0;
+
+  // Skip Virginia — already have it
+  const states = STATE_NAMES.filter(s => s !== 'Virginia');
+
+  while (stateIndex < states.length) {
+    const dow = current.getDay(); // 0=Sun, 1=Mon...
+    if (POSTING_DAYS.includes(dow)) {
+      schedule.push({
+        date: current.toISOString().split('T')[0],
+        dayOfWeek: ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'][dow],
+        state: states[stateIndex],
+        series: 'Series 1 — Worst 5 Restroom Deserts',
+      });
+      stateIndex++;
+    }
+    current.setDate(current.getDate() + 1);
   }
+  return schedule;
+}
 
-  const stateIndex = args.indexOf('--state');
-  if (stateIndex === -1 || !args[stateIndex + 1]) {
-    console.log('\nUsage:');
-    console.log('  node pipeline.js --state "Virginia"');
-    console.log('  node pipeline.js --state "California" --top 10');
-    console.log('  node pipeline.js --list-states\n');
-    process.exit(1);
-  }
-
-  const stateName = args[stateIndex + 1];
-  const topN = parseInt(args[args.indexOf('--top') + 1]) || 5;
-
+// ── Score and save a single state ─────────────────────────────────────────────
+async function runState(stateName, topN) {
   const cities = CITIES_BY_STATE[stateName];
   if (!cities) {
-    console.error(`\nState not found: "${stateName}"`);
-    console.error('Run with --list-states to see available states.\n');
-    process.exit(1);
+    console.error(`\nState not found: "${stateName}". Run --list-states to see options.\n`);
+    return false;
   }
 
-  console.log(`\n🌵 Restroom Desert Report — ${stateName}`);
-  console.log(`   Scoring ${cities.length} cities (top ${topN} worst/best)\n`);
+  console.log(`\n🌵 ${stateName} — scoring ${cities.length} cities`);
 
   const results = [];
   for (let i = 0; i < cities.length; i++) {
@@ -260,29 +273,24 @@ async function main() {
   }
 
   if (results.length === 0) {
-    console.error('\nNo cities scored successfully.\n');
-    process.exit(1);
+    console.error(`  No cities scored for ${stateName}.\n`);
+    return false;
   }
 
-  // Sort worst → best
   const ranked = results.sort((a, b) => b.gapPct - a.gapPct);
 
-  // Print summary
+  // Print table
   console.log(`\n${'─'.repeat(60)}`);
   console.log(`RESULTS — ${stateName} (${results.length} cities scored)`);
   console.log('─'.repeat(60));
   console.log(`${'Rank'.padEnd(6)}${'City'.padEnd(28)}${'Pop'.padEnd(8)}${'Gap %'.padEnd(8)}Label`);
   console.log('─'.repeat(60));
   ranked.forEach((c, i) => {
-    const rank = String(i + 1).padEnd(6);
-    const name = c.name.padEnd(28);
-    const pop  = c.populationFormatted.padEnd(8);
-    const gap  = `${c.gapPct}%`.padEnd(8);
-    console.log(`${rank}${name}${pop}${gap}${c.gapLabel}`);
+    console.log(`${String(i+1).padEnd(6)}${c.name.padEnd(28)}${c.populationFormatted.padEnd(8)}${`${c.gapPct}%`.padEnd(8)}${c.gapLabel}`);
   });
   console.log('─'.repeat(60));
 
-  // Save results
+  // Save files
   const dateStr = new Date().toISOString().split('T')[0];
   const slug    = stateName.toLowerCase().replace(/\s/g, '_');
   const outDir  = path.join(__dirname, 'results');
@@ -291,25 +299,97 @@ async function main() {
   const jsonPath = path.join(outDir, `${slug}_${dateStr}.json`);
   const txtPath  = path.join(outDir, `${slug}_${dateStr}.txt`);
 
-  const output = {
+  fs.writeFileSync(jsonPath, JSON.stringify({
     state: stateName,
     generatedAt: new Date().toISOString(),
     methodology: 'OSM public toilets, libraries, museums. Gap % = share of city area with no facility within 400m.',
     citiesScored: results.length,
     worst: ranked.slice(0, topN),
-    best:  ranked.slice(-topN).reverse(),
-    all:   ranked,
-  };
+    all: ranked,
+  }, null, 2));
 
-  fs.writeFileSync(jsonPath, JSON.stringify(output, null, 2));
-  fs.writeFileSync(txtPath, formatCaption(stateName, ranked, topN));
+  const caption = formatCaption(stateName, ranked, topN);
+  fs.writeFileSync(txtPath, caption);
 
-  console.log(`\n✅ Saved:`);
-  console.log(`   ${jsonPath}`);
-  console.log(`   ${txtPath}`);
-  console.log('\n📋 Social caption preview:\n');
-  console.log(formatCaption(stateName, ranked, topN));
+  console.log(`\n✅ Saved: ${jsonPath}`);
+  console.log(`           ${txtPath}`);
+  console.log('\n📋 Caption:\n');
+  console.log(caption);
   console.log();
+  return true;
+}
+
+// ── Main ──────────────────────────────────────────────────────────────────────
+async function main() {
+  const args = process.argv.slice(2);
+  const topN = parseInt(args[args.indexOf('--top') + 1]) || 5;
+
+  // ── --list-states ──
+  if (args.includes('--list-states')) {
+    console.log('\nAvailable states:\n');
+    STATE_NAMES.forEach(s => console.log(`  ${s} (${CITIES_BY_STATE[s].length} cities)`));
+    console.log();
+    return;
+  }
+
+  // ── --schedule ──
+  if (args.includes('--schedule')) {
+    const startIdx = args.indexOf('--start');
+    const cadenceIdx = args.indexOf('--cadence');
+    const startDate = startIdx !== -1 ? args[startIdx + 1] : new Date().toISOString().split('T')[0];
+    const cadence   = cadenceIdx !== -1 ? parseInt(args[cadenceIdx + 1]) : 3;
+
+    const schedule = generateSchedule(startDate, cadence);
+    const outDir   = path.join(__dirname, 'results');
+    if (!fs.existsSync(outDir)) fs.mkdirSync(outDir);
+    const schedulePath = path.join(outDir, 'posting_schedule.json');
+    const csvPath      = path.join(outDir, 'posting_schedule.csv');
+
+    fs.writeFileSync(schedulePath, JSON.stringify(schedule, null, 2));
+    const csv = ['Date,Day,State,Series', ...schedule.map(r => `${r.date},${r.dayOfWeek},"${r.state}","${r.series}"`)].join('\n');
+    fs.writeFileSync(csvPath, csv);
+
+    console.log(`\n📅 Posting Schedule — ${cadence}x/week starting ${startDate}`);
+    console.log(`   ${schedule.length} posts · completes ${schedule[schedule.length-1].date}\n`);
+    console.log(`${'Date'.padEnd(14)}${'Day'.padEnd(6)}State`);
+    console.log('─'.repeat(50));
+    schedule.forEach(r => console.log(`${r.date.padEnd(14)}${r.dayOfWeek.padEnd(6)}${r.state}`));
+    console.log(`\n✅ Saved: ${schedulePath}`);
+    console.log(`           ${csvPath}\n`);
+    return;
+  }
+
+  // ── --batch ──
+  if (args.includes('--batch')) {
+    const batchIdx = args.indexOf('--batch');
+    if (!args[batchIdx + 1]) {
+      console.error('\nProvide a comma-separated list of states: --batch "Virginia,North Carolina,Tennessee"\n');
+      process.exit(1);
+    }
+    const states = args[batchIdx + 1].split(',').map(s => s.trim());
+    console.log(`\n🌵 Restroom Desert Report — Batch run (${states.length} states)`);
+    for (const state of states) {
+      await runState(state, topN);
+    }
+    console.log(`\n✅ Batch complete. Results saved to pipeline/results/\n`);
+    return;
+  }
+
+  // ── --state (single) ──
+  const stateIdx = args.indexOf('--state');
+  if (stateIdx !== -1 && args[stateIdx + 1]) {
+    await runState(args[stateIdx + 1], topN);
+    return;
+  }
+
+  // ── Help ──
+  console.log(`
+Usage:
+  node pipeline.js --state "Virginia"
+  node pipeline.js --batch "Virginia,North Carolina,Tennessee,Georgia,South Carolina"
+  node pipeline.js --schedule --start "2026-07-01" --cadence 3
+  node pipeline.js --list-states
+  `);
 }
 
 main().catch(err => {
