@@ -61,6 +61,20 @@ function gapLabel(pct) {
   return '💧 Well Covered';
 }
 
+// ── Cache — persist successful scores across runs ─────────────────────────────
+const CACHE_PATH = path.join(__dirname, 'results', 'cache.json');
+
+function loadCache() {
+  if (!fs.existsSync(CACHE_PATH)) return {};
+  try { return JSON.parse(fs.readFileSync(CACHE_PATH, 'utf8')); } catch (_) { return {}; }
+}
+
+function saveCache(cache) {
+  const outDir = path.join(__dirname, 'results');
+  if (!fs.existsSync(outDir)) fs.mkdirSync(outDir);
+  fs.writeFileSync(CACHE_PATH, JSON.stringify(cache, null, 2));
+}
+
 // ── Nominatim: get city boundary ──────────────────────────────────────────────
 const REQUEST_HEADERS = {
   'User-Agent': 'PortaDash-RestroomDesertReport/1.0 (portadash.com)',
@@ -170,8 +184,14 @@ function computeGapScore(bbox, geojson, facilities) {
 }
 
 // ── Score a single city ───────────────────────────────────────────────────────
-async function scoreCity(city, index, total) {
+async function scoreCity(city, index, total, cache) {
   process.stdout.write(`  [${index + 1}/${total}] ${city.name} ... `);
+
+  // Return cached result if available
+  if (cache[city.name]) {
+    console.log(`${cache[city.name].gapPct}% gap · ${cache[city.name].facilitiesFound} facilities (cached)`);
+    return cache[city.name];
+  }
 
   try {
     await sleep(NOMINATIM_DELAY);
@@ -196,7 +216,7 @@ async function scoreCity(city, index, total) {
     const flagged = facilities.length === 0 ? ' ⚠️  flagged — verify manually' : '';
     console.log(`${gapPct}% gap · ${facilities.length} facilities${flagged}`);
 
-    return {
+    const result = {
       name: city.name,
       population: city.pop,
       populationFormatted: formatPop(city.pop),
@@ -207,6 +227,14 @@ async function scoreCity(city, index, total) {
       libraryCount:  facilities.filter(f => f.type === 'library').length,
       museumCount:   facilities.filter(f => f.type === 'museum').length,
     };
+
+    // Save to cache immediately so progress is never lost
+    if (facilities.length > 0) {
+      cache[city.name] = result;
+      saveCache(cache);
+    }
+
+    return result;
   } catch (err) {
     console.log(`error: ${err.message}`);
     return null;
@@ -279,11 +307,14 @@ async function runState(stateName, topN) {
     return false;
   }
 
-  console.log(`\n🌵 ${stateName} — scoring ${cities.length} cities`);
+  const cache = loadCache();
+  const cached = cities.filter(c => cache[c.name]).length;
+  const toScore = cities.filter(c => !cache[c.name]).length;
+  console.log(`\n🌵 ${stateName} — ${cities.length} cities (${cached} cached, ${toScore} to score)`);
 
   const results = [];
   for (let i = 0; i < cities.length; i++) {
-    const result = await scoreCity(cities[i], i, cities.length);
+    const result = await scoreCity(cities[i], i, cities.length, cache);
     if (result) results.push(result);
   }
 
