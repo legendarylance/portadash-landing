@@ -4,6 +4,9 @@
  * Single state:
  *   node pipeline.js --state "Virginia"
  *
+ * With population-weighted gap (US Census ACS, recommended for press):
+ *   node pipeline.js --state "Virginia" --census
+ *
  * Batch (multiple states at once):
  *   node pipeline.js --batch "Virginia,North Carolina,Tennessee,Georgia,South Carolina"
  *
@@ -16,6 +19,9 @@
  * Output per state:
  *   results/<state>_<date>.json   — full ranked data
  *   results/<state>_<date>.txt    — worst-5 social caption ready to post
+ *
+ * Environment:
+ *   CENSUS_API_KEY — free key from api.census.gov (increases Census rate limits)
  */
 
 import { CITIES_BY_STATE, STATE_NAMES } from './cities.js';
@@ -31,6 +37,7 @@ const DEAD_ZONE_RADIUS = 400;   // meters — same as website
 const GRID_STEPS       = 60;    // grid resolution (60x60 = 3600 cells per city)
 const NOMINATIM_DELAY  = 1200;  // ms between Nominatim requests (rate limit)
 const OVERPASS_DELAY   = 2000;  // ms between Overpass requests
+const CENSUS_DELAY     = 600;   // ms between Census API calls
 
 const OVERPASS_ENDPOINTS = [
   'https://overpass-api.de/api/interpreter',
@@ -69,6 +76,23 @@ function per100kLabel(rate) {
   if (rate >= 30)  return '🟠 Underserved';
   return '🔴 Severely underserved';
 }
+
+// ── Census state FIPS codes ───────────────────────────────────────────────────
+const STATE_FIPS = {
+  'Alabama': '01', 'Alaska': '02', 'Arizona': '04', 'Arkansas': '05',
+  'California': '06', 'Colorado': '08', 'Connecticut': '09', 'Delaware': '10',
+  'Florida': '12', 'Georgia': '13', 'Hawaii': '15', 'Idaho': '16',
+  'Illinois': '17', 'Indiana': '18', 'Iowa': '19', 'Kansas': '20',
+  'Kentucky': '21', 'Louisiana': '22', 'Maine': '23', 'Maryland': '24',
+  'Massachusetts': '25', 'Michigan': '26', 'Minnesota': '27', 'Mississippi': '28',
+  'Missouri': '29', 'Montana': '30', 'Nebraska': '31', 'Nevada': '32',
+  'New Hampshire': '33', 'New Jersey': '34', 'New Mexico': '35', 'New York': '36',
+  'North Carolina': '37', 'North Dakota': '38', 'Ohio': '39', 'Oklahoma': '40',
+  'Oregon': '41', 'Pennsylvania': '42', 'Rhode Island': '44', 'South Carolina': '45',
+  'South Dakota': '46', 'Tennessee': '47', 'Texas': '48', 'Utah': '49',
+  'Vermont': '50', 'Virginia': '51', 'Washington': '53', 'West Virginia': '54',
+  'Wisconsin': '55', 'Wyoming': '56',
+};
 
 // ── Cache — persist successful scores across runs ─────────────────────────────
 const CACHE_PATH = path.join(__dirname, 'results', 'cache.json');
@@ -192,14 +216,110 @@ function computeGapScore(bbox, geojson, facilities) {
   return totalCells > 0 ? Math.round((deadCells / totalCells) * 100) : 0;
 }
 
+// ── Census: population-weighted gap ──────────────────────────────────────────
+//
+// Approach: US Census ACS 5-year block group data (pop + internal point lat/lon)
+// for each county that overlaps the city. Filter block group centroids to those
+// inside the city boundary, then compute what share of the population lives in a
+// "desert" cell (no facility within 400m of their block group centroid).
+//
+// More accurate than land-area gap because dense neighbourhoods count more than
+// empty industrial zones.
+
+// Census Geocoder: lat/lon → county FIPS (3-digit)
+async function getCountyFips(lat, lon) {
+  const url = `https://geocoding.geo.census.gov/geocoder/geographies/coordinates?x=${lon}&y=${lat}&benchmark=Public_AR_Current&vintage=Current_Current&format=json`;
+  try {
+    const res = await fetch(url, { headers: REQUEST_HEADERS });
+    if (!res.ok) return null;
+    const data = await res.json();
+    const counties = data?.result?.geographies?.Counties;
+    if (!counties?.length) return null;
+    return counties[0].COUNTY; // e.g. "760"
+  } catch (_) {
+    return null;
+  }
+}
+
+// Census ACS 5-year: all block groups in a county with population + centroid
+// Returns array of { lat, lon, pop }
+async function getCensusBlockGroupData(stFips, coFips) {
+  const key = process.env.CENSUS_API_KEY ? `&key=${process.env.CENSUS_API_KEY}` : '';
+  const url = `https://api.census.gov/data/2023/acs/acs5?get=B01001_001E,INTPTLAT,INTPTLON&for=block+group:*&in=state:${stFips}+county:${coFips}${key}`;
+
+  try {
+    const res = await fetch(url, { headers: REQUEST_HEADERS });
+    if (!res.ok) return [];
+    const rows = await res.json();
+    if (!Array.isArray(rows) || rows.length < 2) return [];
+
+    return rows.slice(1)
+      .map(row => ({
+        pop: parseInt(row[0]) || 0,
+        lat: parseFloat(row[1]),
+        lon: parseFloat(row[2]),
+      }))
+      .filter(bg => bg.pop > 0 && !isNaN(bg.lat) && !isNaN(bg.lon));
+  } catch (_) {
+    return [];
+  }
+}
+
+// Compute population-weighted gap % from Census block group centroids
+function computePopWeightedGap(geojson, facilities, blockGroups) {
+  const cityFeature = geojson
+    ? { type: 'Feature', geometry: geojson, properties: {} }
+    : null;
+
+  let totalPop = 0;
+  let desertPop = 0;
+
+  for (const bg of blockGroups) {
+    // Filter to block groups whose centroid is inside the city boundary
+    if (cityFeature) {
+      try {
+        if (!turf.booleanPointInPolygon(turf.point([bg.lon, bg.lat]), cityFeature)) continue;
+      } catch (_) {
+        // Malformed polygon — include anyway
+      }
+    }
+
+    totalPop += bg.pop;
+    const covered = facilities.some(f => flatDist(bg.lat, bg.lon, f.lat, f.lon) <= DEAD_ZONE_RADIUS);
+    if (!covered) desertPop += bg.pop;
+  }
+
+  return totalPop > 0 ? Math.round((desertPop / totalPop) * 100) : null;
+}
+
+// Enrich a result with population-weighted gap — fetches Census data for one city
+async function enrichWithCensus(result, stFips) {
+  if (!result._boundary || !result._facilities) return;
+
+  const { bbox, geojson } = result._boundary;
+  const lat = (parseFloat(bbox[0]) + parseFloat(bbox[1])) / 2;
+  const lon = (parseFloat(bbox[2]) + parseFloat(bbox[3])) / 2;
+
+  const coFips = await getCountyFips(lat, lon);
+  if (!coFips) { result.popWeightedGapPct = null; return; }
+
+  await sleep(CENSUS_DELAY);
+
+  const blockGroups = await getCensusBlockGroupData(stFips, coFips);
+  if (!blockGroups.length) { result.popWeightedGapPct = null; return; }
+
+  result.popWeightedGapPct = computePopWeightedGap(geojson, result._facilities, blockGroups);
+}
+
 // ── Score a single city ───────────────────────────────────────────────────────
 async function scoreCity(city, index, total, cache) {
   process.stdout.write(`  [${index + 1}/${total}] ${city.name} ... `);
 
   // Return cached result if available
   if (cache[city.name]) {
-    console.log(`${cache[city.name].gapPct}% gap · ${cache[city.name].facilitiesFound} facilities (cached)`);
-    return cache[city.name];
+    const cached = cache[city.name];
+    console.log(`${cached.gapPct}% gap · ${cached.facilitiesFound} facilities (cached)`);
+    return cached;
   }
 
   try {
@@ -221,23 +341,26 @@ async function scoreCity(city, index, total, cache) {
       facilities = await getFacilities(boundary.bbox);
     }
 
-    const gapPct          = computeGapScore(boundary.bbox, boundary.geojson, facilities);
+    const gapPct            = computeGapScore(boundary.bbox, boundary.geojson, facilities);
     const facilitiesPer100k = city.pop > 0 ? Math.round((facilities.length / city.pop) * 100000) : 0;
     const flagged = facilities.length === 0 ? ' ⚠️  flagged — verify manually' : '';
     console.log(`${gapPct}% gap · ${facilities.length} facilities · ${facilitiesPer100k}/100k${flagged}`);
 
     const result = {
-      name: city.name,
-      population: city.pop,
+      name:               city.name,
+      population:         city.pop,
       populationFormatted: formatPop(city.pop),
       gapPct,
-      gapLabel: gapLabel(gapPct),
-      facilitiesFound: facilities.length,
+      gapLabel:           gapLabel(gapPct),
+      facilitiesFound:    facilities.length,
       facilitiesPer100k,
-      per100kLabel: per100kLabel(facilitiesPer100k),
-      restroomCount: facilities.filter(f => f.type === 'restroom').length,
-      libraryCount:  facilities.filter(f => f.type === 'library').length,
-      museumCount:   facilities.filter(f => f.type === 'museum').length,
+      per100kLabel:       per100kLabel(facilitiesPer100k),
+      restroomCount:      facilities.filter(f => f.type === 'restroom').length,
+      libraryCount:       facilities.filter(f => f.type === 'library').length,
+      museumCount:        facilities.filter(f => f.type === 'museum').length,
+      // Internal fields — used for Census enrichment, stripped from public JSON
+      _boundary:  { bbox: boundary.bbox, geojson: boundary.geojson },
+      _facilities: facilities,
     };
 
     // Save to cache immediately so progress is never lost
@@ -253,15 +376,40 @@ async function scoreCity(city, index, total, cache) {
   }
 }
 
+// ── Strip internal cache fields before writing public JSON ────────────────────
+function toPublicResult(r) {
+  const { _boundary, _facilities, ...pub } = r;
+  return pub;
+}
+
 // ── Format social media caption (worst-only Series 1) ────────────────────────
 function formatCaption(state, ranked, topN) {
   const worst = ranked.slice(0, topN);
   const date  = new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
   const stateTag = state.replace(/\s/g, '');
-  const worstLines = worst.map((c, i) =>
-    `${i + 1}. ${c.name}\n   🌵 ${c.gapPct}% desert · ${c.facilitiesPer100k} facilities per 100k residents`
-  ).join('\n');
+  const hasPopWeighted = worst.some(c => c.popWeightedGapPct != null);
+
+  const worstLines = worst.map((c, i) => {
+    const lines = [
+      `${i + 1}. ${c.name}`,
+      `   🌵 ${c.gapPct}% land desert · ${c.facilitiesPer100k} per 100k residents`,
+    ];
+    if (c.popWeightedGapPct != null) {
+      lines.push(`   👥 ${c.popWeightedGapPct}% of residents in a desert zone`);
+    }
+    return lines.join('\n');
+  }).join('\n');
+
   const worstCity = worst[0]?.name.split(',')[0] || state;
+
+  const methodologyNote = hasPopWeighted
+    ? `📊 Three metrics used to reduce bias:
+• Desert % = share of city land with no facility within 400m
+• Per 100k = facilities per 100,000 residents (WHO benchmark: 200)
+• Residents % = share of population in a desert zone (US Census ACS data)`
+    : `📊 Two metrics used to reduce bias:
+• Desert % = share of city land with no facility within 400m
+• Per 100k = facilities per 100,000 residents (WHO benchmark: 200)`;
 
   return `
 🌵 RESTROOM DESERT REPORT — ${state.toUpperCase()}
@@ -273,9 +421,7 @@ ${worstLines}
 
 A Restroom Desert is any area where no public restroom exists within a 5-minute walk.
 
-📊 Two metrics used to reduce bias:
-• Desert % = share of city land with no facility within 400m
-• Per 100k = facilities per 100,000 residents (WHO benchmark: 200)
+${methodologyNote}
 
 Data: OpenStreetMap + community pins. Think we missed a facility? Add it → portadash.com/deserts
 
@@ -318,15 +464,20 @@ function generateSchedule(startDateStr, postsPerWeek) {
 }
 
 // ── Score and save a single state ─────────────────────────────────────────────
-async function runState(stateName, topN) {
+async function runState(stateName, topN, useCensus) {
   const cities = CITIES_BY_STATE[stateName];
   if (!cities) {
     console.error(`\nState not found: "${stateName}". Run --list-states to see options.\n`);
     return false;
   }
 
+  const stFips = STATE_FIPS[stateName];
+  if (useCensus && !stFips) {
+    console.warn(`  ⚠️  No FIPS code found for ${stateName} — skipping Census enrichment`);
+  }
+
   const cache = loadCache();
-  const cached = cities.filter(c => cache[c.name]).length;
+  const cached  = cities.filter(c => cache[c.name]).length;
   const toScore = cities.filter(c => !cache[c.name]).length;
   console.log(`\n🌵 ${stateName} — ${cities.length} cities (${cached} cached, ${toScore} to score)`);
 
@@ -342,22 +493,60 @@ async function runState(stateName, topN) {
   }
 
   const ranked = results.sort((a, b) => b.gapPct - a.gapPct);
+  const worst  = ranked.slice(0, topN);
 
-  // Print table
-  console.log(`\n${'─'.repeat(80)}`);
+  // ── Census enrichment for worst-N cities ──────────────────────────────────
+  if (useCensus && stFips) {
+    console.log(`\n📊 Census enrichment — worst ${topN} cities (US ACS 5-year, 2023):`);
+    for (const city of worst) {
+      process.stdout.write(`  ${city.name.split(',')[0]} ...`);
+      // Skip if already enriched in this session
+      if (city.popWeightedGapPct !== undefined) {
+        console.log(` ${city.popWeightedGapPct !== null ? `${city.popWeightedGapPct}%` : 'n/a'} (cached)`);
+        continue;
+      }
+      try {
+        await enrichWithCensus(city, stFips);
+        console.log(` ${city.popWeightedGapPct !== null ? `${city.popWeightedGapPct}%` : 'n/a'}`);
+        // Persist Census result back to cache
+        if (cache[city.name]) {
+          cache[city.name].popWeightedGapPct = city.popWeightedGapPct;
+          saveCache(cache);
+        }
+      } catch (err) {
+        city.popWeightedGapPct = null;
+        console.log(` error: ${err.message}`);
+      }
+      await sleep(CENSUS_DELAY);
+    }
+  }
+
+  // ── Print results table ───────────────────────────────────────────────────
+  const hasPopWeighted = useCensus && worst.some(c => c.popWeightedGapPct != null);
+  const LINE = '─'.repeat(hasPopWeighted ? 95 : 80);
+
+  console.log(`\n${LINE}`);
   console.log(`RESULTS — ${stateName} (${results.length} cities scored)`);
-  console.log('─'.repeat(80));
-  console.log(`${'Rank'.padEnd(6)}${'City'.padEnd(28)}${'Pop'.padEnd(8)}${'Gap %'.padEnd(8)}${'Per 100k'.padEnd(10)}Access`);
-  console.log('─'.repeat(80));
-  ranked.forEach((c, i) => {
-    console.log(
-      `${String(i+1).padEnd(6)}${c.name.padEnd(28)}${c.populationFormatted.padEnd(8)}` +
-      `${`${c.gapPct}%`.padEnd(8)}${`${c.facilitiesPer100k}`.padEnd(10)}${c.per100kLabel}`
-    );
-  });
-  console.log('─'.repeat(80));
+  console.log(LINE);
 
-  // Save files
+  if (hasPopWeighted) {
+    console.log(`${'Rank'.padEnd(6)}${'City'.padEnd(28)}${'Pop'.padEnd(8)}${'Gap %'.padEnd(8)}${'Per 100k'.padEnd(10)}${'Pop-Wtd %'.padEnd(11)}Access`);
+  } else {
+    console.log(`${'Rank'.padEnd(6)}${'City'.padEnd(28)}${'Pop'.padEnd(8)}${'Gap %'.padEnd(8)}${'Per 100k'.padEnd(10)}Access`);
+  }
+  console.log(LINE);
+
+  ranked.forEach((c, i) => {
+    const base = `${String(i+1).padEnd(6)}${c.name.padEnd(28)}${c.populationFormatted.padEnd(8)}` +
+      `${`${c.gapPct}%`.padEnd(8)}${`${c.facilitiesPer100k}`.padEnd(10)}`;
+    const popWtd = hasPopWeighted
+      ? `${(c.popWeightedGapPct != null ? `${c.popWeightedGapPct}%` : 'n/a').padEnd(11)}`
+      : '';
+    console.log(base + popWtd + c.per100kLabel);
+  });
+  console.log(LINE);
+
+  // ── Save files ────────────────────────────────────────────────────────────
   const dateStr = new Date().toISOString().split('T')[0];
   const slug    = stateName.toLowerCase().replace(/\s/g, '_');
   const outDir  = path.join(__dirname, 'results');
@@ -369,10 +558,11 @@ async function runState(stateName, topN) {
   fs.writeFileSync(jsonPath, JSON.stringify({
     state: stateName,
     generatedAt: new Date().toISOString(),
-    methodology: 'OSM public toilets, libraries, museums. Gap % = share of city area with no facility within 400m.',
+    methodology: 'OSM public toilets, libraries, museums. Gap % = share of city area with no facility within 400m. Per 100k = facilities per 100,000 residents. Pop-Wtd % = share of population in a desert zone (US Census ACS 5-year block groups).',
+    censusEnriched: useCensus && hasPopWeighted,
     citiesScored: results.length,
-    worst: ranked.slice(0, topN),
-    all: ranked,
+    worst: worst.map(toPublicResult),
+    all:   ranked.map(toPublicResult),
   }, null, 2));
 
   const caption = formatCaption(stateName, ranked, topN);
@@ -389,7 +579,13 @@ async function runState(stateName, topN) {
 // ── Main ──────────────────────────────────────────────────────────────────────
 async function main() {
   const args = process.argv.slice(2);
-  const topN = parseInt(args[args.indexOf('--top') + 1]) || 5;
+  const topN      = parseInt(args[args.indexOf('--top') + 1]) || 5;
+  const useCensus = args.includes('--census');
+
+  if (useCensus && !process.env.CENSUS_API_KEY) {
+    console.log('  ℹ️  CENSUS_API_KEY not set — using Census API without a key (rate-limited).');
+    console.log('      Get a free key at https://api.census.gov/data/key_signup.html\n');
+  }
 
   // ── --list-states ──
   if (args.includes('--list-states')) {
@@ -401,10 +597,10 @@ async function main() {
 
   // ── --schedule ──
   if (args.includes('--schedule')) {
-    const startIdx = args.indexOf('--start');
+    const startIdx   = args.indexOf('--start');
     const cadenceIdx = args.indexOf('--cadence');
-    const startDate = startIdx !== -1 ? args[startIdx + 1] : new Date().toISOString().split('T')[0];
-    const cadence   = cadenceIdx !== -1 ? parseInt(args[cadenceIdx + 1]) : 3;
+    const startDate  = startIdx   !== -1 ? args[startIdx + 1]            : new Date().toISOString().split('T')[0];
+    const cadence    = cadenceIdx !== -1 ? parseInt(args[cadenceIdx + 1]) : 3;
 
     const schedule = generateSchedule(startDate, cadence);
     const outDir   = path.join(__dirname, 'results');
@@ -434,9 +630,9 @@ async function main() {
       process.exit(1);
     }
     const states = args[batchIdx + 1].split(',').map(s => s.trim());
-    console.log(`\n🌵 Restroom Desert Report — Batch run (${states.length} states)`);
+    console.log(`\n🌵 Restroom Desert Report — Batch run (${states.length} states)${useCensus ? ' + Census' : ''}`);
     for (const state of states) {
-      await runState(state, topN);
+      await runState(state, topN, useCensus);
     }
     console.log(`\n✅ Batch complete. Results saved to pipeline/results/\n`);
     return;
@@ -445,7 +641,7 @@ async function main() {
   // ── --state (single) ──
   const stateIdx = args.indexOf('--state');
   if (stateIdx !== -1 && args[stateIdx + 1]) {
-    await runState(args[stateIdx + 1], topN);
+    await runState(args[stateIdx + 1], topN, useCensus);
     return;
   }
 
@@ -453,9 +649,17 @@ async function main() {
   console.log(`
 Usage:
   node pipeline.js --state "Virginia"
+  node pipeline.js --state "Virginia" --census
   node pipeline.js --batch "Virginia,North Carolina,Tennessee,Georgia,South Carolina"
+  node pipeline.js --batch "Virginia,North Carolina" --census
   node pipeline.js --schedule --start "2026-07-01" --cadence 3
   node pipeline.js --list-states
+
+Options:
+  --census    Compute population-weighted gap % using US Census ACS 5-year
+              block group data (enriches the worst-N cities only).
+              Set CENSUS_API_KEY env var for higher rate limits.
+  --top N     Show worst N cities (default: 5)
   `);
 }
 
