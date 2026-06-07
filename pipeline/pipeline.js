@@ -61,6 +61,15 @@ function gapLabel(pct) {
   return '💧 Well Covered';
 }
 
+// Facilities per 100k residents — counters land-area bias
+// WHO recommends ~1 public toilet per 500 people = 200 per 100k
+function per100kLabel(rate) {
+  if (rate >= 150) return '✅ Well served';
+  if (rate >= 75)  return '🟡 Adequate';
+  if (rate >= 30)  return '🟠 Underserved';
+  return '🔴 Severely underserved';
+}
+
 // ── Cache — persist successful scores across runs ─────────────────────────────
 const CACHE_PATH = path.join(__dirname, 'results', 'cache.json');
 
@@ -212,9 +221,10 @@ async function scoreCity(city, index, total, cache) {
       facilities = await getFacilities(boundary.bbox);
     }
 
-    const gapPct = computeGapScore(boundary.bbox, boundary.geojson, facilities);
+    const gapPct          = computeGapScore(boundary.bbox, boundary.geojson, facilities);
+    const facilitiesPer100k = city.pop > 0 ? Math.round((facilities.length / city.pop) * 100000) : 0;
     const flagged = facilities.length === 0 ? ' ⚠️  flagged — verify manually' : '';
-    console.log(`${gapPct}% gap · ${facilities.length} facilities${flagged}`);
+    console.log(`${gapPct}% gap · ${facilities.length} facilities · ${facilitiesPer100k}/100k${flagged}`);
 
     const result = {
       name: city.name,
@@ -223,6 +233,8 @@ async function scoreCity(city, index, total, cache) {
       gapPct,
       gapLabel: gapLabel(gapPct),
       facilitiesFound: facilities.length,
+      facilitiesPer100k,
+      per100kLabel: per100kLabel(facilitiesPer100k),
       restroomCount: facilities.filter(f => f.type === 'restroom').length,
       libraryCount:  facilities.filter(f => f.type === 'library').length,
       museumCount:   facilities.filter(f => f.type === 'museum').length,
@@ -246,8 +258,10 @@ function formatCaption(state, ranked, topN) {
   const worst = ranked.slice(0, topN);
   const date  = new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
   const stateTag = state.replace(/\s/g, '');
-  const worstLines = worst.map((c, i) => `${i + 1}. ${c.name} — ${c.gapPct}% restroom desert`).join('\n');
-  const worstCity  = worst[0]?.name.split(',')[0] || state;
+  const worstLines = worst.map((c, i) =>
+    `${i + 1}. ${c.name}\n   🌵 ${c.gapPct}% desert · ${c.facilitiesPer100k} facilities per 100k residents`
+  ).join('\n');
+  const worstCity = worst[0]?.name.split(',')[0] || state;
 
   return `
 🌵 RESTROOM DESERT REPORT — ${state.toUpperCase()}
@@ -257,9 +271,13 @@ Bottom 5 worst cities for public restrooms in ${state}:
 
 ${worstLines}
 
-A Restroom Desert is any area where no public restroom exists within a 5-minute walk. These cities have the highest share of their land area with zero coverage.
+A Restroom Desert is any area where no public restroom exists within a 5-minute walk.
 
-Think we got it wrong? Add missing facilities at portadash.com/deserts — your corrections improve the next report.
+📊 Two metrics used to reduce bias:
+• Desert % = share of city land with no facility within 400m
+• Per 100k = facilities per 100,000 residents (WHO benchmark: 200)
+
+Data: OpenStreetMap + community pins. Think we missed a facility? Add it → portadash.com/deserts
 
 ${worstCity}, do you agree? Drop your experience below 👇
 
@@ -326,15 +344,18 @@ async function runState(stateName, topN) {
   const ranked = results.sort((a, b) => b.gapPct - a.gapPct);
 
   // Print table
-  console.log(`\n${'─'.repeat(60)}`);
+  console.log(`\n${'─'.repeat(80)}`);
   console.log(`RESULTS — ${stateName} (${results.length} cities scored)`);
-  console.log('─'.repeat(60));
-  console.log(`${'Rank'.padEnd(6)}${'City'.padEnd(28)}${'Pop'.padEnd(8)}${'Gap %'.padEnd(8)}Label`);
-  console.log('─'.repeat(60));
+  console.log('─'.repeat(80));
+  console.log(`${'Rank'.padEnd(6)}${'City'.padEnd(28)}${'Pop'.padEnd(8)}${'Gap %'.padEnd(8)}${'Per 100k'.padEnd(10)}Access`);
+  console.log('─'.repeat(80));
   ranked.forEach((c, i) => {
-    console.log(`${String(i+1).padEnd(6)}${c.name.padEnd(28)}${c.populationFormatted.padEnd(8)}${`${c.gapPct}%`.padEnd(8)}${c.gapLabel}`);
+    console.log(
+      `${String(i+1).padEnd(6)}${c.name.padEnd(28)}${c.populationFormatted.padEnd(8)}` +
+      `${`${c.gapPct}%`.padEnd(8)}${`${c.facilitiesPer100k}`.padEnd(10)}${c.per100kLabel}`
+    );
   });
-  console.log('─'.repeat(60));
+  console.log('─'.repeat(80));
 
   // Save files
   const dateStr = new Date().toISOString().split('T')[0];
