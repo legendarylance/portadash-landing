@@ -8,6 +8,8 @@
     "start": "node pipeline.js"
   },
   "dependencies": {
-    "@turf/turf": "^6.5.0"
+    "@turf/turf": "^6.5.0",
+    "canvas": "^3.2.3",
+    "fluent-ffmpeg": "^2.1.3"
   }
 }

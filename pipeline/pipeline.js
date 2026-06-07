@@ -85,7 +85,7 @@ async function getCityBoundary(cityName) {
 }
 
 // ── Overpass: get facilities in bounding box ──────────────────────────────────
-async function getFacilities(bbox) {
+async function getFacilities(bbox, attempt = 1) {
   const [south, north, west, east] = [
     parseFloat(bbox[0]), parseFloat(bbox[1]),
     parseFloat(bbox[2]), parseFloat(bbox[3]),
@@ -123,6 +123,12 @@ async function getFacilities(bbox) {
     } catch (_) {
       continue;
     }
+  }
+
+  // Retry once on total failure
+  if (attempt < 2) {
+    await sleep(5000);
+    return getFacilities(bbox, attempt + 1);
   }
   return [];
 }
@@ -176,10 +182,19 @@ async function scoreCity(city, index, total) {
     }
 
     await sleep(OVERPASS_DELAY);
-    const facilities = await getFacilities(boundary.bbox);
-    const gapPct = computeGapScore(boundary.bbox, boundary.geojson, facilities);
+    let facilities = await getFacilities(boundary.bbox);
 
-    console.log(`${gapPct}% gap · ${facilities.length} facilities`);
+    // Sanity check — 0 facilities for a city of 50k+ is almost certainly a
+    // rate-limit false negative. Wait and retry once more.
+    if (facilities.length === 0 && city.pop > 50000) {
+      process.stdout.write('(0 facilities — retrying in 8s) ');
+      await sleep(8000);
+      facilities = await getFacilities(boundary.bbox);
+    }
+
+    const gapPct = computeGapScore(boundary.bbox, boundary.geojson, facilities);
+    const flagged = facilities.length === 0 ? ' ⚠️  flagged — verify manually' : '';
+    console.log(`${gapPct}% gap · ${facilities.length} facilities${flagged}`);
 
     return {
       name: city.name,
