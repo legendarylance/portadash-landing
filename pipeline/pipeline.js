@@ -161,6 +161,12 @@ async function getFacilities(bbox, attempt = 1) {
           if (tags.temporary === 'yes' || tags.portable === 'yes') continue;
           facilities.push({ lat, lon, type: 'restroom' });
         } else if (tags.amenity === 'library') {
+          // Exclude school libraries — not publicly accessible
+          const name     = (tags.name || '').toLowerCase();
+          const operator = (tags.operator || '').toLowerCase();
+          const isSchool = ['school', 'middle', 'elementary', 'high school', 'academy']
+            .some(w => name.includes(w) || operator.includes(w));
+          if (isSchool) continue;
           facilities.push({ lat, lon, type: 'library' });
         } else if (tags.tourism === 'museum') {
           facilities.push({ lat, lon, type: 'museum' });
